@@ -6,6 +6,18 @@ import {
 } from "react-router-dom";
 import Layout from "./components/Layout";
 
+import "@fontsource/roboto/300.css";
+import "@fontsource/roboto/400.css";
+import "@fontsource/roboto/500.css";
+import "@fontsource/roboto/700.css";
+import { createTheme, CssBaseline, ThemeProvider } from "@mui/material";
+
+const darkTheme = createTheme({
+  palette: {
+    mode: "dark",
+  },
+});
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -15,10 +27,10 @@ const router = createBrowserRouter([
     path: "/components",
     // element: <Components />,
     async lazy() {
-      const Components = await import("./pages/Components")
+      const Components = await import("./pages/Components");
       return {
-        Component: Components.default
-      }
+        Component: Components.default,
+      };
     },
   },
   {
@@ -28,10 +40,10 @@ const router = createBrowserRouter([
         path: "/home",
         // element: <Home />,
         async lazy() {
-          const Home = await import("./pages/Home")
+          const Home = await import("./pages/Home");
           return {
-            Component: Home.default
-          }
+            Component: Home.default,
+          };
         },
       },
     ],
@@ -42,7 +54,10 @@ function App() {
   return (
     <>
       {/* <Suspense fallback={<Loader />}> */}
-      <RouterProvider router={router} />
+      <ThemeProvider theme={darkTheme}>
+        <RouterProvider router={router} />
+        <CssBaseline />
+      </ThemeProvider>
       {/* </Suspense> */}
     </>
   );

@@ -3,4 +3,5 @@ export interface IMovie {
   name: string;
   imageUrl: string;
   description: string;
+  updatedAt: string;
 }
