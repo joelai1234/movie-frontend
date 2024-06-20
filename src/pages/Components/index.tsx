@@ -10,6 +10,16 @@ import SearchIcon from "@mui/icons-material/Search";
 import ReactPlayer from "react-player";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
+import MoviesSlides from "../../components/MoviesSlides";
+
+const movie = {
+  id: "Garfield",
+  name: "Garfield",
+  imageUrl: "https://image.tmdb.org/t/p/w500/wvMczgfFHlVV3oBH7fNxCiYHWAs.jpg",
+  description:
+    "Garfield, the world-famous Monday-hating, lasagna-loving cat, is about to embark on a wild outdoor adventure! After an unexpected reunion with his long-lost father, Garfield and his canine friend Odie are forced to leave their comfortable lives and embark on a risky and hilarious heist adventure with Vic.",
+  updatedAt: "2024-06-07",
+};
 
 export default function Components() {
   return (
@@ -41,17 +51,7 @@ export default function Components() {
         Outlined
       </Button>
       <h2 className="text-amber-600">Card</h2>
-      <MovieCard
-        movie={{
-          id: "Garfield",
-          name: "Garfield",
-          imageUrl:
-            "https://image.tmdb.org/t/p/w500/wvMczgfFHlVV3oBH7fNxCiYHWAs.jpg",
-          description:
-            "Garfield, the world-famous Monday-hating, lasagna-loving cat, is about to embark on a wild outdoor adventure! After an unexpected reunion with his long-lost father, Garfield and his canine friend Odie are forced to leave their comfortable lives and embark on a risky and hilarious heist adventure with Vic.",
-          updatedAt: "2024-06-07",
-        }}
-      />
+      <MovieCard movie={movie} />
       <h2 className="text-amber-600">Input</h2>
       <Paper
         sx={{ p: "2px 4px", display: "flex", alignItems: "center", width: 400 }}
@@ -116,6 +116,8 @@ export default function Components() {
           Copyright © Website {new Date().getFullYear()}.
         </Typography>
       </footer>
+      <h2 className="mt-0 text-amber-600">Movie Swiper</h2>
+      <MoviesSlides />
     </div>
   );
 }
