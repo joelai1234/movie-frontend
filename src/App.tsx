@@ -49,6 +49,15 @@ const router = createBrowserRouter([
           };
         },
       },
+      {
+        path: "/detail",
+        async lazy() {
+          const Detail = await import("./pages/Detail");
+          return {
+            Component: Detail.default,
+          };
+        },
+      },
     ],
   },
 ]);

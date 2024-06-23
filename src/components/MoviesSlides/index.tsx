@@ -4,6 +4,8 @@ import { IconButton } from "@mui/material";
 import { ArrowBackIos, ArrowForwardIos } from "@mui/icons-material";
 import { useRef } from "react";
 import { Navigation } from "swiper/modules";
+import { cn } from "../../utils/helper";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const movies = [
   {
@@ -88,13 +90,25 @@ const movies = [
   },
 ];
 
-export default function MoviesSlides() {
+interface MoviesSlidesProps {
+  id: string;
+}
+
+export default function MoviesSlides({ id }: MoviesSlidesProps) {
   const nextBtn = useRef(null);
   const prevBtn = useRef(null);
+
+  const navigate = useNavigate();
+
   return (
-    <div className="flex items-center">
+    <div
+      className="flex items-center space-x-2"
+      onClick={() => {
+        navigate("/detail");
+      }}
+    >
       <div>
-        <IconButton className="prev h-fit w-fit" ref={prevBtn}>
+        <IconButton className={cn(`prev-${id}`, "h-fit w-fit")} ref={prevBtn}>
           <ArrowBackIos />
         </IconButton>
       </div>
@@ -103,8 +117,8 @@ export default function MoviesSlides() {
         slidesPerView="auto"
         spaceBetween={15}
         navigation={{
-          nextEl: ".next",
-          prevEl: ".prev",
+          nextEl: `.next-${id}`,
+          prevEl: `.prev-${id}`,
           disabledClass: "opacity-0",
           //   disabledClass: classes.hide,
         }}
@@ -118,7 +132,7 @@ export default function MoviesSlides() {
         })}
       </Swiper>
       <div>
-        <IconButton className="next h-fit w-fit" ref={nextBtn}>
+        <IconButton className={cn(`next-${id}`, "h-fit w-fit")} ref={nextBtn}>
           <ArrowForwardIos />
         </IconButton>
       </div>
