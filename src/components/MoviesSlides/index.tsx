@@ -98,15 +98,8 @@ export default function MoviesSlides({ id }: MoviesSlidesProps) {
   const nextBtn = useRef(null);
   const prevBtn = useRef(null);
 
-  const navigate = useNavigate();
-
   return (
-    <div
-      className="flex items-center space-x-2"
-      onClick={() => {
-        navigate("/detail");
-      }}
-    >
+    <div className="flex items-center space-x-2">
       <div>
         <IconButton className={cn(`prev-${id}`, "h-fit w-fit")} ref={prevBtn}>
           <ArrowBackIos />
@@ -120,7 +113,6 @@ export default function MoviesSlides({ id }: MoviesSlidesProps) {
           nextEl: `.next-${id}`,
           prevEl: `.prev-${id}`,
           disabledClass: "opacity-0",
-          //   disabledClass: classes.hide,
         }}
       >
         {movies.map((movie) => {

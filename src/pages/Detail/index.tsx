@@ -5,12 +5,8 @@ export default function Detail() {
     <div>
       <div className="pt-[64px]">
         <ReactPlayer
-          style={{
-            margin: "auto",
-            // height: "calc(100vh - 64px)"
-          }}
           width="100%"
-          height="calc(100vh - 100px)"
+          height="calc(100vh - 64px)"
           controls
           url="https://d3q62pnjbn74l6.cloudfront.net/Goodfellas.mp4"
         />

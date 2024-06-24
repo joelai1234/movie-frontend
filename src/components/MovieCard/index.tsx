@@ -1,14 +1,16 @@
 import { Typography } from "@mui/material";
 import { IMovie } from "../../model/movie";
 import { FavoriteBorder } from "@mui/icons-material";
+import { useNavigate } from "react-router-dom";
 
 interface MovieCardProps {
   movie?: IMovie;
 }
 
 const MovieCard = ({ movie }: MovieCardProps) => {
+  const navigate = useNavigate();
   return (
-    <div className="w-min">
+    <div className="w-min" onClick={() => navigate(`/detail/${movie?.id}`)}>
       <div className="group relative h-80 w-56 cursor-pointer overflow-hidden rounded">
         <img
           className="absolute z-0 h-full w-full object-cover transition-all duration-500 group-hover:scale-[1.2] group-hover:blur-sm"
