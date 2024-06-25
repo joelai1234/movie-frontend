@@ -4,7 +4,6 @@ import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
 import "swiper/css";
 
-
 import {
   createBrowserRouter,
   Navigate,
@@ -14,6 +13,7 @@ import Layout from "./components/Layout";
 
 import { createTheme, CssBaseline, ThemeProvider } from "@mui/material";
 import { QueryClient, QueryClientProvider } from "react-query";
+import SettingsLayout from "./components/SettingsLayout";
 
 const queryClient = new QueryClient();
 
@@ -30,7 +30,6 @@ const router = createBrowserRouter([
   },
   {
     path: "/components",
-    // element: <Components />,
     async lazy() {
       const Components = await import("./pages/Components");
       return {
@@ -43,7 +42,6 @@ const router = createBrowserRouter([
     children: [
       {
         path: "/home",
-        // element: <Home />,
         async lazy() {
           const Home = await import("./pages/Home");
           return {
@@ -52,7 +50,7 @@ const router = createBrowserRouter([
         },
       },
       {
-        path: "/detail",
+        path: "/detail/:id",
         async lazy() {
           const Detail = await import("./pages/Detail");
           return {
@@ -61,15 +59,38 @@ const router = createBrowserRouter([
         },
       },
       {
-        path: "/profile",
-        async lazy() {
-          const Profile = await import("./pages/Profile");
-          return {
-            Component: Profile.default,
-          };
-        },
+        element: <SettingsLayout />,
+        children: [
+          {
+            path: "/profile",
+            async lazy() {
+              const Profile = await import("./pages/Profile");
+              return {
+                Component: Profile.default,
+              };
+            },
+          },
+          {
+            path: "/videos",
+            async lazy() {
+              const Videos = await import("./pages/Videos");
+              return {
+                Component: Videos.default,
+              };
+            },
+          },
+          {
+            path: "/upload-video",
+            async lazy() {
+              const UploadVideo = await import("./pages/UploadVideo");
+              return {
+                Component: UploadVideo.default,
+              };
+            },
+          },
+        ],
       },
-      
+
       {
         path: "/auth/sign-in",
         async lazy() {
@@ -102,7 +123,6 @@ function App() {
           <CssBaseline />
         </ThemeProvider>
       </QueryClientProvider>
-
       {/* </Suspense> */}
     </>
   );

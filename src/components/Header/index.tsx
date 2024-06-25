@@ -44,6 +44,9 @@ export default function Header() {
     if (
       pathname === "/auth/sign-in" ||
       pathname === "/auth/sign-up" ||
+      pathname === "/profile" ||
+      pathname === "/videos" ||
+      pathname === "/upload-video" ||
       pathname === "/detail"
     ) {
       setIsTransparent(false);
