@@ -18,7 +18,7 @@ export default function Profile() {
 
   let movies = [];
   if (data?.data) {
-    // console.log(data?.data.data);
+    console.log(data?.data.data);
     movies = data?.data?.data.map((item: any) => {
       return {
         id: item.id,

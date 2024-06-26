@@ -3,11 +3,13 @@ import { useMutation } from "react-query";
 import { useUserDataStore } from "../../store/useUserDataStore";
 import { useState } from "react";
 import {
+  Autocomplete,
   Button,
   Checkbox,
   FormControl,
   FormControlLabel,
   FormGroup,
+  LinearProgress,
   TextField,
   Typography,
 } from "@mui/material";
@@ -23,6 +25,8 @@ type Inputs = {
 };
 
 export default function UploadVideo() {
+  const [tags, setTags] = useState<string[]>([]);
+
   const navigate = useNavigate();
   const [uploadedVideoFileName, setUploadedVideoFileName] = useState<
     string | null
@@ -55,7 +59,7 @@ export default function UploadVideo() {
       },
     },
   );
-
+  console.log(uploadVideoMutation.status);
   const uploadThumbnailMutation = useMutation(
     (file: File) => {
       const formData = new FormData();
@@ -94,7 +98,10 @@ export default function UploadVideo() {
             },
           ],
           videoSubtitles: [],
-          videoTags: [],
+          videoTags: tags.map((tag) => ({
+            type: "normal",
+            value: tag,
+          })),
         },
         {
           headers: {
@@ -112,14 +119,13 @@ export default function UploadVideo() {
   );
 
   const onSubmit: SubmitHandler<Inputs> = (data) => {
-    console.log(data);
     createVideoMutation.mutate(data);
   };
 
-  if (uploadedVideoFileName) {
+  if (uploadVideoMutation.status !== 'idle') {
     return (
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <FormControl className="w-full space-y-8 p-8">
+      <form className="flex h-full flex-col" onSubmit={handleSubmit(onSubmit)}>
+        <FormControl className="w-full flex-1 space-y-8 overflow-auto p-8">
           <div>
             <Typography variant="h6" gutterBottom>
               Details
@@ -140,6 +146,27 @@ export default function UploadVideo() {
               />
             </div>
           </div>
+          <div>
+            <Typography variant="h6" gutterBottom>
+              Tags
+            </Typography>
+            <Autocomplete
+              style={{ margin: "10px 0" }}
+              multiple
+              options={tags}
+              defaultValue={[...tags]}
+              freeSolo
+              autoSelect
+              onChange={(_, newValue) => {
+                // console.log(e);
+                // console.log(newValue);
+                setTags(newValue);
+              }}
+              renderInput={(params) => (
+                <TextField {...params} placeholder="Add tags" value={tags} />
+              )}
+            />
+          </div>
           <div className="space-y-2">
             <Typography variant="h6" gutterBottom>
               Subtitles
@@ -148,11 +175,11 @@ export default function UploadVideo() {
               Select translation language
             </Typography>
             <FormGroup>
+              <FormControlLabel control={<Checkbox />} label="Chinese" />
               <FormControlLabel
                 control={<Checkbox defaultChecked />}
-                label="Chinese"
+                label="English"
               />
-              <FormControlLabel control={<Checkbox />} label="English" />
               <FormControlLabel control={<Checkbox />} label="Japanese" />
               <FormControlLabel control={<Checkbox />} label="Korean" />
               <FormControlLabel control={<Checkbox />} label="Thai" />
@@ -223,19 +250,29 @@ export default function UploadVideo() {
               />
             </div>
           </div>
-          <div className="flex border-0 border-t border-solid border-white/20 pt-4">
+        </FormControl>
+        <div className="border-0 border-t border-solid border-white/20">
+          {uploadVideoMutation.isLoading && (
+            <LinearProgress className="h-[2px]" />
+          )}
+          <div className="flex items-center p-4">
+            <div>
+              <Typography className="opacity-50" variant="body2">
+                {uploadVideoMutation.isLoading
+                  ? "Uploading video, please wait."
+                  : "Video upload successful."}
+              </Typography>
+            </div>
             <Button
               className="ml-auto rounded-full px-6"
               variant="contained"
               type="submit"
-              //   onClick={() => {
-              //     createVideoMutation.mutate();
-              //   }}
+              disabled={uploadVideoMutation.isLoading}
             >
               Confirm
             </Button>
           </div>
-        </FormControl>
+        </div>
       </form>
     );
   }
