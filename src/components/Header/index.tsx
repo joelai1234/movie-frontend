@@ -10,7 +10,11 @@ import {
   Typography,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import {
+  Link,
+  useLocation,
+  useNavigate,
+} from "react-router-dom";
 import { useEffect, useState } from "react";
 import { cn } from "../../utils/helper";
 import { useUserDataStore } from "../../store/useUserDataStore";
@@ -22,6 +26,7 @@ export default function Header() {
   const [isTransparent, setIsTransparent] = useState(true);
   const { userData, deleteUserData } = useUserDataStore();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [searchValue, setSearchValue] = useState("");
 
   const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -38,17 +43,7 @@ export default function Header() {
   };
 
   useEffect(() => {
-    // if (!/\/detail\/[0-9]*/.test(pathname) && pathname !== "/search") {
-    //     setSearchValue("");
-    // }
-    if (
-      pathname === "/auth/sign-in" ||
-      pathname === "/auth/sign-up" ||
-      pathname === "/profile" ||
-      pathname === "/videos" ||
-      pathname === "/upload-video" ||
-      pathname === "/detail"
-    ) {
+    if (pathname !== "/home") {
       setIsTransparent(false);
     } else {
       setIsTransparent(true);
@@ -65,6 +60,10 @@ export default function Header() {
       };
     }
   }, [pathname]);
+
+  const handleSearch = () => {
+    navigate("/search?search=" + searchValue);
+  };
 
   return (
     <div>
@@ -97,8 +96,20 @@ export default function Header() {
               sx={{ ml: 1, flex: 1 }}
               placeholder="Search..."
               inputProps={{ "aria-label": "search..." }}
+              value={searchValue}
+              onChange={(e) => {
+                setSearchValue(e.target.value)
+              }}
+              onKeyDown={(e) => { 
+                e.key === "Enter" && handleSearch();
+              }}
             />
-            <IconButton type="button" sx={{ p: "10px" }} aria-label="search">
+            <IconButton
+              type="button"
+              sx={{ p: "10px" }}
+              aria-label="search"
+              onClick={handleSearch}
+            >
               <SearchIcon />
             </IconButton>
           </Paper>

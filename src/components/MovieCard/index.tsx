@@ -3,18 +3,69 @@ import { IMovie } from "../../model/movie";
 import { FavoriteBorder } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { cn } from "../../utils/helper";
+import { useMutation } from "react-query";
+import axios from "axios";
+import { useUserDataStore } from "../../store/useUserDataStore";
 
 interface MovieCardProps {
   movie?: IMovie;
 }
 
+const VITE_BACKEND_API_BASE_URL = import.meta.env.VITE_BACKEND_API_BASE_URL;
+
 const MovieCard = ({ movie }: MovieCardProps) => {
   const navigate = useNavigate();
   const [imgSrc, setImgSrc] = useState(movie?.imageUrl);
+  const [isFavorite, setIsFavorite] = useState(false);
+  const { userData } = useUserDataStore();
 
   const handleError = () => {
     setImgSrc("/images/bg-sign-in.jpeg");
   };
+
+  const addFavoriteMutation  = useMutation(
+    () => {
+
+      return axios.post(
+        VITE_BACKEND_API_BASE_URL + `/api/v1/video/favorites`,
+        {
+          videoId: Number(movie?.id),
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${userData?.accessToken}`,
+          },
+        },
+      );
+    },
+  );
+
+  const deleteFavoriteMutation  = useMutation(
+    () => {
+      return axios.delete(
+        VITE_BACKEND_API_BASE_URL + `/api/v1/video/favorites/video/${movie?.id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${userData?.accessToken}`,
+          },
+        },
+      );
+    },
+  );
+
+  const handleTriggerFavorite = (
+    e: React.MouseEvent<HTMLDivElement, MouseEvent>
+  ) => { 
+    e.stopPropagation();
+    if (isFavorite) {
+      deleteFavoriteMutation.mutate();
+    } {
+      addFavoriteMutation.mutate();
+    }
+    setIsFavorite((prev) => !prev);
+    
+  }
 
 
   return (
@@ -45,10 +96,13 @@ const MovieCard = ({ movie }: MovieCardProps) => {
           </div>
         </div>
         <div
-          className="absolute -right-14 -top-14 h-14 w-14 bg-gray-400 opacity-0 transition-all duration-300 group-hover:right-0 group-hover:top-0 group-hover:opacity-90"
+          className={cn("absolute -right-14 -top-14 h-14 w-14 bg-gray-400 opacity-0 transition-all duration-300 group-hover:right-0 group-hover:top-0 group-hover:opacity-90", {
+            "bg-red-500": isFavorite,
+          })}
           style={{
             clipPath: "polygon(100% 0, 0 0, 100% 100%)",
           }}
+          onClick={handleTriggerFavorite}
         >
           <FavoriteBorder className="absolute right-1 top-1 h-7 w-7" />
         </div>

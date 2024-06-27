@@ -4,24 +4,27 @@ import Banner from "../../components/Banner";
 import { movies as mockMovies } from "../../data/movies";
 import { useQuery } from "react-query";
 import axios from "axios";
+import { IMovie, VideoResponseData } from "../../model/movie";
 
 const VITE_BACKEND_API_BASE_URL = import.meta.env.VITE_BACKEND_API_BASE_URL;
 
 export default function Home() {
   const { data } = useQuery(["movies"], async () => {
-    return axios.get(VITE_BACKEND_API_BASE_URL + `/api/v1/videos`, {
-      params: {
-        languageCode: "en",
+    return axios.get<VideoResponseData>(
+      VITE_BACKEND_API_BASE_URL + `/api/v1/videos`,
+      {
+        params: {
+          languageCode: "en",
+        },
       },
-    });
+    );
   });
 
-  let movies = [];
+  let movies: IMovie[] = [];
   if (data?.data) {
-    console.log(data?.data.data);
-    movies = data?.data?.data.map((item: any) => {
+    movies = data?.data?.data.map((item) => {
       return {
-        id: item.id,
+        id: String(item.id),
         name: item.name,
         imageUrl: item.coverPictureUrl,
         description: "",

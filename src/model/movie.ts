@@ -23,7 +23,7 @@ interface VideoTag {
   value: string;
 }
 
-interface Video {
+export interface VideoAo {
   createdAt: string;
   updatedAt: string;
   id: number;
@@ -38,7 +38,7 @@ interface Video {
 }
 
 export interface VideoResponseData {
-  data: Video[];
+  data: VideoAo[];
   count: number;
   page: number;
   pageCount: number;

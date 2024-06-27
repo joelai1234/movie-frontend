@@ -88,9 +88,35 @@ const router = createBrowserRouter([
               };
             },
           },
+          {
+            path: "/edit-video/:id",
+            async lazy() {
+              const EditVideo = await import("./pages/EditVideo");
+              return {
+                Component: EditVideo.default,
+              };
+            },
+          },
+          {
+            path: "/favorites",
+            async lazy() {
+              const Favorites = await import("./pages/Favorites");
+              return {
+                Component: Favorites.default,
+              };
+            },
+          },
         ],
       },
-
+      {
+        path: "/search",
+        async lazy() {
+          const Search = await import("./pages/Search");
+          return {
+            Component: Search.default,
+          };
+        },
+      },
       {
         path: "/auth/sign-in",
         async lazy() {

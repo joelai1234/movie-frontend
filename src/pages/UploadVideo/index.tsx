@@ -28,12 +28,14 @@ export default function UploadVideo() {
   const [tags, setTags] = useState<string[]>([]);
 
   const navigate = useNavigate();
-  const [uploadedVideoFileName, setUploadedVideoFileName] = useState<
-    string | null
-  >(null);
-  const [uploadedThumbnailFileName, setUploadedThumbnailFileName] = useState<
-    string | null
-  >(null);
+  const [uploadedVideoRes, setUploadedVideoRes] = useState<{
+    fileName: string;
+    url: string;
+  } | null>(null);
+  const [uploadedThumbnailRes, setUploadedThumbnailRes] = useState<{
+    fileName: string;
+    url: string;
+  } | null>(null);
   const { userData } = useUserDataStore();
 
   const { register, handleSubmit } = useForm<Inputs>();
@@ -55,7 +57,7 @@ export default function UploadVideo() {
     {
       onSuccess: (data) => {
         console.log(data);
-        setUploadedVideoFileName(data.data.fileName);
+        setUploadedVideoRes(data.data);
       },
     },
   );
@@ -77,7 +79,7 @@ export default function UploadVideo() {
     {
       onSuccess: (data) => {
         console.log(data);
-        setUploadedThumbnailFileName(data.data.fileName);
+        setUploadedThumbnailRes(data.data);
       },
     },
   );
@@ -87,9 +89,11 @@ export default function UploadVideo() {
       return axios.post(
         VITE_BACKEND_API_BASE_URL + `/api/v1/videos`,
         {
+          ownerId: userData?.me.id,
           name: title,
-          fileName: uploadedVideoFileName,
-          coverPictureUrl: uploadedThumbnailFileName,
+          url: uploadedVideoRes?.url,
+          fileName: uploadedVideoRes?.fileName,
+          coverPictureUrl: uploadedThumbnailRes?.url,
           videoDetails: [
             {
               languageCode: "en",
@@ -122,7 +126,7 @@ export default function UploadVideo() {
     createVideoMutation.mutate(data);
   };
 
-  if (uploadVideoMutation.status !== 'idle') {
+  if (uploadVideoMutation.status !== "idle") {
     return (
       <form className="flex h-full flex-col" onSubmit={handleSubmit(onSubmit)}>
         <FormControl className="w-full flex-1 space-y-8 overflow-auto p-8">

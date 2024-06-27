@@ -4,6 +4,7 @@ import {
   VideoCameraFront,
   Settings,
   SupervisedUserCircle,
+  Favorite
 } from "@mui/icons-material";
 import { Button, Typography } from "@mui/material";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
@@ -54,7 +55,14 @@ export default function SettingsLayout() {
                   <ListItemText primary="Videos" />
                 </ListItemButton>
               </ListItem>
-
+              <ListItem disablePadding onClick={() => navigate("/favorites")}>
+                <ListItemButton selected={pathname === "/favorites"}>
+                  <ListItemIcon>
+                    <Favorite />
+                  </ListItemIcon>
+                  <ListItemText primary="Favorites" />
+                </ListItemButton>
+              </ListItem>
               <ListItem disablePadding>
                 <ListItemButton>
                   <ListItemIcon>

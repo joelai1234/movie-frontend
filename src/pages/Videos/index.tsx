@@ -9,10 +9,12 @@ import axios from "axios";
 import ImageWithFallback from "../../components/ImageWithFallback";
 import { Button, Chip, Switch, TableCell } from "@mui/material";
 import { VideoResponseData } from "../../model/movie";
+import { useNavigate } from "react-router-dom";
 
 const VITE_BACKEND_API_BASE_URL = import.meta.env.VITE_BACKEND_API_BASE_URL;
 
 interface RowData {
+  id: number;
   video: string;
   name: string;
   date: string;
@@ -24,6 +26,7 @@ interface RowData {
 }
 
 export default function Videos() {
+  const navigate = useNavigate();
   const { data } = useQuery(["movies"], async () => {
     return axios.get<VideoResponseData>(
       VITE_BACKEND_API_BASE_URL + `/api/v1/videos`,
@@ -39,6 +42,7 @@ export default function Videos() {
   if (data?.data) {
     rows = data?.data?.data.map((item) => {
       return {
+        id: item.id,
         video: item.coverPictureUrl,
         name: item.name,
         date: item.updatedAt,
@@ -88,7 +92,7 @@ export default function Videos() {
                 </TableCell>
                 <TableCell align="right">{row.views}</TableCell>
                 <TableCell align="right">{row.comments}</TableCell>
-                <TableCell className="space-x-1" align="right">
+                <TableCell className="space-x-1 space-y-1" align="right">
                   {row.tags.map((tag) => (
                     <Chip key={tag} label={tag} variant="outlined" />
                   ))}
@@ -98,7 +102,14 @@ export default function Videos() {
                 </TableCell>
                 <TableCell align="right">{row.process}</TableCell>
                 <TableCell align="right">
-                  <Button variant="text">Edit</Button>
+                  <Button
+                    variant="text"
+                    onClick={() => {
+                      navigate(`/edit-video/${row.id}`);
+                    }}
+                  >
+                    Edit
+                  </Button>
                 </TableCell>
               </TableRow>
             ))}
