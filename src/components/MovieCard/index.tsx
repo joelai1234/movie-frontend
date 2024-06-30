@@ -5,8 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { cn } from "../../utils/helper";
 import { useMutation } from "react-query";
-import axios from "axios";
-import { useUserDataStore } from "../../store/useUserDataStore";
+import useAuth from "../../services/auth/hooks/useAuth";
 
 interface MovieCardProps {
   movie?: IMovie;
@@ -18,55 +17,39 @@ const MovieCard = ({ movie }: MovieCardProps) => {
   const navigate = useNavigate();
   const [imgSrc, setImgSrc] = useState(movie?.imageUrl);
   const [isFavorite, setIsFavorite] = useState(false);
-  const { userData } = useUserDataStore();
+  const { authAxios } = useAuth();
 
   const handleError = () => {
     setImgSrc("/images/bg-sign-in.jpeg");
   };
 
-  const addFavoriteMutation  = useMutation(
-    () => {
+  const addFavoriteMutation = useMutation(() => {
+    return authAxios?.post(
+      VITE_BACKEND_API_BASE_URL + `/api/v1/video/favorites`,
+      {
+        videoId: Number(movie?.id),
+      },
+    );
+  });
 
-      return axios.post(
-        VITE_BACKEND_API_BASE_URL + `/api/v1/video/favorites`,
-        {
-          videoId: Number(movie?.id),
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${userData?.accessToken}`,
-          },
-        },
-      );
-    },
-  );
-
-  const deleteFavoriteMutation  = useMutation(
-    () => {
-      return axios.delete(
-        VITE_BACKEND_API_BASE_URL + `/api/v1/video/favorites/video/${movie?.id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${userData?.accessToken}`,
-          },
-        },
-      );
-    },
-  );
+  const deleteFavoriteMutation = useMutation(() => {
+    return authAxios.delete(
+      VITE_BACKEND_API_BASE_URL + `/api/v1/video/favorites/video/${movie?.id}`,
+    );
+  });
 
   const handleTriggerFavorite = (
-    e: React.MouseEvent<HTMLDivElement, MouseEvent>
-  ) => { 
+    e: React.MouseEvent<HTMLDivElement, MouseEvent>,
+  ) => {
     e.stopPropagation();
     if (isFavorite) {
       deleteFavoriteMutation.mutate();
-    } {
+    }
+    {
       addFavoriteMutation.mutate();
     }
     setIsFavorite((prev) => !prev);
-    
-  }
-
+  };
 
   return (
     <div className="w-min" onClick={() => navigate(`/detail/${movie?.id}`)}>
@@ -96,9 +79,12 @@ const MovieCard = ({ movie }: MovieCardProps) => {
           </div>
         </div>
         <div
-          className={cn("absolute -right-14 -top-14 h-14 w-14 bg-gray-400 opacity-0 transition-all duration-300 group-hover:right-0 group-hover:top-0 group-hover:opacity-90", {
-            "bg-red-500": isFavorite,
-          })}
+          className={cn(
+            "absolute -right-14 -top-14 h-14 w-14 bg-gray-400 opacity-0 transition-all duration-300 group-hover:right-0 group-hover:top-0 group-hover:opacity-90",
+            {
+              "bg-red-500": isFavorite,
+            },
+          )}
           style={{
             clipPath: "polygon(100% 0, 0 0, 100% 100%)",
           }}

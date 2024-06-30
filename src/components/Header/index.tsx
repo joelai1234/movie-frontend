@@ -10,21 +10,17 @@ import {
   Typography,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
-import {
-  Link,
-  useLocation,
-  useNavigate,
-} from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { cn } from "../../utils/helper";
-import { useUserDataStore } from "../../store/useUserDataStore";
 import { AccountCircle } from "@mui/icons-material";
+import useAuth from "../../services/auth/hooks/useAuth";
 
 export default function Header() {
   const { pathname } = useLocation();
+  const { isAuthenticated, signOut } = useAuth();
   const navigate = useNavigate();
   const [isTransparent, setIsTransparent] = useState(true);
-  const { userData, deleteUserData } = useUserDataStore();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [searchValue, setSearchValue] = useState("");
 
@@ -34,12 +30,15 @@ export default function Header() {
 
   const handleClose = () => {
     setAnchorEl(null);
-    navigate("/profile");
   };
+
+  const handleProfile = () => { 
+    navigate("/profile");
+  }
 
   const handleLogout = () => {
     setAnchorEl(null);
-    deleteUserData();
+    signOut();
   };
 
   useEffect(() => {
@@ -98,9 +97,9 @@ export default function Header() {
               inputProps={{ "aria-label": "search..." }}
               value={searchValue}
               onChange={(e) => {
-                setSearchValue(e.target.value)
+                setSearchValue(e.target.value);
               }}
-              onKeyDown={(e) => { 
+              onKeyDown={(e) => {
                 e.key === "Enter" && handleSearch();
               }}
             />
@@ -113,7 +112,7 @@ export default function Header() {
               <SearchIcon />
             </IconButton>
           </Paper>
-          {!userData && (
+          {!isAuthenticated && (
             <div className="space-x-2">
               <Link to="/auth/sign-in">
                 <Button
@@ -134,7 +133,7 @@ export default function Header() {
             </div>
           )}
 
-          {userData && (
+          {isAuthenticated && (
             <div>
               <IconButton
                 size="large"
@@ -161,7 +160,7 @@ export default function Header() {
                 open={Boolean(anchorEl)}
                 onClose={handleClose}
               >
-                <MenuItem onClick={handleClose}>Profile</MenuItem>
+                <MenuItem onClick={handleProfile}>Profile</MenuItem>
                 <MenuItem onClick={handleLogout}>Logout</MenuItem>
               </Menu>
             </div>

@@ -1,26 +1,13 @@
 import { Button } from "@mui/material";
-import axios from "axios";
-import { useMutation } from "react-query";
-import { useUserDataStore } from "../../store/useUserDataStore";
-import { useNavigate } from "react-router-dom";
-
-const VITE_BACKEND_API_BASE_URL = import.meta.env
-  .VITE_BACKEND_API_BASE_URL as string;
+import useAuth from "../../services/auth/hooks/useAuth";
+import { Navigate } from "react-router-dom";
 
 export default function SignIn() {
-  const navigate = useNavigate();
-  const { setUserData } = useUserDataStore();
-  const signInMutation = useMutation({
-    mutationFn: () => {
-      return axios.get(
-        `${VITE_BACKEND_API_BASE_URL}/api/v1/auth/google/signin/mock1`,
-      );
-    },
-    onSuccess: (data) => {
-      setUserData(data.data);
-      navigate("/home");
-    },
-  });
+  const { signIn, isAuthenticated } = useAuth();
+  
+  if (isAuthenticated) {
+    return <Navigate to="/home" />;
+  }
 
   return (
     <div className="mt-16 h-[calc(100vh-64px)] bg-slate-100">
@@ -148,7 +135,7 @@ export default function SignIn() {
                     </svg>
                   }
                   onClick={() => {
-                    signInMutation.mutate();
+                    signIn();
                   }}
                 >
                   Google

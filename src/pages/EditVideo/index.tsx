@@ -1,6 +1,5 @@
 import axios from "axios";
 import { useMutation, useQuery } from "react-query";
-import { useUserDataStore } from "../../store/useUserDataStore";
 import { useState } from "react";
 import {
   Autocomplete,
@@ -15,6 +14,7 @@ import {
 import { useNavigate, useParams } from "react-router-dom";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { VideoAo } from "../../model/movie";
+import useAuth from "../../services/auth/hooks/useAuth";
 
 const VITE_BACKEND_API_BASE_URL = import.meta.env.VITE_BACKEND_API_BASE_URL;
 
@@ -35,7 +35,7 @@ export default function EditVideo() {
     fileName: string;
     url: string;
   } | null>(null);
-  const { userData } = useUserDataStore();
+  const { authAxios } = useAuth();
 
   const { register, handleSubmit, setValue } = useForm<Inputs>();
 
@@ -67,14 +67,9 @@ export default function EditVideo() {
     (file: File) => {
       const formData = new FormData();
       formData.append("file", file);
-      return axios.post(
+      return authAxios.post(
         VITE_BACKEND_API_BASE_URL + `/api/v1/videos/pictures/upload`,
         formData,
-        {
-          headers: {
-            Authorization: `Bearer ${userData?.accessToken}`,
-          },
-        },
       );
     },
     {
@@ -87,11 +82,12 @@ export default function EditVideo() {
 
   const updateVideoMutation = useMutation(
     ({ title, description }: { title: string; description: string }) => {
-      return axios.patch(
+      return authAxios.patch(
         VITE_BACKEND_API_BASE_URL + `/api/v1/videos/${id}`,
         {
           name: title,
-          coverPictureUrl: uploadedThumbnailRes?.url || data?.data.coverPictureUrl,
+          coverPictureUrl:
+            uploadedThumbnailRes?.url || data?.data.coverPictureUrl,
           videoDetails: [
             {
               languageCode: "en",
@@ -104,11 +100,6 @@ export default function EditVideo() {
             type: "normal",
             value: tag,
           })),
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${userData?.accessToken}`,
-          },
         },
       );
     },

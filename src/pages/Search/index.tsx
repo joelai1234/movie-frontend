@@ -4,12 +4,10 @@ import { IMovie, VideoResponseData } from "../../model/movie";
 import axios from "axios";
 import { Typography } from "@mui/material";
 import MoviesSlides from "../../components/MoviesSlides";
-import { useUserDataStore } from "../../store/useUserDataStore";
 
 const VITE_BACKEND_API_BASE_URL = import.meta.env.VITE_BACKEND_API_BASE_URL;
 
 export default function Search() {
-  const { userData } = useUserDataStore();
   const [searchParams] = useSearchParams();
   const search = searchParams.get("search");
   const { data } = useQuery(["/api/v1/videos/me", search], async () => {
@@ -19,9 +17,6 @@ export default function Search() {
         params: {
           languageCode: "en",
           keyword: search,
-        },
-        headers: {
-          Authorization: `Bearer ${userData?.accessToken}`,
         },
       },
     );

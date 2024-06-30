@@ -1,6 +1,4 @@
-import axios from "axios";
 import { useMutation } from "react-query";
-import { useUserDataStore } from "../../store/useUserDataStore";
 import { useState } from "react";
 import {
   Autocomplete,
@@ -15,6 +13,8 @@ import {
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useForm, SubmitHandler } from "react-hook-form";
+import useAuth from "../../services/auth/hooks/useAuth";
+import { useUserDataStore } from "../../store/useUserDataStore";
 
 const VITE_BACKEND_API_BASE_URL = import.meta.env.VITE_BACKEND_API_BASE_URL;
 
@@ -36,6 +36,7 @@ export default function UploadVideo() {
     fileName: string;
     url: string;
   } | null>(null);
+  const { authAxios } = useAuth();
   const { userData } = useUserDataStore();
 
   const { register, handleSubmit } = useForm<Inputs>();
@@ -44,14 +45,9 @@ export default function UploadVideo() {
     (file: File) => {
       const formData = new FormData();
       formData.append("file", file);
-      return axios.post(
+      return authAxios.post(
         VITE_BACKEND_API_BASE_URL + `/api/v1/videos/upload`,
         formData,
-        {
-          headers: {
-            Authorization: `Bearer ${userData?.accessToken}`,
-          },
-        },
       );
     },
     {
@@ -66,14 +62,9 @@ export default function UploadVideo() {
     (file: File) => {
       const formData = new FormData();
       formData.append("file", file);
-      return axios.post(
+      return authAxios.post(
         VITE_BACKEND_API_BASE_URL + `/api/v1/videos/pictures/upload`,
         formData,
-        {
-          headers: {
-            Authorization: `Bearer ${userData?.accessToken}`,
-          },
-        },
       );
     },
     {
@@ -86,33 +77,25 @@ export default function UploadVideo() {
 
   const createVideoMutation = useMutation(
     ({ title, description }: { title: string; description: string }) => {
-      return axios.post(
-        VITE_BACKEND_API_BASE_URL + `/api/v1/videos`,
-        {
-          ownerId: userData?.me.id,
-          name: title,
-          url: uploadedVideoRes?.url,
-          fileName: uploadedVideoRes?.fileName,
-          coverPictureUrl: uploadedThumbnailRes?.url,
-          videoDetails: [
-            {
-              languageCode: "en",
-              title: title,
-              description: description,
-            },
-          ],
-          videoSubtitles: [],
-          videoTags: tags.map((tag) => ({
-            type: "normal",
-            value: tag,
-          })),
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${userData?.accessToken}`,
+      return authAxios.post(VITE_BACKEND_API_BASE_URL + `/api/v1/videos`, {
+        ownerId: userData?.me.id,
+        name: title,
+        url: uploadedVideoRes?.url,
+        fileName: uploadedVideoRes?.fileName,
+        coverPictureUrl: uploadedThumbnailRes?.url,
+        videoDetails: [
+          {
+            languageCode: "en",
+            title: title,
+            description: description,
           },
-        },
-      );
+        ],
+        videoSubtitles: [],
+        videoTags: tags.map((tag) => ({
+          type: "normal",
+          value: tag,
+        })),
+      });
     },
     {
       onSuccess: (data) => {
