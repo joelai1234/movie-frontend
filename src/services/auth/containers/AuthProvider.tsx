@@ -10,8 +10,9 @@ interface AuthProviderProps {
 }
 
 export default function AuthProvider({ children }: AuthProviderProps) {
-  const { isAuthenticated, signOut, refresh } = useAuth();
+  const { signOut, refresh } = useAuth();
   const { accessToken } = useAuthStore();
+  const { isAuthenticated, setIsAuthenticated } = useAuthAxiosStore();
   const { setAuthAxios, deleteAuthAxios } = useAuthAxiosStore();
 
   useEffect(() => {
@@ -27,16 +28,18 @@ export default function AuthProvider({ children }: AuthProviderProps) {
     ); // Refresh every 5 minutes
 
     return () => clearInterval(interval);
-  }, [isAuthenticated]);
+  }, [isAuthenticated, refresh]);
 
   useEffect(() => {
     console.log("setting auth axios instance");
     if (accessToken) {
       setAuthAxios(createAuthAxios(accessToken));
+      setIsAuthenticated(true);
     } else {
       deleteAuthAxios();
+      setIsAuthenticated(false);
     }
-  }, [accessToken, deleteAuthAxios, setAuthAxios]);
+  }, [accessToken, deleteAuthAxios, setAuthAxios, setIsAuthenticated]);
 
   useEffect(() => {
     console.log("checking token expiration and refreshing if needed");

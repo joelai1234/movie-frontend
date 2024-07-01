@@ -7,16 +7,13 @@ const VITE_BACKEND_API_BASE_URL = import.meta.env.VITE_BACKEND_API_BASE_URL;
 
 export default function useAuth() {
   const {
-    accessToken,
     refreshToken,
     setAuthData,
     deleteAuthData,
     setAccessToken,
     setRefreshToken,
   } = useAuthStore();
-  const { authAxios } = useAuthAxiosStore();
-
-  const isAuthenticated = !!accessToken;
+  const { authAxios, isAuthenticated } = useAuthAxiosStore();
 
   const signInMutation = useMutation({
     mutationFn: () => {
@@ -31,7 +28,7 @@ export default function useAuth() {
 
   const signOutMutation = useMutation({
     mutationFn: () => {
-      return axios.delete("/api/v1/auth/signout");
+      return authAxios.delete("/api/v1/auth/signout");
     },
   });
 
@@ -45,10 +42,15 @@ export default function useAuth() {
   };
 
   const refresh = async () => {
-    const response = await axios.post(
+    console.log("refreshToken", refreshToken);
+
+    const response = await axios.put(
       `${VITE_BACKEND_API_BASE_URL}/api/v1/auth/refresh-token`,
+      undefined,
       {
-        refreshToken,
+        headers: {
+          Authorization: `Bearer ${refreshToken}`,
+        },
       },
     );
     setAccessToken(response.data.accessToken);

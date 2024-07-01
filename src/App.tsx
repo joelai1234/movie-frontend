@@ -14,6 +14,8 @@ import Layout from "./components/Layout";
 import { createTheme, CssBaseline, ThemeProvider } from "@mui/material";
 import { QueryClient, QueryClientProvider } from "react-query";
 import SettingsLayout from "./components/SettingsLayout";
+import PrivateRoute from "./services/auth/containers/PrivateRoute";
+import AuthProvider from "./services/auth/containers/AuthProvider";
 
 const queryClient = new QueryClient();
 
@@ -59,56 +61,6 @@ const router = createBrowserRouter([
         },
       },
       {
-        element: <SettingsLayout />,
-        children: [
-          {
-            path: "/profile",
-            async lazy() {
-              const Profile = await import("./pages/Profile");
-              return {
-                Component: Profile.default,
-              };
-            },
-          },
-          {
-            path: "/videos",
-            async lazy() {
-              const Videos = await import("./pages/Videos");
-              return {
-                Component: Videos.default,
-              };
-            },
-          },
-          {
-            path: "/upload-video",
-            async lazy() {
-              const UploadVideo = await import("./pages/UploadVideo");
-              return {
-                Component: UploadVideo.default,
-              };
-            },
-          },
-          {
-            path: "/edit-video/:id",
-            async lazy() {
-              const EditVideo = await import("./pages/EditVideo");
-              return {
-                Component: EditVideo.default,
-              };
-            },
-          },
-          {
-            path: "/favorites",
-            async lazy() {
-              const Favorites = await import("./pages/Favorites");
-              return {
-                Component: Favorites.default,
-              };
-            },
-          },
-        ],
-      },
-      {
         path: "/search",
         async lazy() {
           const Search = await import("./pages/Search");
@@ -135,6 +87,61 @@ const router = createBrowserRouter([
           };
         },
       },
+      {
+        element: <PrivateRoute />,
+        children: [
+          {
+            element: <SettingsLayout />,
+            children: [
+              {
+                path: "/profile",
+                async lazy() {
+                  const Profile = await import("./pages/Profile");
+                  return {
+                    Component: Profile.default,
+                  };
+                },
+              },
+              {
+                path: "/videos",
+                async lazy() {
+                  const Videos = await import("./pages/Videos");
+                  return {
+                    Component: Videos.default,
+                  };
+                },
+              },
+              {
+                path: "/upload-video",
+                async lazy() {
+                  const UploadVideo = await import("./pages/UploadVideo");
+                  return {
+                    Component: UploadVideo.default,
+                  };
+                },
+              },
+              {
+                path: "/edit-video/:id",
+                async lazy() {
+                  const EditVideo = await import("./pages/EditVideo");
+                  return {
+                    Component: EditVideo.default,
+                  };
+                },
+              },
+              {
+                path: "/favorites",
+                async lazy() {
+                  const Favorites = await import("./pages/Favorites");
+                  return {
+                    Component: Favorites.default,
+                  };
+                },
+              },
+            ],
+          },
+        ],
+      },
     ],
   },
 ]);
@@ -145,7 +152,9 @@ function App() {
       {/* <Suspense fallback={<Loader />}> */}
       <QueryClientProvider client={queryClient}>
         <ThemeProvider theme={darkTheme}>
-          <RouterProvider router={router} />
+          <AuthProvider>
+            <RouterProvider router={router} />
+          </AuthProvider>
           <CssBaseline />
         </ThemeProvider>
       </QueryClientProvider>

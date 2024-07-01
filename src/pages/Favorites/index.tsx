@@ -9,9 +9,9 @@ const VITE_BACKEND_API_BASE_URL = import.meta.env.VITE_BACKEND_API_BASE_URL;
 
 export default function Favorites() {
   const { authAxios } = useAuth();
-  const { data } = useQuery(["/api/v1/video/favorites"], async () => {
+  const { data } = useQuery(["/api/v1/videos/favorites"], async () => {
     return authAxios.get<VideoResponseData>(
-      VITE_BACKEND_API_BASE_URL + `/api/v1/video/favorites`,
+      VITE_BACKEND_API_BASE_URL + `/api/v1/videos/favorites`,
       {
         params: {
           languageCode: "en",

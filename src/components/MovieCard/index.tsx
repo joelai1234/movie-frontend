@@ -25,7 +25,7 @@ const MovieCard = ({ movie }: MovieCardProps) => {
 
   const addFavoriteMutation = useMutation(() => {
     return authAxios?.post(
-      VITE_BACKEND_API_BASE_URL + `/api/v1/video/favorites`,
+      VITE_BACKEND_API_BASE_URL + `/api/v1/videos/favorites`,
       {
         videoId: Number(movie?.id),
       },
@@ -34,7 +34,7 @@ const MovieCard = ({ movie }: MovieCardProps) => {
 
   const deleteFavoriteMutation = useMutation(() => {
     return authAxios.delete(
-      VITE_BACKEND_API_BASE_URL + `/api/v1/video/favorites/video/${movie?.id}`,
+      VITE_BACKEND_API_BASE_URL + `/api/v1/videos/favorites/video/${movie?.id}`,
     );
   });
 

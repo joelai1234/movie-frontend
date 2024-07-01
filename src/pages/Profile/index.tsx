@@ -2,27 +2,23 @@ import { Typography } from "@mui/material";
 
 import MoviesSlides from "../../components/MoviesSlides";
 import { useQuery } from "react-query";
-import axios from "axios";
 import { IMovie, VideoResponseData } from "../../model/movie";
-
-const VITE_BACKEND_API_BASE_URL = import.meta.env.VITE_BACKEND_API_BASE_URL;
+import useAuth from "../../services/auth/hooks/useAuth";
 
 export default function Profile() {
-  const { data } = useQuery(["movies"], async () => {
-    return axios.get<VideoResponseData>(
-      VITE_BACKEND_API_BASE_URL + `/api/v1/videos`,
-      {
-        params: {
-          languageCode: "en",
-        },
+  const { authAxios } = useAuth();
+  const { data } = useQuery(["/api/v1/videos/me"], async () => {
+    return authAxios.get<VideoResponseData>("/api/v1/videos/me", {
+      params: {
+        languageCode: "en",
       },
-    );
+    });
   });
-
+  console.log("data", data);
   let movies: IMovie[] = [];
-  if (data?.data) {
-    console.log(data?.data.data);
-    movies = data?.data?.data.map((item) => {
+  if (data?.data?.data) {
+    console.log(data?.data?.data);
+    movies = data?.data?.data?.map((item) => {
       return {
         id: String(item.id),
         name: item.name,
