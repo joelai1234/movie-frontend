@@ -31,8 +31,8 @@ export default function Profile() {
 
   return (
     <div className="space-y-8 py-8">
-      <div>
-        <Typography className="px-12 font-medium" variant="h6" gutterBottom>
+      <div className="px-10">
+        <Typography className="font-medium" variant="h6" gutterBottom>
           Videos
         </Typography>
         <MoviesSlides id="1" movies={movies} />

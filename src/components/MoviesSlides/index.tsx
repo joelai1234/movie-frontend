@@ -13,17 +13,13 @@ interface MoviesSlidesProps {
 }
 
 export default function MoviesSlides({ id, movies }: MoviesSlidesProps) {
-  const nextBtn = useRef(null);
-  const prevBtn = useRef(null);
+  // const nextBtn = useRef(null);
+  // const prevBtn = useRef(null);
 
   return (
-    <div className="flex items-center space-x-2">
-      <div>
-        <IconButton className={cn(`prev-${id}`, "h-fit w-fit")} ref={prevBtn}>
-          <ArrowBackIos />
-        </IconButton>
-      </div>
+    <div className="relative flex items-center space-x-2">
       <Swiper
+        className="ml-0"
         modules={[Navigation]}
         slidesPerView="auto"
         spaceBetween={15}
@@ -41,11 +37,16 @@ export default function MoviesSlides({ id, movies }: MoviesSlidesProps) {
           );
         })}
       </Swiper>
-      <div>
+      {/* <div className="absolute left-0 z-10 -translate-y-[14px]">
+        <IconButton className={cn(`prev-${id}`, "h-fit w-fit bg-black")} ref={prevBtn}>
+          <ArrowBackIos className=" text-red-500" />
+        </IconButton>
+      </div>
+      <div className="absolute right-0 z-10 -translate-y-[14px]">
         <IconButton className={cn(`next-${id}`, "h-fit w-fit")} ref={nextBtn}>
           <ArrowForwardIos />
         </IconButton>
-      </div>
+      </div> */}
     </div>
   );
 }
