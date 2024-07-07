@@ -4,29 +4,32 @@ import {
   Autocomplete,
   Button,
   Checkbox,
-  FormControl,
   FormControlLabel,
   FormGroup,
   LinearProgress,
+  MenuItem,
+  OutlinedInput,
+  Select,
   TextField,
   Typography,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useForm, SubmitHandler } from "react-hook-form";
 import useAuth from "../../services/auth/hooks/useAuth";
-import { useUserDataStore } from "../../store/useUserDataStore";
-
-const VITE_BACKEND_API_BASE_URL = import.meta.env.VITE_BACKEND_API_BASE_URL;
+import { categoryList, ratingList } from "../../data/movies";
+import { VideoCategory, VideoRating } from "../../model/movie";
 
 type Inputs = {
   title: string;
   description: string;
+  releaseYear: string;
   thumbnail: File;
 };
 
 export default function UploadVideo() {
   const [tags, setTags] = useState<string[]>([]);
-
+  const [category, setCategory] = useState<string[]>([]);
+  const [rating, setRating] = useState<string>(VideoRating.G);
   const navigate = useNavigate();
   const [uploadedVideoRes, setUploadedVideoRes] = useState<{
     fileName: string;
@@ -37,7 +40,6 @@ export default function UploadVideo() {
     url: string;
   } | null>(null);
   const { authAxios } = useAuth();
-  const { userData } = useUserDataStore();
 
   const { register, handleSubmit } = useForm<Inputs>();
 
@@ -45,10 +47,7 @@ export default function UploadVideo() {
     (file: File) => {
       const formData = new FormData();
       formData.append("file", file);
-      return authAxios.post(
-        VITE_BACKEND_API_BASE_URL + `/api/v1/videos/upload`,
-        formData,
-      );
+      return authAxios.post("api/v1/videos/upload", formData);
     },
     {
       onSuccess: (data) => {
@@ -62,10 +61,7 @@ export default function UploadVideo() {
     (file: File) => {
       const formData = new FormData();
       formData.append("file", file);
-      return authAxios.post(
-        VITE_BACKEND_API_BASE_URL + `/api/v1/videos/pictures/upload`,
-        formData,
-      );
+      return authAxios.post("/api/v1/videos/pictures/upload", formData);
     },
     {
       onSuccess: (data) => {
@@ -76,13 +72,23 @@ export default function UploadVideo() {
   );
 
   const createVideoMutation = useMutation(
-    ({ title, description }: { title: string; description: string }) => {
-      return authAxios.post(VITE_BACKEND_API_BASE_URL + `/api/v1/videos`, {
-        ownerId: userData?.me.id,
+    ({
+      title,
+      description,
+      releaseYear,
+    }: {
+      title: string;
+      description: string;
+      releaseYear: string;
+    }) => {
+      return authAxios.post("/api/v1/videos", {
         name: title,
         url: uploadedVideoRes?.url,
         fileName: uploadedVideoRes?.fileName,
         coverPictureUrl: uploadedThumbnailRes?.url,
+        categories: [VideoCategory.ALL, ...category],
+        rating: rating,
+        releaseYear: new Date(releaseYear).getTime() / 1000,
         videoDetails: [
           {
             languageCode: "en",
@@ -106,13 +112,14 @@ export default function UploadVideo() {
   );
 
   const onSubmit: SubmitHandler<Inputs> = (data) => {
+    console.log(data);
     createVideoMutation.mutate(data);
   };
 
   if (uploadVideoMutation.status !== "idle") {
     return (
       <form className="flex h-full flex-col" onSubmit={handleSubmit(onSubmit)}>
-        <FormControl className="w-full flex-1 space-y-8 overflow-auto p-8">
+        <div className="w-full flex-1 space-y-8 overflow-auto p-8">
           <div>
             <Typography variant="h6" gutterBottom>
               Details
@@ -130,6 +137,68 @@ export default function UploadVideo() {
                 multiline
                 rows={4}
                 {...register("description")}
+              />
+            </div>
+          </div>
+          <div>
+            <Typography variant="h6" gutterBottom>
+              Category
+            </Typography>
+            <Select
+              className="w-full"
+              placeholder="Select category"
+              labelId="category"
+              multiple
+              value={category}
+              onChange={(e) => {
+                // setCategory(e.target.value as string);
+                const {
+                  target: { value },
+                } = e;
+                setCategory(
+                  // On autofill we get a stringified value.
+                  typeof value === "string" ? value.split(",") : value,
+                );
+              }}
+              input={<OutlinedInput label="Name" />}
+            >
+              {categoryList
+                .filter((item) => item.value !== VideoCategory.ALL)
+                .map((item) => (
+                  <MenuItem key={item.value} value={item.value}>
+                    {item.name}
+                  </MenuItem>
+                ))}
+            </Select>
+          </div>
+          <div>
+            <Typography variant="h6" gutterBottom>
+              Rating
+            </Typography>
+            <Select
+              className="w-full"
+              value={rating}
+              onChange={(e) => {
+                setRating(e.target.value as string);
+              }}
+              input={<OutlinedInput label="Name" />}
+            >
+              {ratingList.map((item) => (
+                <MenuItem key={item.value} value={item.value}>
+                  {item.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </div>
+          <div>
+            <Typography variant="h6" gutterBottom>
+              Release Year
+            </Typography>
+            <div className="flex flex-col space-y-4">
+              <TextField
+                type="date"
+                variant="outlined"
+                {...register("releaseYear")}
               />
             </div>
           </div>
@@ -237,7 +306,7 @@ export default function UploadVideo() {
               />
             </div>
           </div>
-        </FormControl>
+        </div>
         <div className="border-0 border-t border-solid border-white/20">
           {uploadVideoMutation.isLoading && (
             <LinearProgress className="h-[2px]" />

@@ -1,21 +1,32 @@
-import { Button, Fade, Popper, Typography } from "@mui/material";
+import { Button, Popover, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { useState } from "react";
-export default function Banner() {
+import { VideoCategory } from "../../model/movie";
+import { categoryList } from "../../data/movies";
+
+interface BannerProps {
+  setCategory: (category: VideoCategory) => void;
+}
+
+
+
+export default function Banner({ setCategory }: BannerProps) {
   const navigate = useNavigate();
 
   // select
-  const [open, setOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
-    setOpen((previousOpen) => !previousOpen);
+  };
+  const open = Boolean(anchorEl);
+
+  const id = open ? "category-popper" : undefined;
+  const handleClose = () => {
+    setAnchorEl(null);
   };
 
-  const canBeOpen = open && Boolean(anchorEl);
-  const id = canBeOpen ? "transition-popper" : undefined;
   return (
     <div className="relative mb-0 h-full max-h-[600px] pb-0">
       <img
@@ -32,64 +43,50 @@ export default function Banner() {
         >
           Category: All movies
         </Button>
-        <Popper
+        <Popover
           style={{
             zIndex: 1000,
-          
           }}
           id={id}
           open={open}
+          onClose={handleClose}
           anchorEl={anchorEl}
-          transition
-          placement="bottom-start"
+          anchorOrigin={{
+            vertical: "bottom",
+            horizontal: "left",
+          }}
         >
-          {({ TransitionProps }) => (
-            <Fade
-            
-              {...TransitionProps}
-              timeout={350}
-            >
+          <div
+            style={{
+              width: 420,
+              backgroundColor: "#00000077",
+              paddingLeft: 20,
+              paddingRight: 20,
+              paddingTop: 16,
+              paddingBottom: 16,
+              border: "1px solid #626262",
+              borderRadius: 4,
+              display: "grid",
+              gridTemplateColumns: "1fr 1fr 1fr 1fr",
+              gap: 8,
+              fontSize: 14,
+              fontWeight: 500,
+            }}
+          >
+            {categoryList.map((item) => (
               <div
-                style={{
-                  width: 420,
-                  backgroundColor: "#00000077",
-                  paddingLeft: 20,
-                  paddingRight: 20,
-                  paddingTop: 16,
-                  paddingBottom: 16,
-                  border: "1px solid #626262",
-                  borderRadius: 4,
-                  display: "grid",
-                  gridTemplateColumns: "1fr 1fr 1fr 1fr",
-                  gap: 8,
-                  fontSize: 14,
-                  fontWeight: 500,
+                style={{ cursor: "pointer" }}
+                onClick={() => {
+                  setCategory(item.value);
+                  handleClose();
                 }}
+                key={item.value}
               >
-                <div style={{ cursor: "pointer" }}>All</div>
-                <div style={{ cursor: "pointer" }}>Crime</div>
-                <div style={{ cursor: "pointer" }}>History</div>
-                <div style={{ cursor: "pointer" }}>Sci-fi</div>
-                <div style={{ cursor: "pointer" }}>Action</div>
-                <div style={{ cursor: "pointer" }}>Documentary</div>
-                <div style={{ cursor: "pointer" }}>Horror</div>
-                <div style={{ cursor: "pointer" }}>Sport</div>
-                <div style={{ cursor: "pointer" }}>Adventure</div>
-                <div style={{ cursor: "pointer" }}>Drama</div>
-                <div style={{ cursor: "pointer" }}>Musical</div>
-                <div style={{ cursor: "pointer" }}>Superhero</div>
-                <div style={{ cursor: "pointer" }}>Animation</div>
-                <div style={{ cursor: "pointer" }}>Family</div>
-                <div style={{ cursor: "pointer" }}>Mystery</div>
-                <div style={{ cursor: "pointer" }}>Thriller</div>
-                <div style={{ cursor: "pointer" }}>Comedy</div>
-                <div style={{ cursor: "pointer" }}>Fantasy</div>
-                <div style={{ cursor: "pointer" }}>Romance</div>
-                <div style={{ cursor: "pointer" }}>War</div>
+                {item.name}
               </div>
-            </Fade>
-          )}
-        </Popper>
+            ))}
+          </div>
+        </Popover>
       </div>
       <div
         className="absolute left-0 top-0 z-10 h-[600px] w-full"
