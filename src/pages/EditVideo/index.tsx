@@ -13,7 +13,7 @@ import {
 } from "@mui/material";
 import { useNavigate, useParams } from "react-router-dom";
 import { useForm, SubmitHandler } from "react-hook-form";
-import { VideoAo } from "../../model/movie";
+import { VideoData } from "../../model/movie";
 import useAuth from "../../services/auth/hooks/useAuth";
 
 const VITE_BACKEND_API_BASE_URL = import.meta.env.VITE_BACKEND_API_BASE_URL;
@@ -42,8 +42,7 @@ export default function EditVideo() {
   const { data } = useQuery(
     ["/api/v1/videos", id],
     async () => {
-      // return axios.get(VITE_BACKEND_API_BASE_URL + `/api/v1/videos/${id}/details`, {
-      return axios.get<VideoAo>(
+      return axios.get<VideoData>(
         VITE_BACKEND_API_BASE_URL + `/api/v1/videos/${id}`,
         {
           params: {

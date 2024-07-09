@@ -1,4 +1,4 @@
-import { Box, Chip, IconButton, Tab, Typography } from "@mui/material";
+import { Box, Chip, IconButton, Paper, Tab, Typography } from "@mui/material";
 import ReactPlayer from "react-player";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import StarBorderIcon from "@mui/icons-material/StarBorder";
@@ -7,14 +7,75 @@ import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 import { useState } from "react";
-import { movies as mockMovies } from "../../data/movies";
-import MovieCard from "../../components/MovieCard";
 import Message from "../../components/Message";
+import { useParams } from "react-router-dom";
+import { useMutation, useQuery, useQueryClient } from "react-query";
+import axios from "axios";
+import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+import {
+  CommentsResponseData,
+  VideoCategory,
+  VideoData,
+} from "../../model/movie";
+
+import * as React from "react";
+import InputBase from "@mui/material/InputBase";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import useAuth from "../../services/auth/hooks/useAuth";
+
+const VITE_BACKEND_API_BASE_URL = import.meta.env.VITE_BACKEND_API_BASE_URL;
+
 export default function Detail() {
+  const { authAxios } = useAuth();
+  const { id } = useParams();
   const [value, setValue] = useState("Videos & Photos");
+  const [comment, setComment] = useState("");
+  const queryClient = useQueryClient();
+
+  const { data: movieRes } = useQuery(["/api/v1/videos", id], async () => {
+    return axios.get<VideoData>(
+      VITE_BACKEND_API_BASE_URL + `/api/v1/videos/${id}`,
+      {
+        params: {
+          languageCode: "en",
+        },
+      },
+    );
+  });
+  const movieData = movieRes?.data;
+  // console.log(movieRes);
+
+  const { data: commentsRes } = useQuery(
+    ["/api/v1/videos/${id}/comments"],
+    async () => {
+      return authAxios.get<CommentsResponseData>(
+        VITE_BACKEND_API_BASE_URL + `/api/v1/videos/${id}/comments`,
+      );
+    },
+  );
+  const commentsData = commentsRes?.data;
+  console.log(commentsData);
+
+  const commentMutation = useMutation({
+    mutationFn: async () => {
+      return authAxios.post(`/api/v1/videos/comments`, {
+        videoId: Number(id),
+        rating: 10,
+        content: comment,
+      });
+    },
+    onSuccess: () => {
+      setComment("");
+      queryClient.invalidateQueries(["/api/v1/videos/${id}/comments"]);
+    },
+  });
 
   const handleChange = (event: React.SyntheticEvent, newValue: string) => {
     setValue(newValue);
+  };
+
+  const handleCommentChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setComment(event.target.value);
   };
 
   return (
@@ -32,7 +93,9 @@ export default function Detail() {
           <div className="flex gap-16">
             <div className="w-full space-y-3">
               <div className="flex space-x-5">
-                <Typography variant="h4">Goodfellas</Typography>
+                <Typography variant="h4">
+                  {movieData?.videoDetail.title}
+                </Typography>
                 <IconButton className="bg-gray-800">
                   <FavoriteBorderIcon />
                 </IconButton>
@@ -43,7 +106,8 @@ export default function Detail() {
               <div className="flex w-full items-center justify-between">
                 <div>
                   <Typography variant="body1">
-                    1989 &bull; PG &bull; 1h 35m
+                    {movieData?.releaseYear} &bull; {movieData?.rating} &bull;
+                    1h 35m
                   </Typography>
                 </div>
                 <div className="flex items-center gap-1">
@@ -56,21 +120,26 @@ export default function Detail() {
                     >
                       (1k)
                     </Typography>{" "}
-                    &bull; 2.1k Views &bull; 1.2K Comments
+                    &bull; {movieData?.totalViews} Views &bull; 1.2K Comments
                   </Typography>
                 </div>
               </div>
               <div>
                 <Typography variant="body2">
-                  The beloved characters Gru and Lucy and their adorable
-                  daughters Maomao, Didi, and An An are about to start a new
-                  chapter in their family life, welcoming a new...
+                  {movieData?.videoDetail.description}
                 </Typography>
               </div>
               <div className="space-x-4">
-                <Chip label="Animation" variant="outlined" />
-                <Chip label="Adventure" variant="outlined" />
-                <Chip label="Comedy" variant="outlined" />
+                {movieData?.categories
+                  .filter((item) => item !== VideoCategory.ALL)
+                  .map((category) => (
+                    <Chip
+                      className="capitalize"
+                      key={category}
+                      label={category.toLocaleLowerCase()}
+                      variant="outlined"
+                    />
+                  ))}
               </div>
             </div>
             <div className="w-80 shrink-0 space-y-4">
@@ -81,7 +150,11 @@ export default function Detail() {
                   </Typography>
                 </div>
                 <div>
-                  <Typography variant="body2">Pete Docter</Typography>
+                  <Typography variant="body2">
+                    {movieData?.videoDirectors
+                      .map((director) => director.crew.name)
+                      .join(", ")}
+                  </Typography>
                 </div>
               </div>
               <div className="flex">
@@ -92,9 +165,9 @@ export default function Detail() {
                 </div>
                 <div>
                   <Typography variant="body2">
-                    Amy Poehler, Phyllis Smith, Richard Kind, Bill Hader, Lewis
-                    Black, Mindy Kaling, Kaitlyn Dias, Diane Lane, Kyle
-                    Maclachlan
+                    {movieData?.videoCasts
+                      .map((director) => director.crew.name)
+                      .join(", ")}
                   </Typography>
                 </div>
               </div>
@@ -105,7 +178,12 @@ export default function Detail() {
                   </Typography>
                 </div>
                 <div>
-                  <Typography variant="body2">Animation, Family</Typography>
+                  <Typography className="capitalize" variant="body2">
+                    {movieData?.categories
+                      .filter((item) => item !== VideoCategory.ALL)
+                      .join(", ")
+                      .toLocaleLowerCase()}
+                  </Typography>
                 </div>
               </div>
               <div className="flex">
@@ -147,6 +225,13 @@ export default function Detail() {
                 </Box>
                 <TabPanel className="px-0" value="Videos & Photos">
                   <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
+                    <div className="aspect-video">
+                      <img
+                        className="h-full w-full object-cover"
+                        src={movieData?.coverPictureUrl}
+                        alt="video image"
+                      />
+                    </div>
                     <div className="aspect-video bg-slate-700"></div>
                     <div className="aspect-video bg-slate-700"></div>
                     <div className="aspect-video bg-slate-700"></div>
@@ -158,19 +243,69 @@ export default function Detail() {
                   </div>
                 </TabPanel>
                 <TabPanel className="px-0" value="Comments">
+                  <Paper
+                    className="mb-4 rounded-full"
+                    component="form"
+                    sx={{
+                      p: "2px 4px",
+                      display: "flex",
+                      alignItems: "center",
+                    }}
+                  >
+                    <IconButton sx={{ p: "10px" }} aria-label="menu">
+                      <AccountCircleIcon />
+                    </IconButton>
+                    <InputBase
+                      sx={{ ml: 1, flex: 1 }}
+                      placeholder="Replay"
+                      inputProps={{ "aria-label": "replay" }}
+                      value={comment}
+                      onChange={handleCommentChange}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          commentMutation.mutate();
+                        }
+                      }}
+                    />
+                    <IconButton
+                      type="button"
+                      sx={{ p: "10px" }}
+                      aria-label="search"
+                      onClick={() => {
+                        commentMutation.mutate();
+                      }}
+                    >
+                      <ArrowForwardIcon />
+                    </IconButton>
+                  </Paper>
+
                   <div className="space-y-10">
-                    <Message />
-                    <Message />
-                    <Message />
-                    <Message />
+                    {commentsData?.data.map((comment) => {
+                      return (
+                        <Message
+                          key={comment.id}
+                          id={comment.id}
+                          name={comment.member.name}
+                          date={comment.createdAt}
+                          rating={comment.rating}
+                          message={comment.content}
+                          likes={comment.reactionLikeCount}
+                          dislikes={comment.reactionDislikeCount}
+                          reaction={
+                            comment.videoCommentReactions?.[0]?.reactionType
+                          }
+                        />
+                      );
+                    })}
                   </div>
                 </TabPanel>
                 <TabPanel className="px-0" value="More like this">
-                  <div className="flex flex-wrap gap-4">
+                  {/* <div className="flex flex-wrap gap-4">
                     {mockMovies.map((movie) => {
                       return <MovieCard key={movie.id} movie={movie} />;
                     })}
-                  </div>
+                  </div> */}
                 </TabPanel>
               </TabContext>
             </Box>
