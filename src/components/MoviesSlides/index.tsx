@@ -1,10 +1,10 @@
 import { Swiper, SwiperSlide } from "swiper/react";
 import MovieCard from "../MovieCard";
-import { IconButton } from "@mui/material";
-import { ArrowBackIos, ArrowForwardIos } from "@mui/icons-material";
-import { useRef } from "react";
+// import { IconButton } from "@mui/material";
+// import { ArrowBackIos, ArrowForwardIos } from "@mui/icons-material";
+// import { useRef } from "react";
 import { Navigation } from "swiper/modules";
-import { cn } from "../../utils/helper";
+// import { cn } from "../../utils/helper";
 import { IMovie } from "../../model/movie";
 
 interface MoviesSlidesProps {

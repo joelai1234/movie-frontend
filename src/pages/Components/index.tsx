@@ -8,7 +8,7 @@ import {
 import MovieCard from "../../components/MovieCard";
 import SearchIcon from "@mui/icons-material/Search";
 import ReactPlayer from "react-player";
-import MoviesSlides from "../../components/MoviesSlides";
+// import MoviesSlides from "../../components/MoviesSlides";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 
@@ -75,7 +75,7 @@ export default function Components() {
       <h2 className="mt-0 text-amber-600">Footer</h2>
       <Footer />
       <h2 className="mt-0 text-amber-600">Movie Swiper</h2>
-      <MoviesSlides id="1" />
+      {/* <MoviesSlides id="1" /> */}
     </div>
   );
 }
