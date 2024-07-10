@@ -1,5 +1,5 @@
 import { useQuery } from "react-query";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { IMovie, VideoResponseData } from "../../model/movie";
 import axios from "axios";
 import {
@@ -12,25 +12,25 @@ import {
   Select,
   Typography,
 } from "@mui/material";
-import MoviesSlides from "../../components/MoviesSlides";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import GridViewIcon from "@mui/icons-material/GridView";
 import ViewListIcon from "@mui/icons-material/ViewList";
 import { useState } from "react";
 import MovieCard from "../../components/MovieCard";
-import { movies as mockMovies } from "../../data/movies";
 import StarIcon from "@mui/icons-material/Star";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import StarBorderIcon from "@mui/icons-material/StarBorder";
+import ImageWithFallback from "../../components/ImageWithFallback";
 
 const VITE_BACKEND_API_BASE_URL = import.meta.env.VITE_BACKEND_API_BASE_URL;
 
 export default function Search() {
   const [searchParams] = useSearchParams();
   const search = searchParams.get("search");
-  const { data } = useQuery(["/api/v1/videos/me", search], async () => {
+  const navigate = useNavigate();
+  const { data } = useQuery(["/api/v1/videos", search], async () => {
     return axios.get<VideoResponseData>(
-      VITE_BACKEND_API_BASE_URL + `/api/v1/videos/me`,
+      VITE_BACKEND_API_BASE_URL + `/api/v1/videos`,
       {
         params: {
           languageCode: "en",
@@ -64,10 +64,13 @@ export default function Search() {
               className="normal-case text-white"
               variant="text"
               startIcon={<ArrowBackIosNewIcon />}
+              onClick={() => {
+                navigate(-1);
+              }}
             >
               Back
             </Button>
-            <Typography variant="h4">Amy Poehler’s movies (95)</Typography>
+            <Typography variant="h4">{search}</Typography>
           </div>
           <div className="mt-6 flex justify-between">
             <div className="space-x-6">
@@ -150,261 +153,124 @@ export default function Search() {
           <div>
             {isDisplayDetail && (
               <div>
-                <div className="flex gap-8">
-                  <div className="h-60 w-44 rounded-sm bg-slate-100"></div>
-                  <div className="flex-1 space-y-3">
-                    <Typography className="font-semibold" variant="body1">
-                      Inside Out
-                    </Typography>
-                    <div className="flex items-center gap-1">
-                      <Typography variant="body1">
-                        1989 &bull; PG &bull; 1h 35m
-                      </Typography>{" "}
-                      &bull;
-                      <StarIcon fontSize="small" className="text-yellow-500" />
-                      <Typography variant="body2">
-                        8.1
-                        <Typography
-                          className="inline text-gray-500"
-                          variant="body2"
-                        >
-                          (1k)
-                        </Typography>{" "}
-                        &bull; 2.1k Views
-                      </Typography>
-                    </div>
-                    <div className="flex">
-                      <Typography
-                        className="w-24 shrink-0 text-gray-500"
-                        variant="body2"
+                {data?.data.data.map((movie) => {
+                  return (
+                    <>
+                      <div
+                        className="flex cursor-pointer gap-8"
+                        onClick={() => {
+                          navigate(`/detail/${movie.id}`);
+                        }}
                       >
-                        Director
-                      </Typography>
-                      <Typography variant="body2">Mark Dindal</Typography>
-                    </div>
-                    <div className="flex">
-                      <Typography
-                        className="w-24 shrink-0 text-gray-500"
-                        variant="body2"
-                      >
-                        Cast
-                      </Typography>
-                      <Typography variant="body2">
-                        Chris Pratt, Samuel L. Jackson, Hannah Waddingham, Ving
-                        Rhames, Nicholas Hoult, Cecily Strong
-                      </Typography>
-                    </div>
-                    <div className="flex">
-                      <Typography
-                        className="w-24 shrink-0 text-gray-500"
-                        variant="body2"
-                      >
-                        Category
-                      </Typography>
-                      <Typography variant="body2">Animation, Family</Typography>
-                    </div>
-                    <div className="flex">
-                      <Typography
-                        className="w-24 shrink-0 text-gray-500"
-                        variant="body2"
-                      >
-                        Subtitle
-                      </Typography>
-                      <Typography variant="body2">Chinese, English</Typography>
-                    </div>
-                    <div className="space-x-2">
-                      <Chip label="Animation" variant="outlined" />
-                      <Chip label="Adventure" variant="outlined" />
-                      <Chip label="Comedy" variant="outlined" />
-                    </div>
-                  </div>
-                  <div className="space-x-4">
-                    <IconButton className="bg-gray-800">
-                      <FavoriteBorderIcon />
-                    </IconButton>
-                    <IconButton className="bg-gray-800">
-                      <StarBorderIcon />
-                    </IconButton>
-                  </div>
-                </div>
-                <Divider className="my-6" />
-                <div className="flex gap-8">
-                  <div className="h-60 w-44 rounded-sm bg-slate-100"></div>
-                  <div className="flex-1 space-y-3">
-                    <Typography className="font-semibold" variant="body1">
-                      Inside Out
-                    </Typography>
-                    <div className="flex items-center gap-1">
-                      <Typography variant="body1">
-                        1989 &bull; PG &bull; 1h 35m
-                      </Typography>{" "}
-                      &bull;
-                      <StarIcon fontSize="small" className="text-yellow-500" />
-                      <Typography variant="body2">
-                        8.1
-                        <Typography
-                          className="inline text-gray-500"
-                          variant="body2"
-                        >
-                          (1k)
-                        </Typography>{" "}
-                        &bull; 2.1k Views
-                      </Typography>
-                    </div>
-                    <div className="flex">
-                      <Typography
-                        className="w-24 shrink-0 text-gray-500"
-                        variant="body2"
-                      >
-                        Director
-                      </Typography>
-                      <Typography variant="body2">Mark Dindal</Typography>
-                    </div>
-                    <div className="flex">
-                      <Typography
-                        className="w-24 shrink-0 text-gray-500"
-                        variant="body2"
-                      >
-                        Cast
-                      </Typography>
-                      <Typography variant="body2">
-                        Chris Pratt, Samuel L. Jackson, Hannah Waddingham, Ving
-                        Rhames, Nicholas Hoult, Cecily Strong
-                      </Typography>
-                    </div>
-                    <div className="flex">
-                      <Typography
-                        className="w-24 shrink-0 text-gray-500"
-                        variant="body2"
-                      >
-                        Category
-                      </Typography>
-                      <Typography variant="body2">Animation, Family</Typography>
-                    </div>
-                    <div className="flex">
-                      <Typography
-                        className="w-24 shrink-0 text-gray-500"
-                        variant="body2"
-                      >
-                        Subtitle
-                      </Typography>
-                      <Typography variant="body2">Chinese, English</Typography>
-                    </div>
-                    <div className="space-x-2">
-                      <Chip label="Animation" variant="outlined" />
-                      <Chip label="Adventure" variant="outlined" />
-                      <Chip label="Comedy" variant="outlined" />
-                    </div>
-                  </div>
-                  <div className="space-x-4">
-                    <IconButton className="bg-gray-800">
-                      <FavoriteBorderIcon />
-                    </IconButton>
-                    <IconButton className="bg-gray-800">
-                      <StarBorderIcon />
-                    </IconButton>
-                  </div>
-                </div>
-                <Divider className="my-6" />
-                <div className="flex gap-8">
-                  <div className="h-60 w-44 rounded-sm bg-slate-100"></div>
-                  <div className="flex-1 space-y-3">
-                    <Typography className="font-semibold" variant="body1">
-                      Inside Out
-                    </Typography>
-                    <div className="flex items-center gap-1">
-                      <Typography variant="body1">
-                        1989 &bull; PG &bull; 1h 35m
-                      </Typography>{" "}
-                      &bull;
-                      <StarIcon fontSize="small" className="text-yellow-500" />
-                      <Typography variant="body2">
-                        8.1
-                        <Typography
-                          className="inline text-gray-500"
-                          variant="body2"
-                        >
-                          (1k)
-                        </Typography>{" "}
-                        &bull; 2.1k Views
-                      </Typography>
-                    </div>
-                    <div className="flex">
-                      <Typography
-                        className="w-24 shrink-0 text-gray-500"
-                        variant="body2"
-                      >
-                        Director
-                      </Typography>
-                      <Typography variant="body2">Mark Dindal</Typography>
-                    </div>
-                    <div className="flex">
-                      <Typography
-                        className="w-24 shrink-0 text-gray-500"
-                        variant="body2"
-                      >
-                        Cast
-                      </Typography>
-                      <Typography variant="body2">
-                        Chris Pratt, Samuel L. Jackson, Hannah Waddingham, Ving
-                        Rhames, Nicholas Hoult, Cecily Strong
-                      </Typography>
-                    </div>
-                    <div className="flex">
-                      <Typography
-                        className="w-24 shrink-0 text-gray-500"
-                        variant="body2"
-                      >
-                        Category
-                      </Typography>
-                      <Typography variant="body2">Animation, Family</Typography>
-                    </div>
-                    <div className="flex">
-                      <Typography
-                        className="w-24 shrink-0 text-gray-500"
-                        variant="body2"
-                      >
-                        Subtitle
-                      </Typography>
-                      <Typography variant="body2">Chinese, English</Typography>
-                    </div>
-                    <div className="space-x-2">
-                      <Chip label="Animation" variant="outlined" />
-                      <Chip label="Adventure" variant="outlined" />
-                      <Chip label="Comedy" variant="outlined" />
-                    </div>
-                  </div>
-                  <div className="space-x-4">
-                    <IconButton className="bg-gray-800">
-                      <FavoriteBorderIcon />
-                    </IconButton>
-                    <IconButton className="bg-gray-800">
-                      <StarBorderIcon />
-                    </IconButton>
-                  </div>
-                </div>
+                        <ImageWithFallback
+                          className="h-60 w-44 rounded-sm"
+                          src={movie.coverPictureUrl}
+                          fallbackSrc="/images/bg-sign-in.jpeg"
+                          alt="video"
+                        />
+                        <div className="flex-1 space-y-3">
+                          <Typography className="font-semibold" variant="body1">
+                            {movie.name}
+                          </Typography>
+                          <div className="flex items-center gap-1">
+                            <Typography variant="body1">
+                              {movie.releaseYear} &bull; {movie?.rating} &bull;
+                              1h 35m
+                            </Typography>{" "}
+                            &bull;
+                            <StarIcon
+                              fontSize="small"
+                              className="text-yellow-500"
+                            />
+                            <Typography variant="body2">
+                              {movie.rating}
+                              <Typography
+                                className="inline text-gray-500"
+                                variant="body2"
+                              >
+                                (1k)
+                              </Typography>{" "}
+                              &bull; {movie.totalViews} Views
+                            </Typography>
+                          </div>
+                          <div className="flex">
+                            <Typography
+                              className="w-24 shrink-0 text-gray-500"
+                              variant="body2"
+                            >
+                              Director
+                            </Typography>
+                            <Typography variant="body2">
+                              Chris Pratt
+                              {movie?.videoDirectors
+                                ?.map((director) => director.crew.name)
+                                .join(", ")}
+                            </Typography>
+                          </div>
+                          <div className="flex">
+                            <Typography
+                              className="w-24 shrink-0 text-gray-500"
+                              variant="body2"
+                            >
+                              Cast
+                            </Typography>
+                            <Typography variant="body2">
+                              Chris Pratt, Samuel L. Jackson, Hannah Waddingham,
+                              Ving Rhames, Nicholas Hoult, Cecily Strong
+                            </Typography>
+                          </div>
+                          <div className="flex">
+                            <Typography
+                              className="w-24 shrink-0 text-gray-500"
+                              variant="body2"
+                            >
+                              Category
+                            </Typography>
+                            <Typography variant="body2">
+                              Animation, Family
+                            </Typography>
+                          </div>
+                          <div className="flex">
+                            <Typography
+                              className="w-24 shrink-0 text-gray-500"
+                              variant="body2"
+                            >
+                              Subtitle
+                            </Typography>
+                            <Typography variant="body2">
+                              Chinese, English
+                            </Typography>
+                          </div>
+                          <div className="space-x-2">
+                            <Chip label="Animation" variant="outlined" />
+                            <Chip label="Adventure" variant="outlined" />
+                            <Chip label="Comedy" variant="outlined" />
+                          </div>
+                        </div>
+                        <div className="space-x-4">
+                          <IconButton className="bg-gray-800">
+                            <FavoriteBorderIcon />
+                          </IconButton>
+                          <IconButton className="bg-gray-800">
+                            <StarBorderIcon />
+                          </IconButton>
+                        </div>
+                      </div>
+                      <Divider className="my-6" />
+                    </>
+                  );
+                })}
               </div>
             )}
             {!isDisplayDetail && (
               <div className="flex flex-wrap gap-4">
-                {mockMovies.map((movie) => {
+                {movies.map((movie) => {
                   return <MovieCard key={movie.id} movie={movie} />;
                 })}
               </div>
             )}
           </div>
         </div>
-      </div>
-    </div>
-  );
-
-  return (
-    <div className="mt-16 h-[calc(100vh-64px)] px-2 py-8">
-      <div>
-        <Typography className="px-12 font-medium" variant="h6" gutterBottom>
-          Search
-        </Typography>
-        <MoviesSlides id="0" movies={movies} />
       </div>
     </div>
   );
