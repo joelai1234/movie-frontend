@@ -86,7 +86,9 @@ export default function Detail() {
             width="100%"
             height="100%"
             controls
-            url="https://d3q62pnjbn74l6.cloudfront.net/Goodfellas.mp4"
+            // url="https://d3q62pnjbn74l6.cloudfront.net/Goodfellas.mp4"
+            url="https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8"
+            // url="https://hn.bfvvs.com/play/QbYKvLYe/index.m3u8"
           />
         </div>
         <div className="space-y-10 px-10 py-5">

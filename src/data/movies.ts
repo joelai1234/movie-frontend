@@ -184,3 +184,149 @@ export const ratingList = [
     value: VideoRating.R,
   },
 ];
+
+export const releaseYearList = [
+  {
+    name: "All",
+    value: "all",
+  },
+  {
+    name: "2020",
+    value: "2020",
+  },
+  {
+    name: "2015",
+    value: "2015",
+  },
+  {
+    name: "2000-2010",
+    value: "2000-2010",
+  },
+  {
+    name: "2024",
+    value: "2024",
+  },
+  {
+    name: "2019",
+    value: "2019",
+  },
+  {
+    name: "2014",
+    value: "2014",
+  },
+  {
+    name: "1990-1999",
+    value: "1990-1999",
+  },
+  {
+    name: "2023",
+    value: "2023",
+  },
+  {
+    name: "2018",
+    value: "2018",
+  },
+  {
+    name: "2013",
+    value: "2013",
+  },
+  {
+    name: "1980-1989",
+    value: "1980-1989",
+  },
+  {
+    name: "2022",
+    value: "2022",
+  },
+  {
+    name: "2017",
+    value: "2017",
+  },
+  {
+    name: "2012",
+    value: "2012",
+  },
+  {
+    name: "1970-1979",
+    value: "1970-1979",
+  },
+  {
+    name: "2021",
+    value: "2021",
+  },
+  {
+    name: "2016",
+    value: "2016",
+  },
+  {
+    name: "2011",
+    value: "2011",
+  },
+  {
+    name: "1960-1969",
+    value: "1960-1969",
+  },
+];
+
+export const areaList = [
+  {
+    name: "All",
+    value: "all",
+  },
+  {
+    name: "Africa",
+    value: "Africa",
+  },
+  {
+    name: "Spain",
+    value: "Spain",
+  },
+  {
+    name: "North America",
+    value: "North America",
+  },
+  {
+    name: "Middle East",
+    value: "Middle East",
+  },
+  {
+    name: "United Kingdom",
+    value: "United Kingdom",
+  },
+  {
+    name: "South America",
+    value: "South America",
+  },
+  {
+    name: "United States",
+    value: "United States",
+  },
+  {
+    name: "Japan",
+    value: "Japan",
+  },
+  {
+    name: "Europe",
+    value: "Europe",
+  },
+  {
+    name: "France",
+    value: "France",
+  },
+  {
+    name: "Korea",
+    value: "Korea",
+  },
+  {
+    name: "Asia",
+    value: "Asia",
+  },
+  {
+    name: "China",
+    value: "China",
+  },
+  {
+    name: "Italy",
+    value: "Italy",
+  },
+];

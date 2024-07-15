@@ -1,17 +1,8 @@
 import { useQuery } from "react-query";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { IMovie, VideoResponseData } from "../../model/movie";
+import { IMovie, VideoCategory, VideoResponseData } from "../../model/movie";
 import axios from "axios";
-import {
-  Button,
-  Chip,
-  Divider,
-  FormControl,
-  IconButton,
-  MenuItem,
-  Select,
-  Typography,
-} from "@mui/material";
+import { Button, Chip, Divider, IconButton, Typography } from "@mui/material";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import GridViewIcon from "@mui/icons-material/GridView";
 import ViewListIcon from "@mui/icons-material/ViewList";
@@ -21,25 +12,52 @@ import StarIcon from "@mui/icons-material/Star";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import StarBorderIcon from "@mui/icons-material/StarBorder";
 import ImageWithFallback from "../../components/ImageWithFallback";
+import CustomSelect from "../../components/CustomSelect";
+import { areaList, categoryList, releaseYearList } from "../../data/movies";
 
 const VITE_BACKEND_API_BASE_URL = import.meta.env.VITE_BACKEND_API_BASE_URL;
 
 export default function Search() {
   const [searchParams] = useSearchParams();
   const search = searchParams.get("search");
+  const [category, setCategory] = useState(VideoCategory.ALL);
+  const [releaseYear, setReleaseYear] = useState("all");
+  const [area, setArea] = useState("all");
   const navigate = useNavigate();
-  const { data } = useQuery(["/api/v1/videos", search], async () => {
-    return axios.get<VideoResponseData>(
-      VITE_BACKEND_API_BASE_URL + `/api/v1/videos`,
-      {
-        params: {
-          languageCode: "en",
-          keyword: search,
-        },
-      },
-    );
-  });
 
+  const { data } = useQuery(
+    ["/api/v1/videos", search, category, releaseYear],
+    async () => {
+      const years = releaseYear.split('-')
+      if (years.length === 2) {
+        return axios.get<VideoResponseData>(
+          VITE_BACKEND_API_BASE_URL + `/api/v1/videos`,
+          {
+            params: {
+              languageCode: "en",
+              keyword: search,
+              category: category === VideoCategory.ALL ? undefined : category,
+              releaseYearStartedAt: years[0],
+              releaseYearEndedAt: years[1],
+            },
+          },
+        );
+      }
+      return axios.get<VideoResponseData>(
+        VITE_BACKEND_API_BASE_URL + `/api/v1/videos`,
+        {
+          params: {
+            languageCode: "en",
+            keyword: search,
+            category: category === VideoCategory.ALL ? undefined : category,
+            releaseYearStartedAt:
+              releaseYear === "all" ? undefined : releaseYear,
+            releaseYearEndedAt: releaseYear === "all" ? undefined : releaseYear,
+          },
+        },
+      );
+    },
+  );
   let movies: IMovie[] = [];
   if (data?.data) {
     movies = data?.data?.data.map((item) => {
@@ -73,61 +91,51 @@ export default function Search() {
             <Typography variant="h4">{search}</Typography>
           </div>
           <div className="mt-6 flex justify-between">
-            <div className="space-x-6">
-              <FormControl variant="standard">
-                <Select
-                  disableUnderline
-                  labelId="demo-simple-select-standard-label"
-                  id="demo-simple-select-standard"
-                  value={10}
-                  // value={age}
-                  // onChange={handleChange}
-                  label="Age"
-                >
-                  <MenuItem value={10}>Category</MenuItem>
-                </Select>
-              </FormControl>
-              <FormControl variant="standard">
-                <Select
-                  disableUnderline
-                  labelId="demo-simple-select-standard-label"
-                  id="demo-simple-select-standard"
-                  value={10}
-                  // value={age}
-                  // onChange={handleChange}
-                  label="Age"
-                >
-                  <MenuItem value={10}>Release Year</MenuItem>
-                </Select>
-              </FormControl>
-              <FormControl variant="standard">
-                <Select
-                  disableUnderline
-                  labelId="demo-simple-select-standard-label"
-                  id="demo-simple-select-standard"
-                  value={10}
-                  // value={age}
-                  // onChange={handleChange}
-                  label="Age"
-                >
-                  <MenuItem value={10}>Area</MenuItem>
-                </Select>
-              </FormControl>
+            <div className="flex space-x-6">
+              <CustomSelect
+                data={categoryList.map((data) => ({
+                  label: data.name,
+                  value: data.value,
+                }))}
+                title="Category"
+                onChange={(value) => {
+                  setCategory(value as VideoCategory);
+                }}
+                value={category}
+              />
+              <CustomSelect
+                data={releaseYearList.map((data) => ({
+                  label: data.name,
+                  value: data.value,
+                }))}
+                title="Release Year"
+                value={releaseYear}
+                onChange={(value) => {
+                  setReleaseYear(value);
+                }}
+              />
+              <CustomSelect
+                data={areaList.map((data) => ({
+                  label: data.name,
+                  value: data.value,
+                }))}
+                title="Area"
+                value={area}
+                onChange={(value) => {
+                  setArea(value);
+                }}
+              />
             </div>
             <div>
               <div className="flex items-center justify-center gap-2">
-                <Typography variant="body1">Sort by</Typography>
-                <FormControl variant="standard">
-                  <Select
-                    disableUnderline
-                    labelId="demo-simple-select-standard-label"
-                    id="demo-simple-select-standard"
-                    value={10}
-                    label="Age"
-                  >
-                    <MenuItem value={10}>Release date </MenuItem>
-                  </Select>
-                </FormControl>
+                <Typography variant="body2">Sort by</Typography>
+                <CustomSelect
+                  data={categoryList.map((data) => ({
+                    label: data.name,
+                    value: data.value,
+                  }))}
+                  title="Release date "
+                />
                 <IconButton
                   className={isDisplayDetail ? "" : "text-yellow-500"}
                   size="small"
@@ -149,7 +157,7 @@ export default function Search() {
               </div>
             </div>
           </div>
-          <Divider className="mb-6 mt-3 bg-white" />
+          <Divider className="mb-6 mt-1 bg-white" />
           <div>
             {isDisplayDetail && (
               <div>

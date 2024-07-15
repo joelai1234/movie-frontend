@@ -8,12 +8,13 @@ import { useQuery } from "react-query";
 import axios from "axios";
 
 interface BannerProps {
+  category: VideoCategory;
   setCategory: (category: VideoCategory) => void;
 }
 
 const VITE_BACKEND_API_BASE_URL = import.meta.env.VITE_BACKEND_API_BASE_URL;
 
-export default function Banner({ setCategory }: BannerProps) {
+export default function Banner({ category,setCategory }: BannerProps) {
   const navigate = useNavigate();
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -57,7 +58,7 @@ export default function Banner({ setCategory }: BannerProps) {
           endIcon={<ExpandMoreIcon />}
           onClick={handleClick}
         >
-          Category: All movies
+          Category: {category.toLocaleLowerCase()}
         </Button>
         <Popover
           style={{
