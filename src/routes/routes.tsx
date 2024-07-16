@@ -39,11 +39,20 @@ export const router = createBrowserRouter([
         },
       },
       {
-        path: "/search",
+        path: "/search/movies",
         async lazy() {
-          const Search = await import("../pages/Search");
+          const SearchMovies = await import("../pages/SearchMovies");
           return {
-            Component: Search.default,
+            Component: SearchMovies.default,
+          };
+        },
+      },
+      {
+        path: "/search/people",
+        async lazy() {
+          const SearchPeople = await import("../pages/SearchPeople");
+          return {
+            Component: SearchPeople.default,
           };
         },
       },

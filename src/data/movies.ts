@@ -330,3 +330,49 @@ export const areaList = [
     value: "Italy",
   },
 ];
+
+export const searchTypeOptions = [
+  {
+    name: "Movies",
+    value: "Movies",
+  },
+  {
+    name: "People",
+    value: "People",
+  },
+];
+
+export const peopleTypeOptions = [
+  {
+    name: "Actor",
+    value: "Actor",
+  },
+  {
+    name: "Actress",
+    value: "Actress",
+  },
+  {
+    name: "Director",
+    value: "Director",
+  },
+  {
+    name: "Writer",
+    value: "Writer",
+  },
+  {
+    name: "Producer",
+    value: "Producer",
+  },
+  {
+    name: "Comedian",
+    value: "Comedian",
+  },
+  {
+    name: "Soundtrack",
+    value: "Soundtrack",
+  },
+  {
+    name: "Additional Crew",
+    value: "Additional Crew",
+  },
+];

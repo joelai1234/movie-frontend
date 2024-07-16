@@ -17,7 +17,7 @@ import { areaList, categoryList, releaseYearList } from "../../data/movies";
 
 const VITE_BACKEND_API_BASE_URL = import.meta.env.VITE_BACKEND_API_BASE_URL;
 
-export default function Search() {
+export default function SearchMovies() {
   const [searchParams] = useSearchParams();
   const search = searchParams.get("search");
   const [category, setCategory] = useState(VideoCategory.ALL);

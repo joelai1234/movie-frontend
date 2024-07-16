@@ -4,11 +4,14 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { useState } from "react";
 
 interface SelectProps {
+  className?: string;
   title: string;
   data: { label: string; value: string }[];
   onChange?: (value: string) => void;
   value?: string;
   col?: number;
+  width?: number;
+  p?: number;
 }
 
 export default function CustomSelect({
@@ -16,6 +19,9 @@ export default function CustomSelect({
   data,
   onChange,
   value,
+  col = 4,
+  width = 420,
+  p = 16,
 }: SelectProps) {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -30,7 +36,7 @@ export default function CustomSelect({
   return (
     <div className="relative z-50">
       <div
-        className="flex cursor-pointer items-center gap-1.5"
+        className="flex cursor-pointer items-center gap-1.5 px-2"
         onClick={handleClick}
       >
         <p className="text-sm text-white">{title}</p>
@@ -50,16 +56,16 @@ export default function CustomSelect({
       >
         <div
           style={{
-            width: 420,
+            width: width,
             backgroundColor: "#00000077",
-            paddingLeft: 20,
-            paddingRight: 20,
-            paddingTop: 16,
-            paddingBottom: 16,
+            paddingLeft: p + 4,
+            paddingRight: p + 4,
+            paddingTop: p,
+            paddingBottom: p,
             border: "1px solid #626262",
             borderRadius: 4,
             display: "grid",
-            gridTemplateColumns: "1fr 1fr 1fr 1fr",
+            gridTemplateColumns: Array(col).fill("1fr").join(" "),
             gap: 8,
             fontSize: 14,
             fontWeight: 500,
@@ -70,6 +76,7 @@ export default function CustomSelect({
               style={{
                 cursor: "pointer",
                 color: item.value == value ? "#eab308" : "#fff",
+                whiteSpace: "nowrap",
               }}
               onClick={() => {
                 onChange?.(item.value);

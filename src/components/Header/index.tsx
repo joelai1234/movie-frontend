@@ -15,6 +15,8 @@ import { useEffect, useState } from "react";
 import { cn } from "../../utils/helper";
 import { AccountCircle } from "@mui/icons-material";
 import useAuth from "../../services/auth/hooks/useAuth";
+import CustomSelect from "../CustomSelect";
+import { searchTypeOptions } from "../../data/movies";
 
 export default function Header() {
   const { pathname } = useLocation();
@@ -23,6 +25,7 @@ export default function Header() {
   const [isTransparent, setIsTransparent] = useState(true);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [searchValue, setSearchValue] = useState("");
+  const [searchType, setSearchType] = useState("Movies");
 
   const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -32,9 +35,9 @@ export default function Header() {
     setAnchorEl(null);
   };
 
-  const handleProfile = () => { 
+  const handleProfile = () => {
     navigate("/profile");
-  }
+  };
 
   const handleLogout = () => {
     setAnchorEl(null);
@@ -61,7 +64,11 @@ export default function Header() {
   }, [pathname]);
 
   const handleSearch = () => {
-    navigate("/search?search=" + searchValue);
+    if (searchType === "Movie") {
+      navigate("/search/movies?search=" + searchValue);
+    } else if (searchType === "People") {
+      navigate("/search/people?search=" + searchValue);
+    }
   };
 
   return (
@@ -90,6 +97,25 @@ export default function Header() {
               alignItems: "center",
             }}
           >
+            <div className="">
+              <CustomSelect
+                data={searchTypeOptions.map((data) => ({
+                  label: data.name,
+                  value: data.value,
+                }))}
+                value={searchType}
+                title={searchType}
+                onChange={setSearchType}
+                col={1}
+                width={92}
+                p={8}
+              />
+            </div>
+            <div
+              className={cn("h-6 w-[1px] bg-[#572729]", {
+                hidden: isTransparent,
+              })}
+            ></div>
             <InputBase
               className="w-60 transition-all focus-within:w-80"
               sx={{ ml: 1, flex: 1 }}
