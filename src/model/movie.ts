@@ -148,3 +148,13 @@ export enum VideoCommentReactionType {
   LIKE = "LIKE",
   DISLIKE = "DISLIKE",
 }
+
+export interface RolesData {
+  createdAt: string
+  updatedAt: string
+  id: number
+  name: string
+  roles: string[]
+  introduction: string
+  pictureUrl: string
+}

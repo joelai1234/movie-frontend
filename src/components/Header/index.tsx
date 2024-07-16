@@ -64,7 +64,7 @@ export default function Header() {
   }, [pathname]);
 
   const handleSearch = () => {
-    if (searchType === "Movie") {
+    if (searchType === "Movies") {
       navigate("/search/movies?search=" + searchValue);
     } else if (searchType === "People") {
       navigate("/search/people?search=" + searchValue);
