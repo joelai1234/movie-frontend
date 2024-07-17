@@ -36,8 +36,8 @@ export default function Detail() {
     return axios.get<VideoData>(
       VITE_BACKEND_API_BASE_URL + `/api/v1/videos/${id}`,
       {
-        params: {
-          languageCode: "en",
+        headers: {
+          "accept-language": "en",
         },
       },
     );

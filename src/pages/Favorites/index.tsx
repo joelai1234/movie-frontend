@@ -13,8 +13,8 @@ export default function Favorites() {
     return authAxios.get<VideoResponseData>(
       VITE_BACKEND_API_BASE_URL + `/api/v1/videos/favorites`,
       {
-        params: {
-          languageCode: "en",
+        headers: {
+          "accept-language": "en",
         },
       },
     );

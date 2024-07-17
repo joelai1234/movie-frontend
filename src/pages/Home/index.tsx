@@ -18,10 +18,12 @@ export default function Home() {
       return axios.get<VideoResponseData>(
         VITE_BACKEND_API_BASE_URL + `/api/v1/videos`,
         {
+          headers: {
+            "accept-language": "en",
+          },
           params: {
-            languageCode: "en",
             sortBy: "UPDATED_AT",
-            category: category === VideoCategory.ALL ? undefined : category,
+            // category: category === VideoCategory.ALL ? undefined : category,
           },
         },
       );
@@ -34,8 +36,10 @@ export default function Home() {
       return axios.get<VideoResponseData>(
         VITE_BACKEND_API_BASE_URL + `/api/v1/videos`,
         {
+          headers: {
+            "accept-language": "en",
+          },
           params: {
-            languageCode: "en",
             sortBy: "TOTAL_VIEWS",
             category: category === VideoCategory.ALL ? undefined : category,
           },
@@ -50,8 +54,10 @@ export default function Home() {
       return axios.get<VideoResponseData>(
         VITE_BACKEND_API_BASE_URL + `/api/v1/videos`,
         {
+          headers: {
+            "accept-language": "en",
+          },
           params: {
-            languageCode: "en",
             sortBy: "LAST_7_DAYS_VIEWS",
             category: category === VideoCategory.ALL ? undefined : category,
           },
@@ -66,8 +72,10 @@ export default function Home() {
       return axios.get<VideoResponseData>(
         VITE_BACKEND_API_BASE_URL + `/api/v1/videos`,
         {
+          headers: {
+            "accept-language": "en",
+          },
           params: {
-            languageCode: "en",
             sortBy: "LAST_30_DAYS_VIEWS",
             category: category === VideoCategory.ALL ? undefined : category,
           },

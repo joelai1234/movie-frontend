@@ -25,8 +25,10 @@ export default function Banner({ category,setCategory }: BannerProps) {
       return axios.get<VideoResponseData>(
         VITE_BACKEND_API_BASE_URL + `/api/v1/videos`,
         {
+          headers: {
+            "accept-language": "en",
+          },
           params: {
-            languageCode: "en",
             sortBy: "TOTAL_VIEWS",
           },
         },

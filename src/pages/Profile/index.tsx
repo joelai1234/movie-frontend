@@ -9,8 +9,8 @@ export default function Profile() {
   const { authAxios } = useAuth();
   const { data } = useQuery(["/api/v1/videos/me"], async () => {
     return authAxios.get<VideoResponseData>("/api/v1/videos/me", {
-      params: {
-        languageCode: "en",
+      headers: {
+        "accept-language": "en",
       },
     });
   });
