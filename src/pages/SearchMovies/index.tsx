@@ -14,6 +14,7 @@ import StarBorderIcon from "@mui/icons-material/StarBorder";
 import ImageWithFallback from "../../components/ImageWithFallback";
 import CustomSelect from "../../components/CustomSelect";
 import { areaList, categoryList, releaseYearList } from "../../data/movies";
+import ArrowSortIcon from "../../components/ArrowSortIcon";
 
 const VITE_BACKEND_API_BASE_URL = import.meta.env.VITE_BACKEND_API_BASE_URL;
 
@@ -24,11 +25,14 @@ export default function SearchMovies() {
   const [releaseYear, setReleaseYear] = useState("all");
   const [area, setArea] = useState("all");
   const navigate = useNavigate();
+  const [sortDirection, setSortDirection] = useState<"top" | "down" | "none">(
+    "none",
+  );
 
-  const { data } = useQuery(
+  const { data: dataRes } = useQuery(
     ["/api/v1/videos", search, category, releaseYear],
     async () => {
-      const years = releaseYear.split('-')
+      const years = releaseYear.split("-");
       if (years.length === 2) {
         return axios.get<VideoResponseData>(
           VITE_BACKEND_API_BASE_URL + `/api/v1/videos`,
@@ -58,9 +62,23 @@ export default function SearchMovies() {
       );
     },
   );
+
+
+  let data = dataRes?.data.data.sort((a, b) => b.id - a.id);
+
+  if (sortDirection !== "none") {
+    data = data?.sort((a, b) => {
+      if (sortDirection === "top") {
+        return a.releaseYear - b.releaseYear;
+      } else {
+        return b.releaseYear - a.releaseYear;
+      }
+    });
+  }
+
   let movies: IMovie[] = [];
-  if (data?.data) {
-    movies = data?.data?.data.map((item) => {
+  if (data) {
+    movies = data?.map((item) => {
       return {
         id: String(item.id),
         name: item.name,
@@ -119,23 +137,39 @@ export default function SearchMovies() {
                   label: data.name,
                   value: data.value,
                 }))}
-                title="Area"
+                title="Area(dev)"
                 value={area}
                 onChange={(value) => {
                   setArea(value);
                 }}
+                col={3}
               />
             </div>
-            <div>
+            <div className="flex items-center">
               <div className="flex items-center justify-center gap-2">
-                <Typography variant="body2">Sort by</Typography>
-                <CustomSelect
-                  data={categoryList.map((data) => ({
-                    label: data.name,
-                    value: data.value,
-                  }))}
-                  title="Release date "
-                />
+                <div className="flex items-center">
+                  <div
+                    className="flex cursor-pointer items-center justify-center gap-2"
+                    onClick={() => {
+                      if (sortDirection === "top") {
+                        setSortDirection("down");
+                      } else if (sortDirection === "down") {
+                        setSortDirection("none");
+                      } else {
+                        setSortDirection("top");
+                      }
+                    }}
+                  >
+                    <Typography variant="body2">Sort by</Typography>
+                    <Typography
+                      className="font-medium text-yellow-500"
+                      variant="body2"
+                    >
+                      Release date
+                    </Typography>
+                    <ArrowSortIcon direction={sortDirection} />
+                  </div>
+                </div>
                 <IconButton
                   className={isDisplayDetail ? "" : "text-yellow-500"}
                   size="small"
@@ -161,7 +195,7 @@ export default function SearchMovies() {
           <div>
             {isDisplayDetail && (
               <div>
-                {data?.data.data.map((movie) => {
+                {data?.map((movie) => {
                   return (
                     <>
                       <div
