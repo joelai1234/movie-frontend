@@ -150,11 +150,51 @@ export enum VideoCommentReactionType {
 }
 
 export interface RolesData {
-  createdAt: string
-  updatedAt: string
-  id: number
-  name: string
-  roles: string[]
-  introduction: string
-  pictureUrl: string
+  createdAt: string;
+  updatedAt: string;
+  id: number;
+  name: string;
+  roles: string[];
+  introduction: string;
+  pictureUrl: string;
+}
+
+export interface MoviePayload {
+  sourceType: "FILE" | "URL";
+  source: string;
+  coverPictureUrl: string;
+  name: string;
+  releaseYear: number;
+  categories: string[];
+  rating: string;
+  videoDetails: MoviePayloadVideoDetail[];
+  videoAttachments: MoviePayloadVideoAttachment[];
+  videoSubtitles: MoviePayloadVideoSubtitle[];
+  videoTags: MoviePayloadVideoTag[];
+  videoDirectorCrewIds: number[];
+  videoWriterCrewIds: number[];
+  videoCastCrewIds: number[];
+}
+
+export interface MoviePayloadVideoDetail {
+  languageCode: string;
+  title: string;
+  description: string;
+}
+
+export interface MoviePayloadVideoAttachment {
+  type: string;
+  url: string;
+  order: number;
+}
+
+export interface MoviePayloadVideoSubtitle {
+  languageCode: string;
+  url: string;
+  fileName: string;
+}
+
+export interface MoviePayloadVideoTag {
+  type: string;
+  value: string;
 }

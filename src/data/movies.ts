@@ -376,3 +376,14 @@ export const peopleTypeOptions = [
     value: "Additional Crew",
   },
 ];
+
+export const videoSourceTypeOptions = [
+  {
+    name: "File",
+    value: "FILE",
+  },
+  {
+    name: "Url",
+    value: "URL",
+  },
+];
