@@ -316,6 +316,69 @@ export default function UploadVideo() {
             )}
           />
         </div>
+        <div>
+          <Typography variant="h6" gutterBottom>
+            Directors
+          </Typography>
+          <Autocomplete
+            style={{ margin: "10px 0" }}
+            multiple
+            options={tags}
+            defaultValue={[...tags]}
+            freeSolo
+            autoSelect
+            onChange={(_, newValue) => {
+              // console.log(e);
+              // console.log(newValue);
+              setTags(newValue);
+            }}
+            renderInput={(params) => (
+              <TextField {...params} placeholder="Add tags" value={tags} />
+            )}
+          />
+        </div>
+        <div>
+          <Typography variant="h6" gutterBottom>
+            Writers
+          </Typography>
+          <Autocomplete
+            style={{ margin: "10px 0" }}
+            multiple
+            options={tags}
+            defaultValue={[...tags]}
+            freeSolo
+            autoSelect
+            onChange={(_, newValue) => {
+              // console.log(e);
+              // console.log(newValue);
+              setTags(newValue);
+            }}
+            renderInput={(params) => (
+              <TextField {...params} placeholder="Add tags" value={tags} />
+            )}
+          />
+        </div>
+        <div>
+          <Typography variant="h6" gutterBottom>
+            Casts
+          </Typography>
+          <Autocomplete
+            style={{ margin: "10px 0" }}
+            multiple
+            options={tags}
+            defaultValue={[...tags]}
+            freeSolo
+            autoSelect
+            onChange={(_, newValue) => {
+              // console.log(e);
+              // console.log(newValue);
+              setTags(newValue);
+            }}
+            renderInput={(params) => (
+              <TextField {...params} placeholder="Add tags" value={tags} />
+            )}
+          />
+        </div>
         <div className="space-y-2">
           <Typography variant="h6" gutterBottom>
             Subtitles
