@@ -387,3 +387,30 @@ export const videoSourceTypeOptions = [
     value: "URL",
   },
 ];
+
+export const sortByTypeOptions = [
+  {
+    name: "Latest",
+    value: "UPDATED_AT",
+  },
+  {
+    name: "Total views",
+    value: "TOTAL_VIEWS",
+  },
+  {
+    name: "Last 30 days views",
+    value: "LAST_30_DAYS_VIEWS",
+  },
+  {
+    name: "Last 7 days views",
+    value: "LAST_7_DAYS_VIEWS",
+  },
+  {
+    name: "Total comment and reply count",
+    value: "TOTAL_COMMENT_AND_REPLY_COUNT",
+  },
+  {
+    name: "Average rating",
+    value: "AVERAGE_RATING",
+  },
+];

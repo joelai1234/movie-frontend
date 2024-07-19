@@ -13,8 +13,14 @@ import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import StarBorderIcon from "@mui/icons-material/StarBorder";
 import ImageWithFallback from "../../components/ImageWithFallback";
 import CustomSelect from "../../components/CustomSelect";
-import { areaList, categoryList, releaseYearList } from "../../data/movies";
+import {
+  areaList,
+  categoryList,
+  releaseYearList,
+  sortByTypeOptions,
+} from "../../data/movies";
 import ArrowSortIcon from "../../components/ArrowSortIcon";
+import { formatMovies } from "../../utils/movie";
 
 const VITE_BACKEND_API_BASE_URL = import.meta.env.VITE_BACKEND_API_BASE_URL;
 
@@ -23,26 +29,30 @@ export default function SearchMovies() {
   const search = searchParams.get("search");
   const [category, setCategory] = useState(VideoCategory.ALL);
   const [releaseYear, setReleaseYear] = useState("all");
+  const [sortBy, setSortBy] = useState("UPDATED_AT");
   const [area, setArea] = useState("all");
   const navigate = useNavigate();
   const [sortDirection, setSortDirection] = useState<"top" | "down" | "none">(
-    "none",
+    "top",
   );
 
   const { data: dataRes } = useQuery(
-    ["/api/v1/videos", search, category, releaseYear],
+    ["/api/v1/videos", search, category, releaseYear, sortBy],
     async () => {
       const years = releaseYear.split("-");
       if (years.length === 2) {
         return axios.get<VideoResponseData>(
           VITE_BACKEND_API_BASE_URL + `/api/v1/videos`,
           {
+            headers: {
+              "accept-language": "en",
+            },
             params: {
-              languageCode: "en",
               keyword: search,
               category: category === VideoCategory.ALL ? undefined : category,
               releaseYearStartedAt: years[0],
               releaseYearEndedAt: years[1],
+              sortBy,
             },
           },
         );
@@ -50,46 +60,132 @@ export default function SearchMovies() {
       return axios.get<VideoResponseData>(
         VITE_BACKEND_API_BASE_URL + `/api/v1/videos`,
         {
+          headers: {
+            "accept-language": "en",
+          },
           params: {
-            languageCode: "en",
             keyword: search,
             category: category === VideoCategory.ALL ? undefined : category,
             releaseYearStartedAt:
               releaseYear === "all" ? undefined : releaseYear,
             releaseYearEndedAt: releaseYear === "all" ? undefined : releaseYear,
+            sortBy,
           },
         },
       );
     },
   );
 
-
-  let data = dataRes?.data.data.sort((a, b) => b.id - a.id);
-
-  if (sortDirection !== "none") {
-    data = data?.sort((a, b) => {
-      if (sortDirection === "top") {
-        return a.releaseYear - b.releaseYear;
-      } else {
-        return b.releaseYear - a.releaseYear;
-      }
-    });
-  }
+  const data = dataRes?.data.data;
 
   let movies: IMovie[] = [];
   if (data) {
-    movies = data?.map((item) => {
-      return {
-        id: String(item.id),
-        name: item.name,
-        imageUrl: item.coverPictureUrl,
-        description: "",
-        updatedAt: item.updatedAt,
-      };
-    });
+    movies = formatMovies(data);
   }
 
   const [isDisplayDetail, setIsDisplayDetail] = useState(false);
+
+  const details = data?.map((movie) => {
+    return (
+      <>
+        <div
+          className="flex cursor-pointer gap-8"
+          onClick={() => {
+            navigate(`/detail/${movie.id}`);
+          }}
+        >
+          <ImageWithFallback
+            className="h-60 w-44 rounded-sm"
+            src={movie.coverPictureUrl}
+            fallbackSrc="/images/bg-sign-in.jpeg"
+            alt="video"
+          />
+          <div className="flex-1 space-y-3">
+            <Typography className="font-semibold" variant="body1">
+              {movie.name}
+            </Typography>
+            <div className="flex items-center gap-1">
+              <Typography variant="body1">
+                {movie.releaseYear} &bull; {movie?.rating} &bull; 1h 35m
+              </Typography>{" "}
+              &bull;
+              <StarIcon fontSize="small" className="text-yellow-500" />
+              <Typography variant="body2">
+                {movie.rating}
+                <Typography className="inline text-gray-500" variant="body2">
+                  (1k)
+                </Typography>{" "}
+                &bull; {movie.totalViews} Views
+              </Typography>
+            </div>
+            <div className="flex">
+              <Typography
+                className="w-24 shrink-0 text-gray-500"
+                variant="body2"
+              >
+                Director
+              </Typography>
+              <Typography variant="body2">
+                Chris Pratt
+                {movie?.videoDirectors
+                  ?.map((director) => director.crew.name)
+                  .join(", ")}
+              </Typography>
+            </div>
+            <div className="flex">
+              <Typography
+                className="w-24 shrink-0 text-gray-500"
+                variant="body2"
+              >
+                Cast
+              </Typography>
+              <Typography variant="body2">
+                Chris Pratt, Samuel L. Jackson, Hannah Waddingham, Ving Rhames,
+                Nicholas Hoult, Cecily Strong
+              </Typography>
+            </div>
+            <div className="flex">
+              <Typography
+                className="w-24 shrink-0 text-gray-500"
+                variant="body2"
+              >
+                Category
+              </Typography>
+              <Typography variant="body2">Animation, Family</Typography>
+            </div>
+            <div className="flex">
+              <Typography
+                className="w-24 shrink-0 text-gray-500"
+                variant="body2"
+              >
+                Subtitle
+              </Typography>
+              <Typography variant="body2">Chinese, English</Typography>
+            </div>
+            <div className="space-x-2">
+              <Chip label="Animation" variant="outlined" />
+              <Chip label="Adventure" variant="outlined" />
+              <Chip label="Comedy" variant="outlined" />
+            </div>
+          </div>
+          <div className="space-x-4">
+            <IconButton className="bg-gray-800">
+              <FavoriteBorderIcon />
+            </IconButton>
+            <IconButton className="bg-gray-800">
+              <StarBorderIcon />
+            </IconButton>
+          </div>
+        </div>
+        <Divider className="my-6" />
+      </>
+    );
+  });
+
+  if (sortDirection === "down") {
+    movies.reverse();
+    details?.reverse();
+  }
 
   return (
     <div className="pt-[64px]">
@@ -148,26 +244,32 @@ export default function SearchMovies() {
             <div className="flex items-center">
               <div className="flex items-center justify-center gap-2">
                 <div className="flex items-center">
-                  <div
-                    className="flex cursor-pointer items-center justify-center gap-2"
-                    onClick={() => {
-                      if (sortDirection === "top") {
-                        setSortDirection("down");
-                      } else if (sortDirection === "down") {
-                        setSortDirection("none");
-                      } else {
-                        setSortDirection("top");
-                      }
-                    }}
-                  >
+                  <div className="flex cursor-pointer items-center justify-center gap-2">
                     <Typography variant="body2">Sort by</Typography>
-                    <Typography
-                      className="font-medium text-yellow-500"
-                      variant="body2"
+                    <CustomSelect
+                      data={sortByTypeOptions.map((data) => ({
+                        label: data.name,
+                        value: data.value,
+                      }))}
+                      title="Latest"
+                      value={sortBy}
+                      onChange={(value) => {
+                        setSortBy(value);
+                      }}
+                      width={240}
+                      col={1}
+                    />
+                    <div
+                      onClick={() => {
+                        if (sortDirection === "top") {
+                          setSortDirection("down");
+                        } else if (sortDirection === "down") {
+                          setSortDirection("top");
+                        }
+                      }}
                     >
-                      Release date
-                    </Typography>
-                    <ArrowSortIcon direction={sortDirection} />
+                      <ArrowSortIcon direction={sortDirection} />
+                    </div>
                   </div>
                 </div>
                 <IconButton
@@ -193,117 +295,7 @@ export default function SearchMovies() {
           </div>
           <Divider className="mb-6 mt-1 bg-white" />
           <div>
-            {isDisplayDetail && (
-              <div>
-                {data?.map((movie) => {
-                  return (
-                    <>
-                      <div
-                        className="flex cursor-pointer gap-8"
-                        onClick={() => {
-                          navigate(`/detail/${movie.id}`);
-                        }}
-                      >
-                        <ImageWithFallback
-                          className="h-60 w-44 rounded-sm"
-                          src={movie.coverPictureUrl}
-                          fallbackSrc="/images/bg-sign-in.jpeg"
-                          alt="video"
-                        />
-                        <div className="flex-1 space-y-3">
-                          <Typography className="font-semibold" variant="body1">
-                            {movie.name}
-                          </Typography>
-                          <div className="flex items-center gap-1">
-                            <Typography variant="body1">
-                              {movie.releaseYear} &bull; {movie?.rating} &bull;
-                              1h 35m
-                            </Typography>{" "}
-                            &bull;
-                            <StarIcon
-                              fontSize="small"
-                              className="text-yellow-500"
-                            />
-                            <Typography variant="body2">
-                              {movie.rating}
-                              <Typography
-                                className="inline text-gray-500"
-                                variant="body2"
-                              >
-                                (1k)
-                              </Typography>{" "}
-                              &bull; {movie.totalViews} Views
-                            </Typography>
-                          </div>
-                          <div className="flex">
-                            <Typography
-                              className="w-24 shrink-0 text-gray-500"
-                              variant="body2"
-                            >
-                              Director
-                            </Typography>
-                            <Typography variant="body2">
-                              Chris Pratt
-                              {movie?.videoDirectors
-                                ?.map((director) => director.crew.name)
-                                .join(", ")}
-                            </Typography>
-                          </div>
-                          <div className="flex">
-                            <Typography
-                              className="w-24 shrink-0 text-gray-500"
-                              variant="body2"
-                            >
-                              Cast
-                            </Typography>
-                            <Typography variant="body2">
-                              Chris Pratt, Samuel L. Jackson, Hannah Waddingham,
-                              Ving Rhames, Nicholas Hoult, Cecily Strong
-                            </Typography>
-                          </div>
-                          <div className="flex">
-                            <Typography
-                              className="w-24 shrink-0 text-gray-500"
-                              variant="body2"
-                            >
-                              Category
-                            </Typography>
-                            <Typography variant="body2">
-                              Animation, Family
-                            </Typography>
-                          </div>
-                          <div className="flex">
-                            <Typography
-                              className="w-24 shrink-0 text-gray-500"
-                              variant="body2"
-                            >
-                              Subtitle
-                            </Typography>
-                            <Typography variant="body2">
-                              Chinese, English
-                            </Typography>
-                          </div>
-                          <div className="space-x-2">
-                            <Chip label="Animation" variant="outlined" />
-                            <Chip label="Adventure" variant="outlined" />
-                            <Chip label="Comedy" variant="outlined" />
-                          </div>
-                        </div>
-                        <div className="space-x-4">
-                          <IconButton className="bg-gray-800">
-                            <FavoriteBorderIcon />
-                          </IconButton>
-                          <IconButton className="bg-gray-800">
-                            <StarBorderIcon />
-                          </IconButton>
-                        </div>
-                      </div>
-                      <Divider className="my-6" />
-                    </>
-                  );
-                })}
-              </div>
-            )}
+            {isDisplayDetail && <div>{details}</div>}
             {!isDisplayDetail && (
               <div className="flex flex-wrap gap-4">
                 {movies.map((movie) => {

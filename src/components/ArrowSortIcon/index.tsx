@@ -19,7 +19,7 @@ export default function ArrowSortIcon({
       className={cn("relative h-6 w-6", className)}
       preserveAspectRatio="xMidYMid meet"
     >
-      <g clip-path="url(#clip0_150_285)">
+      <g clipPath="url(#clip0_150_285)">
         <path
           d="M9 3L5 6.99H8V14H10V6.99H13L9 3ZM9 3L5 6.99H8V14H10V6.99H13L9 3Z"
           fill={direction === "top" ? "#eab308" : "white"}
