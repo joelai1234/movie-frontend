@@ -10,7 +10,12 @@ import {
   Typography,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import {
+  Link,
+  useLocation,
+  useNavigate,
+  useSearchParams,
+} from "react-router-dom";
 import { useEffect, useState } from "react";
 import { cn } from "../../utils/helper";
 import { AccountCircle } from "@mui/icons-material";
@@ -19,13 +24,18 @@ import CustomSelect from "../CustomSelect";
 import { searchTypeOptions } from "../../data/movies";
 
 export default function Header() {
+  const [searchParams] = useSearchParams();
+  const search = searchParams.get("search");
   const { pathname } = useLocation();
+  console.log(pathname);
   const { isAuthenticated, signOut } = useAuth();
   const navigate = useNavigate();
   const [isTransparent, setIsTransparent] = useState(true);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [searchValue, setSearchValue] = useState("");
-  const [searchType, setSearchType] = useState("Movies");
+  const [searchValue, setSearchValue] = useState(search);
+  const [searchType, setSearchType] = useState(
+    pathname === "/search/people" ? "People" : "Movies",
+  );
 
   const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);

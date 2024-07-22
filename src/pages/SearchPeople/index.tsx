@@ -1,5 +1,5 @@
 import { useQuery } from "react-query";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import axios from "axios";
 import { Button, Divider, Typography } from "@mui/material";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
@@ -18,19 +18,29 @@ export default function SearchPeople() {
   const search = searchParams.get("search");
   const [occupation, setOccupation] = useState<string>();
   const navigate = useNavigate();
-  const [sortDirection, setSortDirection] = useState<"top" | "down" | 'none'>("none");
-
-  const { data } = useQuery(["/api/v1/crews"], async () => {
-    return axios.get<RolesData[]>(VITE_BACKEND_API_BASE_URL + `/api/v1/crews`);
-  });
-
-  let peopleData = data?.data.sort(
-    (a, b) =>
-      a.id - b.id,
+  const [sortDirection, setSortDirection] = useState<"top" | "down" | "none">(
+    "none",
   );
 
+  const { data } = useQuery(["/api/v1/crews", search], async () => {
+    return axios.get<{ data: RolesData[] }>(
+      VITE_BACKEND_API_BASE_URL + `/api/v1/crews`,
+      {
+        params: {
+          keyword: search,
+        },
+      },
+    );
+  });
+
+  if (data?.data.data.length === 1) { 
+    return <Navigate to={`/cast/${data?.data.data[0].id}`} replace />;
+  }
+
+  let peopleData = data?.data?.data?.sort((a, b) => a.id - b.id);
+
   if (sortDirection !== "none") {
-    peopleData = data?.data.sort((a, b) => {
+    peopleData = data?.data.data.sort((a, b) => {
       if (sortDirection === "top") {
         return (
           a.name.toLowerCase().charCodeAt(0) -
@@ -96,7 +106,7 @@ export default function SearchPeople() {
                 onClick={() => {
                   if (sortDirection === "top") {
                     setSortDirection("down");
-                  }else if (sortDirection === "down") {
+                  } else if (sortDirection === "down") {
                     setSortDirection("none");
                   } else {
                     setSortDirection("top");

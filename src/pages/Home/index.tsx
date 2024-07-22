@@ -84,6 +84,40 @@ export default function Home() {
     },
   );
 
+  const { data: TotalCommentAndReplyCountData } = useQuery(
+    ["/api/v1/videos", "TOTAL_COMMENT_AND_REPLY_COUNT", category],
+    async () => {
+      return axios.get<VideoResponseData>(
+        VITE_BACKEND_API_BASE_URL + `/api/v1/videos`,
+        {
+          headers: {
+            "accept-language": "en",
+          },
+          params: {
+            sortBy: "TOTAL_COMMENT_AND_REPLY_COUNT",
+            category: category === VideoCategory.ALL ? undefined : category,
+          },
+        },
+      );
+    },
+  );
+  const { data: AverageRatingData } = useQuery(
+    ["/api/v1/videos", "AVERAGE_RATING", category],
+    async () => {
+      return axios.get<VideoResponseData>(
+        VITE_BACKEND_API_BASE_URL + `/api/v1/videos`,
+        {
+          headers: {
+            "accept-language": "en",
+          },
+          params: {
+            sortBy: "AVERAGE_RATING",
+            category: category === VideoCategory.ALL ? undefined : category,
+          },
+        },
+      );
+    },
+  );
   const handleCategoryChange = (category: VideoCategory) => {
     setCategory(category);
   };
@@ -138,6 +172,28 @@ export default function Home() {
               <MoviesSlides
                 id="1"
                 movies={formatMovies(totalViewsData?.data.data)}
+              />
+            </div>
+          )}
+          {TotalCommentAndReplyCountData && (
+            <div>
+              <Typography className="font-medium" variant="h6" gutterBottom>
+                Total Comment And Reply Count
+              </Typography>
+              <MoviesSlides
+                id="1"
+                movies={formatMovies(TotalCommentAndReplyCountData.data.data)}
+              />
+            </div>
+          )}
+          {AverageRatingData && (
+            <div>
+              <Typography className="font-medium" variant="h6" gutterBottom>
+                Average Rating
+              </Typography>
+              <MoviesSlides
+                id="1"
+                movies={formatMovies(AverageRatingData.data.data)}
               />
             </div>
           )}

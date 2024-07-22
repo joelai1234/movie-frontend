@@ -49,7 +49,7 @@ export default function Banner({ category,setCategory }: BannerProps) {
   return (
     <div className="relative mb-0 h-full max-h-[600px] pb-0">
       <img
-        className="mb-0 block max-h-[600px] w-full object-cover pb-0"
+        className="mb-0 block h-[600px] w-full object-cover pb-0"
         src={totalViewsData?.data.data[0].coverPictureUrl}
         alt="banner"
       />

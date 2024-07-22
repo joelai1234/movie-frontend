@@ -8,7 +8,7 @@ import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 import { useState } from "react";
 import Message from "../../components/Message";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import axios from "axios";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
@@ -154,9 +154,19 @@ export default function Detail() {
                 </div>
                 <div>
                   <Typography variant="body2">
-                    {movieData?.videoDirectors
-                      .map((director) => director.crew.name)
-                      .join(", ")}
+                    {movieData?.videoDirectors.map((item, index) => {
+                      return (
+                        <React.Fragment key={item.id}>
+                        <Link
+                          className="text-[#7EC2F9] no-underline"
+                          to={`/cast/${item.crewId}`}
+                        >
+                          {item.crew.name}
+                        </Link>
+                        {index !== movieData.videoDirectors.length - 1 && ", "}
+                      </React.Fragment>
+                      );
+                    })}
                   </Typography>
                 </div>
               </div>
@@ -168,9 +178,19 @@ export default function Detail() {
                 </div>
                 <div>
                   <Typography variant="body2">
-                    {movieData?.videoCasts
-                      .map((director) => director.crew.name)
-                      .join(", ")}
+                    {movieData?.videoCasts.map((item, index) => {
+                      return (
+                        <React.Fragment key={item.id}>
+                          <Link
+                            className="text-[#7EC2F9] no-underline"
+                            to={`/cast/${item.crewId}`}
+                          >
+                            {item.crew.name}
+                          </Link>
+                          {index !== movieData.videoCasts.length - 1 && ", "}
+                        </React.Fragment>
+                      );
+                    })}
                   </Typography>
                 </div>
               </div>
