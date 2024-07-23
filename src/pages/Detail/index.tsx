@@ -255,14 +255,14 @@ export default function Detail() {
                         alt="video image"
                       />
                     </div>
+                    {/* <div className="aspect-video bg-slate-700"></div>
                     <div className="aspect-video bg-slate-700"></div>
                     <div className="aspect-video bg-slate-700"></div>
                     <div className="aspect-video bg-slate-700"></div>
                     <div className="aspect-video bg-slate-700"></div>
                     <div className="aspect-video bg-slate-700"></div>
                     <div className="aspect-video bg-slate-700"></div>
-                    <div className="aspect-video bg-slate-700"></div>
-                    <div className="aspect-video bg-slate-700"></div>
+                    <div className="aspect-video bg-slate-700"></div> */}
                   </div>
                 </TabPanel>
                 <TabPanel className="px-0" value="Comments">

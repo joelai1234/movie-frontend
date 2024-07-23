@@ -1,7 +1,6 @@
 import { Button, Typography } from "@mui/material";
 // import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import MoviesSlides from "../../components/MoviesSlides";
-import { movies as mockMovies } from "../../data/movies";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import { useNavigate, useParams } from "react-router-dom";
@@ -9,6 +8,7 @@ import { useQuery } from "react-query";
 import { RolesData } from "../../model/movie";
 import axios from "axios";
 import ImageWithFallback from "../../components/ImageWithFallback";
+import MovieTable from "../../components/MovieTable";
 
 const VITE_BACKEND_API_BASE_URL = import.meta.env.VITE_BACKEND_API_BASE_URL;
 
@@ -23,7 +23,21 @@ export default function Cast() {
     );
   });
 
-  console.log(data);
+  const movieData =
+    data?.data.videoCrews
+      .map((item) => {
+        return {
+          id: String(item.videoId),
+          name: item.video.name,
+          imageUrl: item.video.coverPictureUrl,
+          description: "",
+          updatedAt: item.video.updatedAt,
+        };
+      })
+      .filter(
+        (item, index, self) =>
+          index === self.findIndex((t) => t.id === item.id),
+      ) ?? [];
 
   return (
     <div className="pt-[64px]">
@@ -46,11 +60,11 @@ export default function Cast() {
               <div className="flex gap-12">
                 {/* <div className="h-56 w-56 rounded-sm bg-gray-400" /> */}
                 <ImageWithFallback
-                    className="h-56 w-56 rounded-sm object-none"
-                    src={data?.data.pictureUrl ?? ''}
-                    fallbackSrc="/images/bg-sign-in.jpeg"
-                    alt="avatar"
-                  />
+                  className="h-56 w-56 rounded-sm object-none"
+                  src={data?.data.pictureUrl ?? ""}
+                  fallbackSrc="/images/bg-sign-in.jpeg"
+                  alt="avatar"
+                />
                 <div className="space-y-4">
                   <div className="flex">
                     <Typography
@@ -182,38 +196,10 @@ export default function Cast() {
             </div> */}
           </div>
           <div className="mt-10">
-            <div className="space-y-8 py-8">
+            <div className="py-8">
+              <MovieTable keyword={data?.data.name ?? ""} />
               <div>
-                <div className="flex justify-between">
-                  <Typography className="font-medium" variant="h6" gutterBottom>
-                    Recent movies(dev)
-                  </Typography>
-                  <Button
-                    className="normal-case text-white"
-                    size="small"
-                    variant="text"
-                    startIcon={<ArrowForwardIosIcon />}
-                  >
-                    View all (95)
-                  </Button>
-                </div>
-                <MoviesSlides id="1" movies={mockMovies} />
-              </div>
-              <div>
-                <div className="flex justify-between">
-                  <Typography className="font-medium" variant="h6" gutterBottom>
-                    Most popular movies(dev)
-                  </Typography>
-                  <Button
-                    className="normal-case text-white"
-                    size="small"
-                    variant="text"
-                    startIcon={<ArrowForwardIosIcon fontSize="small" />}
-                  >
-                    View all (95)
-                  </Button>
-                </div>
-                <MoviesSlides id="1" movies={mockMovies} />
+                <MoviesSlides id="1" movies={movieData} />
               </div>
             </div>
           </div>

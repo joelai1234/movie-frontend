@@ -150,13 +150,48 @@ export enum VideoCommentReactionType {
 }
 
 export interface RolesData {
-  createdAt: string;
-  updatedAt: string;
-  id: number;
-  name: string;
-  roles: string[];
-  introduction: string;
-  pictureUrl: string;
+  createdAt: string
+  updatedAt: string
+  id: number
+  name: string
+  roles: string[]
+  introduction: string
+  pictureUrl: string
+  born: string
+  education: string
+  nickname: string
+  spouse: string
+  websites: string[]
+  videoCrews: VideoCrew[]
+  totalViews: number
+}
+
+export interface VideoCrew {
+  createdAt: string
+  updatedAt: string
+  id: number
+  videoId: number
+  crewId: number
+  role: string
+  video: Video
+}
+
+export interface Video {
+  createdAt: string
+  updatedAt: string
+  id: number
+  ownerId: number
+  sourceType: string
+  url: string
+  status: string
+  fileName: string
+  coverPictureUrl: string
+  name: string
+  releaseYear: number
+  duration: number
+  categories: string[]
+  rating: string
+  videoDetail: string // VideoDetail
 }
 
 export interface MoviePayload {
