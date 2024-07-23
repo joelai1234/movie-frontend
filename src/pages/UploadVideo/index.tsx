@@ -1,4 +1,4 @@
-import { useMutation } from "react-query";
+import { useMutation, useQuery } from "react-query";
 import { useState } from "react";
 import {
   Autocomplete,
@@ -23,8 +23,16 @@ import {
   ratingList,
   videoSourceTypeOptions,
 } from "../../data/movies";
-import { MoviePayload, VideoCategory, VideoRating } from "../../model/movie";
+import {
+  MoviePayload,
+  RolesData,
+  VideoCategory,
+  VideoRating,
+} from "../../model/movie";
 import ReactPlayer from "react-player";
+import axios from "axios";
+
+const VITE_BACKEND_API_BASE_URL = import.meta.env.VITE_BACKEND_API_BASE_URL;
 
 type Inputs = {
   title: string;
@@ -48,8 +56,38 @@ export default function UploadVideo() {
     url: string;
   } | null>(null);
   const { authAxios } = useAuth();
+  const [search, setSearch] = useState("");
+  console.log(search);
 
   const { register, handleSubmit } = useForm<Inputs>();
+  const [directors, setDirectors] = useState<{ id?: number; name: string }[]>(
+    [],
+  );
+  const [writers, setWriters] = useState<{ id?: number; name: string }[]>([]);
+  const [casts, setCasts] = useState<{ id?: number; name: string }[]>([]);
+  console.log(directors);
+
+  const { data } = useQuery(
+    ["/api/v1/crews", search],
+    async () => {
+      return axios.get<{ data: RolesData[] }>(
+        VITE_BACKEND_API_BASE_URL + `/api/v1/crews`,
+        {
+          params: {
+            keyword: search,
+          },
+        },
+      );
+    },
+    {
+      enabled: search.length > 0,
+    },
+  );
+
+  console.log(data);
+
+  const crewsData =
+    data?.data.data.sort((a, b) => a.name.localeCompare(b.name)) ?? [];
 
   const uploadVideoMutation = useMutation(
     (file: File) => {
@@ -79,7 +117,7 @@ export default function UploadVideo() {
   );
 
   const createVideoMutation = useMutation(
-    ({
+    async ({
       title,
       description,
       releaseYear,
@@ -90,6 +128,66 @@ export default function UploadVideo() {
       releaseYear: string;
       url: string;
     }) => {
+      const videoDirectorCrewIds: number[] = [];
+      const videoWriterCrewIds: number[] = [];
+      const videoCastCrewIds: number[] = [];
+
+      const crewsPayload: { name: string; roles: string[]; website: [] }[] = [];
+
+      directors.forEach((director) => {
+        if (director.id) {
+          videoDirectorCrewIds.push(director.id);
+          return;
+        } else {
+          crewsPayload.push({
+            name: director.name,
+            roles: ["DIRECTOR"],
+            website: [],
+          });
+        }
+      });
+      writers.forEach((writer) => {
+        if (writer.id) {
+          videoWriterCrewIds.push(writer.id);
+          return;
+        } else {
+          crewsPayload.push({
+            name: writer.name,
+            roles: ["WRITER"],
+            website: [],
+          });
+        }
+      });
+      casts.forEach((cast) => {
+        if (cast.id) {
+          videoCastCrewIds.push(cast.id);
+          return;
+        } else {
+          crewsPayload.push({
+            name: cast.name,
+            roles: ["CAST"],
+            website: [],
+          });
+        }
+      });
+
+      if (crewsPayload.length > 0) {
+        const crewsRes = await authAxios.post("/api/v1/crews/bulk", {
+          bulk: crewsPayload,
+        });
+        crewsRes.data.forEach((crew: { id: number; roles: string[] }) => {
+          if (crew.roles.includes("DIRECTOR")) {
+            videoDirectorCrewIds.push(crew.id);
+          }
+          if (crew.roles.includes("WRITER")) {
+            videoWriterCrewIds.push(crew.id);
+          }
+          if (crew.roles.includes("CAST")) {
+            videoCastCrewIds.push(crew.id);
+          }
+        });
+      }
+
       const payload: MoviePayload = {
         name: title,
         sourceType: sourceType,
@@ -111,9 +209,9 @@ export default function UploadVideo() {
           type: "normal",
           value: tag,
         })),
-        videoDirectorCrewIds: [], //
-        videoWriterCrewIds: [], //
-        videoCastCrewIds: [], //
+        videoDirectorCrewIds,
+        videoWriterCrewIds,
+        videoCastCrewIds,
       };
       return authAxios.post("/api/v1/videos", payload);
     },
@@ -323,17 +421,54 @@ export default function UploadVideo() {
           <Autocomplete
             style={{ margin: "10px 0" }}
             multiple
-            options={tags}
-            defaultValue={[...tags]}
+            options={[
+              ...directors,
+              ...crewsData.filter((item) => {
+                return item.roles.includes("DIRECTOR");
+              }),
+            ]}
+            isOptionEqualToValue={(option, value) => {
+              if (typeof value === "string") {
+                return option.name === value;
+              } else {
+                return option.id === value.id;
+              }
+            }}
+            getOptionLabel={(option) => {
+              if (typeof option === "string") {
+                return option;
+              } else {
+                return option.name;
+              }
+            }}
             freeSolo
-            autoSelect
             onChange={(_, newValue) => {
-              // console.log(e);
-              // console.log(newValue);
-              setTags(newValue);
+              setDirectors(
+                newValue.map((item) => {
+                  if (typeof item === "string") {
+                    return {
+                      name: item,
+                    };
+                  } else {
+                    return {
+                      id: item.id,
+                      name: item.name,
+                    };
+                  }
+                }),
+              );
             }}
             renderInput={(params) => (
-              <TextField {...params} placeholder="Add tags" value={tags} />
+              <TextField
+                {...params}
+                onFocus={() => {
+                  setSearch("");
+                }}
+                placeholder="Add directors"
+                onChange={(e) => {
+                  setSearch(e.target.value);
+                }}
+              />
             )}
           />
         </div>
@@ -344,17 +479,54 @@ export default function UploadVideo() {
           <Autocomplete
             style={{ margin: "10px 0" }}
             multiple
-            options={tags}
-            defaultValue={[...tags]}
             freeSolo
-            autoSelect
+            options={[
+              ...writers,
+              ...crewsData.filter((item) => {
+                return item.roles.includes("WRITER");
+              }),
+            ]}
+            isOptionEqualToValue={(option, value) => {
+              if (typeof value === "string") {
+                return option.name === value;
+              } else {
+                return option.id === value.id;
+              }
+            }}
+            getOptionLabel={(option) => {
+              if (typeof option === "string") {
+                return option;
+              } else {
+                return option.name;
+              }
+            }}
             onChange={(_, newValue) => {
-              // console.log(e);
-              // console.log(newValue);
-              setTags(newValue);
+              setWriters(
+                newValue.map((item) => {
+                  if (typeof item === "string") {
+                    return {
+                      name: item,
+                    };
+                  } else {
+                    return {
+                      id: item.id,
+                      name: item.name,
+                    };
+                  }
+                }),
+              );
             }}
             renderInput={(params) => (
-              <TextField {...params} placeholder="Add tags" value={tags} />
+              <TextField
+                {...params}
+                onFocus={() => {
+                  setSearch("");
+                }}
+                placeholder="Add writers"
+                onChange={(e) => {
+                  setSearch(e.target.value);
+                }}
+              />
             )}
           />
         </div>
@@ -365,17 +537,54 @@ export default function UploadVideo() {
           <Autocomplete
             style={{ margin: "10px 0" }}
             multiple
-            options={tags}
-            defaultValue={[...tags]}
             freeSolo
-            autoSelect
+            options={[
+              ...casts,
+              ...crewsData.filter((item) => {
+                return item.roles.includes("CAST");
+              }),
+            ]}
+            isOptionEqualToValue={(option, value) => {
+              if (typeof value === "string") {
+                return option.name === value;
+              } else {
+                return option.id === value.id;
+              }
+            }}
+            getOptionLabel={(option) => {
+              if (typeof option === "string") {
+                return option;
+              } else {
+                return option.name;
+              }
+            }}
             onChange={(_, newValue) => {
-              // console.log(e);
-              // console.log(newValue);
-              setTags(newValue);
+              setCasts(
+                newValue.map((item) => {
+                  if (typeof item === "string") {
+                    return {
+                      name: item,
+                    };
+                  } else {
+                    return {
+                      id: item.id,
+                      name: item.name,
+                    };
+                  }
+                }),
+              );
             }}
             renderInput={(params) => (
-              <TextField {...params} placeholder="Add tags" value={tags} />
+              <TextField
+                {...params}
+                onFocus={() => {
+                  setSearch("");
+                }}
+                placeholder="Add casts"
+                onChange={(e) => {
+                  setSearch(e.target.value);
+                }}
+              />
             )}
           />
         </div>
@@ -487,53 +696,4 @@ export default function UploadVideo() {
       </div>
     </form>
   );
-  // return (
-  //   <div className="flex h-full p-8">
-  //     <div className="flex h-full w-full">
-  //       <label
-  //         htmlFor="video"
-  //         className="dark:hover:bg-bray-800 flex h-full w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 hover:bg-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:hover:border-gray-500 dark:hover:bg-gray-600"
-  //       >
-  //         <div className="flex flex-col items-center justify-center pb-6 pt-5">
-  //           <svg
-  //             className="mb-4 h-32 w-32 text-gray-500 dark:text-gray-400"
-  //             aria-hidden="true"
-  //             xmlns="http://www.w3.org/2000/svg"
-  //             fill="none"
-  //             viewBox="0 0 20 16"
-  //           >
-  //             <path
-  //               stroke="currentColor"
-  //               strokeLinecap="round"
-  //               strokeLinejoin="round"
-  //               strokeWidth={2}
-  //               d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
-  //             />
-  //           </svg>
-  //           <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
-  //             <span className="font-semibold">Click to upload</span> or drag and
-  //             drop
-  //           </p>
-  //           <p className="text-xs text-gray-500 dark:text-gray-400">
-  //             MP4, WMV, MOV or AVCHD (MAX. 800x400px)
-  //           </p>
-  //         </div>
-  //         <input
-  //           id="video"
-  //           type="file"
-  //           className="hidden"
-  //           onChange={(event) => {
-  //             const { files } = event.target;
-  //             const selectedFiles = files as FileList;
-  //             if (selectedFiles.length > 0) {
-  //               uploadVideoMutation.mutate(selectedFiles[0]);
-  //             } else {
-  //               console.error("No file selected");
-  //             }
-  //           }}
-  //         />
-  //       </label>
-  //     </div>
-  //   </div>
-  // );
 }
