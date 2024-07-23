@@ -24,10 +24,11 @@ import { formatMovies } from "../../utils/movie";
 const VITE_BACKEND_API_BASE_URL = import.meta.env.VITE_BACKEND_API_BASE_URL;
 
 interface MovieTableProps {
-  keyword: string;
+  keyword?: string;
+  crewId?: number;
 }
 
-export default function MovieTable({ keyword }: MovieTableProps) {
+export default function MovieTable({ keyword, crewId }: MovieTableProps) {
   const [category, setCategory] = useState(VideoCategory.ALL);
   const [releaseYear, setReleaseYear] = useState("all");
   const [sortBy, setSortBy] = useState("UPDATED_AT");
@@ -38,7 +39,7 @@ export default function MovieTable({ keyword }: MovieTableProps) {
   );
 
   const { data: dataRes } = useQuery(
-    ["/api/v1/videos", keyword, category, releaseYear, sortBy],
+    ["/api/v1/videos", keyword, category, releaseYear, sortBy, crewId],
     async () => {
       const years = releaseYear.split("-");
       if (years.length === 2) {
@@ -54,6 +55,7 @@ export default function MovieTable({ keyword }: MovieTableProps) {
               releaseYearStartedAt: years[0],
               releaseYearEndedAt: years[1],
               sortBy,
+              crewId,
             },
           },
         );
@@ -71,6 +73,7 @@ export default function MovieTable({ keyword }: MovieTableProps) {
               releaseYear === "all" ? undefined : releaseYear,
             releaseYearEndedAt: releaseYear === "all" ? undefined : releaseYear,
             sortBy,
+            crewId,
           },
         },
       );

@@ -1,5 +1,5 @@
 import { useQuery } from "react-query";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import { IMovie, VideoCategory, VideoResponseData } from "../../model/movie";
 import axios from "axios";
 import { Button, Chip, Divider, IconButton, Typography } from "@mui/material";
@@ -31,6 +31,8 @@ export default function SearchMovies() {
   const [releaseYear, setReleaseYear] = useState("all");
   const [sortBy, setSortBy] = useState("UPDATED_AT");
   const [area, setArea] = useState("all");
+  const [isDisplayDetail, setIsDisplayDetail] = useState(false);
+
   const navigate = useNavigate();
   const [sortDirection, setSortDirection] = useState<"top" | "down" | "none">(
     "top",
@@ -78,12 +80,15 @@ export default function SearchMovies() {
 
   const data = dataRes?.data.data;
 
+  if (data?.length === 1) { 
+    return <Navigate to={`/detail/${data[0].id}`} replace />;
+  }
+
   let movies: IMovie[] = [];
   if (data) {
     movies = formatMovies(data);
   }
 
-  const [isDisplayDetail, setIsDisplayDetail] = useState(false);
 
   const details = data?.map((movie) => {
     return (

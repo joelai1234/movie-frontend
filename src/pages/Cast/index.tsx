@@ -1,8 +1,5 @@
 import { Button, Typography } from "@mui/material";
-// import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-import MoviesSlides from "../../components/MoviesSlides";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
-import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import { useNavigate, useParams } from "react-router-dom";
 import { useQuery } from "react-query";
 import { RolesData } from "../../model/movie";
@@ -22,22 +19,6 @@ export default function Cast() {
       VITE_BACKEND_API_BASE_URL + `/api/v1/crews/${id}`,
     );
   });
-
-  const movieData =
-    data?.data.videoCrews
-      .map((item) => {
-        return {
-          id: String(item.videoId),
-          name: item.video.name,
-          imageUrl: item.video.coverPictureUrl,
-          description: "",
-          updatedAt: item.video.updatedAt,
-        };
-      })
-      .filter(
-        (item, index, self) =>
-          index === self.findIndex((t) => t.id === item.id),
-      ) ?? [];
 
   return (
     <div className="pt-[64px]">
@@ -197,10 +178,7 @@ export default function Cast() {
           </div>
           <div className="mt-10">
             <div className="py-8">
-              <MovieTable keyword={data?.data.name ?? ""} />
-              <div>
-                <MoviesSlides id="1" movies={movieData} />
-              </div>
+              <MovieTable crewId={data?.data.id} />
             </div>
           </div>
         </div>

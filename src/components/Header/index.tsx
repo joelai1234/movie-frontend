@@ -27,7 +27,6 @@ export default function Header() {
   const [searchParams] = useSearchParams();
   const search = searchParams.get("search");
   const { pathname } = useLocation();
-  console.log(pathname);
   const { isAuthenticated, signOut } = useAuth();
   const navigate = useNavigate();
   const [isTransparent, setIsTransparent] = useState(true);
@@ -168,7 +167,6 @@ export default function Header() {
               </Link>
             </div>
           )}
-
           {isAuthenticated && (
             <div>
               <IconButton
