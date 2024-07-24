@@ -13,7 +13,6 @@ import StarBorderIcon from "@mui/icons-material/StarBorder";
 import ImageWithFallback from "../../components/ImageWithFallback";
 import CustomSelect from "../../components/CustomSelect";
 import {
-  areaList,
   categoryList,
   releaseYearList,
   sortByTypeOptions,
@@ -32,7 +31,7 @@ export default function MovieTable({ keyword, crewId }: MovieTableProps) {
   const [category, setCategory] = useState(VideoCategory.ALL);
   const [releaseYear, setReleaseYear] = useState("all");
   const [sortBy, setSortBy] = useState("UPDATED_AT");
-  const [area, setArea] = useState("all");
+  // const [area, setArea] = useState("all");
   const navigate = useNavigate();
   const [sortDirection, setSortDirection] = useState<"top" | "down" | "none">(
     "top",
@@ -217,7 +216,7 @@ export default function MovieTable({ keyword, crewId }: MovieTableProps) {
               setReleaseYear(value);
             }}
           />
-          <CustomSelect
+          {/* <CustomSelect
             data={areaList.map((data) => ({
               label: data.name,
               value: data.value,
@@ -228,7 +227,7 @@ export default function MovieTable({ keyword, crewId }: MovieTableProps) {
               setArea(value);
             }}
             col={3}
-          />
+          /> */}
         </div>
         <div className="flex items-center">
           <div className="flex items-center justify-center gap-2">

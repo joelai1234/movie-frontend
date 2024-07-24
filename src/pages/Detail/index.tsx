@@ -179,7 +179,7 @@ export default function Detail() {
     };
   });
 
-  console.log( "subtitles",subtitles,);
+  console.log("subtitles", subtitles);
 
   return (
     <div>
@@ -190,7 +190,7 @@ export default function Detail() {
               width="100%"
               height="100%"
               controls
-              url={movieData?.url ?? 'error'}
+              url={movieData?.url ?? "error"}
               config={{
                 file: {
                   attributes: {
@@ -332,6 +332,8 @@ export default function Detail() {
                       .map((item) => {
                         switch (item) {
                           case "zh-cn":
+                            return "Chinese";
+                          case "zh-tw":
                             return "Chinese";
                           case "en":
                             return "English";

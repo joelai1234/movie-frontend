@@ -14,7 +14,6 @@ import StarBorderIcon from "@mui/icons-material/StarBorder";
 import ImageWithFallback from "../../components/ImageWithFallback";
 import CustomSelect from "../../components/CustomSelect";
 import {
-  areaList,
   categoryList,
   releaseYearList,
   sortByTypeOptions,
@@ -25,12 +24,14 @@ import { formatMovies } from "../../utils/movie";
 const VITE_BACKEND_API_BASE_URL = import.meta.env.VITE_BACKEND_API_BASE_URL;
 
 export default function SearchMovies() {
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const search = searchParams.get("search");
-  const [category, setCategory] = useState(VideoCategory.ALL);
-  const [releaseYear, setReleaseYear] = useState("all");
+  const categoryParam = searchParams.get("category");
+  const releaseYearParam = searchParams.get("releaseYear");
+  const [category, setCategory] = useState(categoryParam ?? VideoCategory.ALL);
+  const [releaseYear, setReleaseYear] = useState(releaseYearParam ?? "all");
   const [sortBy, setSortBy] = useState("UPDATED_AT");
-  const [area, setArea] = useState("all");
+  // const [area, setArea] = useState("all");
   const [isDisplayDetail, setIsDisplayDetail] = useState(false);
 
   const navigate = useNavigate();
@@ -80,7 +81,11 @@ export default function SearchMovies() {
 
   const data = dataRes?.data.data;
 
-  if (data?.length === 1) { 
+  if (
+    data?.length === 1 &&
+    category === VideoCategory.ALL &&
+    releaseYear === "all"
+  ) {
     return <Navigate to={`/detail/${data[0].id}`} replace />;
   }
 
@@ -88,7 +93,6 @@ export default function SearchMovies() {
   if (data) {
     movies = formatMovies(data);
   }
-
 
   const details = data?.map((movie) => {
     return (
@@ -219,6 +223,9 @@ export default function SearchMovies() {
                 title="Category"
                 onChange={(value) => {
                   setCategory(value as VideoCategory);
+                  const currentParams = new URLSearchParams(searchParams);
+                  currentParams.set("category", value);
+                  setSearchParams(currentParams);
                 }}
                 value={category}
               />
@@ -231,9 +238,12 @@ export default function SearchMovies() {
                 value={releaseYear}
                 onChange={(value) => {
                   setReleaseYear(value);
+                  const currentParams = new URLSearchParams(searchParams);
+                  currentParams.set("releaseYear", value);
+                  setSearchParams(currentParams);
                 }}
               />
-              <CustomSelect
+              {/* <CustomSelect
                 data={areaList.map((data) => ({
                   label: data.name,
                   value: data.value,
@@ -244,7 +254,7 @@ export default function SearchMovies() {
                   setArea(value);
                 }}
                 col={3}
-              />
+              /> */}
             </div>
             <div className="flex items-center">
               <div className="flex items-center justify-center gap-2">

@@ -31,7 +31,7 @@ export default function Header() {
   const navigate = useNavigate();
   const [isTransparent, setIsTransparent] = useState(true);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [searchValue, setSearchValue] = useState(search);
+  const [searchValue, setSearchValue] = useState(search ?? '');
   const [searchType, setSearchType] = useState(
     pathname === "/search/people" ? "People" : "Movies",
   );
@@ -73,6 +73,9 @@ export default function Header() {
   }, [pathname]);
 
   const handleSearch = () => {
+    if (!searchValue) {
+      return;
+    }
     if (searchType === "Movies") {
       navigate("/search/movies?search=" + searchValue);
     } else if (searchType === "People") {
