@@ -18,6 +18,16 @@ export const router = createBrowserRouter([
     },
   },
   {
+    path: "/subtitle-component",
+    async lazy() {
+      const SubtitleComponent = await import("../pages/SubtitleComponent");
+      return {
+        Component: SubtitleComponent.default,
+      };
+    },
+  },
+  
+  {
     element: <Layout />,
     children: [
       {

@@ -16,6 +16,7 @@ import {
   CommentsResponseData,
   VideoCategory,
   VideoData,
+  VideoSubtitleData,
 } from "../../model/movie";
 
 import * as React from "react";
@@ -42,8 +43,24 @@ export default function Detail() {
       },
     );
   });
+
+  const { data: subtitlesRes } = useQuery(
+    ["/api/v1/video-subtitles", id, "subtitles"],
+    async () => {
+      return authAxios.get<VideoSubtitleData[]>(
+        `/api/v1/videos/${id}/subtitles`,
+        {
+          headers: {
+            "accept-language": "en",
+          },
+        },
+      );
+    },
+  );
+
+  console.log("subtitlesRes", subtitlesRes);
+
   const movieData = movieRes?.data;
-  console.log(movieRes);
 
   const { data: commentsRes } = useQuery(
     ["/api/v1/videos/${id}/comments"],
@@ -86,7 +103,7 @@ export default function Detail() {
             width="100%"
             height="100%"
             controls
-            url={movieData?.fileName}
+            url={movieData?.url}
             // url="https://d3q62pnjbn74l6.cloudfront.net/Goodfellas.mp4"
             // url="https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8"
             // url="https://hn.bfvvs.com/play/QbYKvLYe/index.m3u8"
@@ -157,14 +174,15 @@ export default function Detail() {
                     {movieData?.videoDirectors.map((item, index) => {
                       return (
                         <React.Fragment key={item.id}>
-                        <Link
-                          className="text-[#7EC2F9] no-underline"
-                          to={`/cast/${item.crewId}`}
-                        >
-                          {item.crew.name}
-                        </Link>
-                        {index !== movieData.videoDirectors.length - 1 && ", "}
-                      </React.Fragment>
+                          <Link
+                            className="text-[#7EC2F9] no-underline"
+                            to={`/cast/${item.crewId}`}
+                          >
+                            {item.crew.name}
+                          </Link>
+                          {index !== movieData.videoDirectors.length - 1 &&
+                            ", "}
+                        </React.Fragment>
                       );
                     })}
                   </Typography>
@@ -216,17 +234,24 @@ export default function Detail() {
                   </Typography>
                 </div>
                 <div>
-                  <Typography variant="body2">{
-                    movieData?.supportedLanguages.map((item) => { 
-                      switch (item) { 
-                        case "zh-cn": return "Chinese";
-                        case "en": return "English";
-                        case 'ko': return "Korean";
-                        case 'ja': return "Japanese";
-                        default: return item;
-                      }
-                    }).join(", ")
-                  }</Typography>
+                  <Typography variant="body2">
+                    {movieData?.supportedLanguages
+                      .map((item) => {
+                        switch (item) {
+                          case "zh-cn":
+                            return "Chinese";
+                          case "en":
+                            return "English";
+                          case "ko":
+                            return "Korean";
+                          case "ja":
+                            return "Japanese";
+                          default:
+                            return item;
+                        }
+                      })
+                      .join(", ")}
+                  </Typography>
                 </div>
               </div>
             </div>
@@ -258,19 +283,17 @@ export default function Detail() {
                 </Box>
                 <TabPanel className="px-0" value="Videos & Photos">
                   <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
-                    {
-                      movieData?.videoAttachments.map((attachment) => {
-                        return (
-                          <div key={attachment.id} className="aspect-video">
-                            <img
-                              className="h-full w-full object-cover"
-                              src={attachment.url}
-                              alt="video image"
-                            />
-                          </div>
-                        );
-                      })
-                    }
+                    {movieData?.videoAttachments.map((attachment) => {
+                      return (
+                        <div key={attachment.id} className="aspect-video">
+                          <img
+                            className="h-full w-full object-cover"
+                            src={attachment.url}
+                            alt="video image"
+                          />
+                        </div>
+                      );
+                    })}
                   </div>
                 </TabPanel>
                 <TabPanel className="px-0" value="Comments">

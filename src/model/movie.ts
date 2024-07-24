@@ -246,3 +246,25 @@ export interface MoviePayloadVideoTag {
   type: string;
   value: string;
 }
+
+export interface VideoSubtitleData {
+  createdAt: string
+  updatedAt: string
+  id: number
+  videoId: number
+  languageCode: string
+  url: string
+  fileName: string
+  sourceType: string
+  videoSubtitleEncryption: VideoSubtitleEncryption
+}
+
+export interface VideoSubtitleEncryption {
+  createdAt: string
+  updatedAt: string
+  id: number
+  videoSubtitleId: number
+  algorithm: string
+  key: string
+  iv: string
+}
