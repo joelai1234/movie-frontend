@@ -81,10 +81,12 @@ export default function UploadVideo() {
     fileName: string;
     url: string;
   } | null>(null);
-  const [uploadedThumbnailRes, setUploadedThumbnailRes] = useState<{
-    fileName: string;
-    url: string;
-  } | null>(null);
+  const [uploadedThumbnailRes, setUploadedThumbnailRes] = useState<
+    {
+      fileName: string;
+      url: string;
+    }[]
+  >([]);
   const { authAxios } = useAuth();
   const [search, setSearch] = useState("");
 
@@ -137,7 +139,7 @@ export default function UploadVideo() {
     {
       onSuccess: (data) => {
         console.log(data);
-        setUploadedThumbnailRes(data.data);
+        setUploadedThumbnailRes((prev) => [...prev, data.data]);
       },
     },
   );
@@ -203,18 +205,24 @@ export default function UploadVideo() {
           }
         });
       }
-      console.log()
+      console.log();
 
       const payload: MoviePayload = {
         name: title,
         sourceType: sourceType,
         source: sourceType === "FILE" ? uploadedVideoRes?.url ?? "" : url,
-        coverPictureUrl: uploadedThumbnailRes?.url ?? "",
+        coverPictureUrl: uploadedThumbnailRes?.[0].url ?? "",
         categories: category,
         rating: rating,
         releaseYear: new Date(releaseYear).getTime() / 1000,
         videoDetails: transformLanguageObject(subtitles, title, description),
-        videoAttachments: [], //
+        videoAttachments: uploadedThumbnailRes.map((thumbnail, index) => {
+          return {
+            type: "PICTURE",
+            url: thumbnail.url,
+            order: index,
+          };
+        }),
         videoSubtitles: [],
         videoTags: tags.map((tag) => ({
           type: "normal",
@@ -652,70 +660,57 @@ export default function UploadVideo() {
             />
             {/* <FormControlLabel control={<Checkbox />} label="Thai" /> */}
           </FormGroup>
-          <Typography variant="body1" gutterBottom>
-            Upload custom language subtitles
-          </Typography>
-          <div className="w-36 rounded-md border border-indigo-500 bg-gray-800 p-4 shadow-md">
-            <label
-              htmlFor="upload"
-              className="flex cursor-pointer flex-col items-center gap-2"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-10 w-10 fill-gray-800 stroke-indigo-500"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth="2"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                />
-              </svg>
-              <span className="font-medium text-white">Upload subtitle</span>
-            </label>
-            <input id="upload" type="file" className="hidden" />
-          </div>
         </div>
         <div>
           <Typography variant="h6" gutterBottom>
             Thumbnail
           </Typography>
-          <div className="w-36 rounded-md border border-indigo-500 bg-gray-800 p-4 shadow-md">
-            <label
-              htmlFor="thumbnail"
-              className="flex cursor-pointer flex-col items-center gap-2"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-10 w-10 fill-gray-800 stroke-indigo-500"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth="2"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+          <div className="flex flex-wrap gap-4">
+            <div>
+              {uploadedThumbnailRes.map((thumbnail) => (
+                <img
+                  className="aspect-video w-36 object-contain object-center"
+                  key={thumbnail.url}
+                  src={thumbnail.url}
+                  alt="Thumbnail image"
                 />
-              </svg>
-              <span className="font-medium text-white">Upload image</span>
-            </label>
-            <input
-              id="thumbnail"
-              type="file"
-              className="hidden"
-              onChange={(event) => {
-                const { files } = event.target;
-                const selectedFiles = files as FileList;
-                if (selectedFiles.length > 0) {
-                  uploadThumbnailMutation.mutate(selectedFiles[0]);
-                } else {
-                  console.error("No file selected");
-                }
-              }}
-            />
+              ))}
+            </div>
+            <div className="w-36 rounded-md border border-indigo-500 bg-gray-800 p-4 shadow-md">
+              <label
+                htmlFor="thumbnail"
+                className="flex cursor-pointer flex-col items-center gap-2"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-10 w-10 fill-gray-800 stroke-indigo-500"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                  />
+                </svg>
+                <span className="font-medium text-white">Upload image</span>
+              </label>
+              <input
+                id="thumbnail"
+                type="file"
+                className="hidden"
+                onChange={(event) => {
+                  const { files } = event.target;
+                  const selectedFiles = files as FileList;
+                  if (selectedFiles.length > 0) {
+                    uploadThumbnailMutation.mutate(selectedFiles[0]);
+                  } else {
+                    console.error("No file selected");
+                  }
+                }}
+              />
+            </div>
           </div>
         </div>
       </div>

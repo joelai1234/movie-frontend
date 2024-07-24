@@ -258,21 +258,19 @@ export default function Detail() {
                 </Box>
                 <TabPanel className="px-0" value="Videos & Photos">
                   <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
-                    <div className="aspect-video">
-                      <img
-                        className="h-full w-full object-cover"
-                        src={movieData?.coverPictureUrl}
-                        alt="video image"
-                      />
-                    </div>
-                    {/* <div className="aspect-video bg-slate-700"></div>
-                    <div className="aspect-video bg-slate-700"></div>
-                    <div className="aspect-video bg-slate-700"></div>
-                    <div className="aspect-video bg-slate-700"></div>
-                    <div className="aspect-video bg-slate-700"></div>
-                    <div className="aspect-video bg-slate-700"></div>
-                    <div className="aspect-video bg-slate-700"></div>
-                    <div className="aspect-video bg-slate-700"></div> */}
+                    {
+                      movieData?.videoAttachments.map((attachment) => {
+                        return (
+                          <div key={attachment.id} className="aspect-video">
+                            <img
+                              className="h-full w-full object-cover"
+                              src={attachment.url}
+                              alt="video image"
+                            />
+                          </div>
+                        );
+                      })
+                    }
                   </div>
                 </TabPanel>
                 <TabPanel className="px-0" value="Comments">

@@ -21,6 +21,17 @@ interface VideoTag {
   value: string;
 }
 
+interface MediaItem {
+  createdAt: string;
+  updatedAt: string;
+  id: number;
+  videoId: number;
+  status: string;
+  type: string;
+  url: string;
+  order: number;
+}
+
 export interface VideoData {
   updatedAt: string;
   totalViews: number;
@@ -43,6 +54,7 @@ export interface VideoData {
   videoDirectors: Cast[];
   videoWriters: Cast[];
   supportedLanguages: string[];
+  videoAttachments: MediaItem[];
 }
 
 export interface Cast {
