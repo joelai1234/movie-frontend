@@ -16,7 +16,7 @@ import {
   Typography,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { useForm, SubmitHandler } from "react-hook-form";
+import { useForm, SubmitHandler, Controller } from "react-hook-form";
 import useAuth from "../../services/auth/hooks/useAuth";
 import {
   categoryList,
@@ -39,7 +39,37 @@ type Inputs = {
   description: string;
   releaseYear: string;
   url: string;
+  subtitles: {
+    en: boolean;
+    "zh-cn": boolean;
+    ko: boolean;
+    ja: boolean;
+  };
 };
+
+interface LanguageObject {
+  [key: string]: boolean;
+}
+
+interface LanguageArrayItem {
+  languageCode: string;
+  title: string;
+  description: string;
+}
+
+function transformLanguageObject(
+  obj: LanguageObject,
+  title: string,
+  description: string,
+): LanguageArrayItem[] {
+  return Object.entries(obj)
+    .filter(([, value]) => value)
+    .map(([key]) => ({
+      languageCode: key,
+      title: title,
+      description: description,
+    }));
+}
 
 export default function UploadVideo() {
   const [tags, setTags] = useState<string[]>([]);
@@ -57,15 +87,13 @@ export default function UploadVideo() {
   } | null>(null);
   const { authAxios } = useAuth();
   const [search, setSearch] = useState("");
-  console.log(search);
 
-  const { register, handleSubmit } = useForm<Inputs>();
+  const { register, handleSubmit, control } = useForm<Inputs>();
   const [directors, setDirectors] = useState<{ id?: number; name: string }[]>(
     [],
   );
   const [writers, setWriters] = useState<{ id?: number; name: string }[]>([]);
   const [casts, setCasts] = useState<{ id?: number; name: string }[]>([]);
-  console.log(directors);
 
   const { data } = useQuery(
     ["/api/v1/crews", search],
@@ -83,8 +111,6 @@ export default function UploadVideo() {
       enabled: search.length > 0,
     },
   );
-
-  console.log(data);
 
   const crewsData =
     data?.data.data.sort((a, b) => a.name.localeCompare(b.name)) ?? [];
@@ -117,17 +143,7 @@ export default function UploadVideo() {
   );
 
   const createVideoMutation = useMutation(
-    async ({
-      title,
-      description,
-      releaseYear,
-      url,
-    }: {
-      title: string;
-      description: string;
-      releaseYear: string;
-      url: string;
-    }) => {
+    async ({ title, description, releaseYear, url, subtitles }: Inputs) => {
       const videoDirectorCrewIds: number[] = [];
       const videoWriterCrewIds: number[] = [];
       const videoCastCrewIds: number[] = [];
@@ -187,6 +203,7 @@ export default function UploadVideo() {
           }
         });
       }
+      console.log()
 
       const payload: MoviePayload = {
         name: title,
@@ -196,13 +213,7 @@ export default function UploadVideo() {
         categories: category,
         rating: rating,
         releaseYear: new Date(releaseYear).getTime() / 1000,
-        videoDetails: [
-          {
-            languageCode: "en",
-            title: title,
-            description: description,
-          },
-        ],
+        videoDetails: transformLanguageObject(subtitles, title, description),
         videoAttachments: [], //
         videoSubtitles: [],
         videoTags: tags.map((tag) => ({
@@ -224,7 +235,10 @@ export default function UploadVideo() {
   );
 
   const onSubmit: SubmitHandler<Inputs> = (data) => {
-    console.log(data);
+    // console.log(data);
+    // console.log(
+    //   transformLanguageObject(data.subtitles, data.title, data.description),
+    // );
     createVideoMutation.mutate(data);
   };
 
@@ -596,14 +610,47 @@ export default function UploadVideo() {
             Select translation language
           </Typography>
           <FormGroup>
-            <FormControlLabel control={<Checkbox />} label="Chinese" />
             <FormControlLabel
-              control={<Checkbox defaultChecked />}
+              control={
+                <Controller
+                  name="subtitles.zh-cn"
+                  control={control}
+                  render={({ field }) => <Checkbox {...field} />}
+                />
+              }
+              label="Chinese"
+            />
+            <FormControlLabel
+              control={
+                <Controller
+                  name="subtitles.en"
+                  control={control}
+                  render={({ field }) => <Checkbox {...field} />}
+                />
+              }
               label="English"
             />
-            <FormControlLabel control={<Checkbox />} label="Japanese" />
-            <FormControlLabel control={<Checkbox />} label="Korean" />
-            <FormControlLabel control={<Checkbox />} label="Thai" />
+            <FormControlLabel
+              control={
+                <Controller
+                  name="subtitles.ja"
+                  control={control}
+                  render={({ field }) => <Checkbox {...field} />}
+                />
+              }
+              label="Japanese"
+            />
+            <FormControlLabel
+              control={
+                <Controller
+                  name="subtitles.ko"
+                  control={control}
+                  render={({ field }) => <Checkbox {...field} />}
+                />
+              }
+              label="Korean"
+            />
+            {/* <FormControlLabel control={<Checkbox />} label="Thai" /> */}
           </FormGroup>
           <Typography variant="body1" gutterBottom>
             Upload custom language subtitles

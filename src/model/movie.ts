@@ -42,6 +42,7 @@ export interface VideoData {
   videoCasts: Cast[];
   videoDirectors: Cast[];
   videoWriters: Cast[];
+  supportedLanguages: string[];
 }
 
 export interface Cast {

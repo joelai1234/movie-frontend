@@ -216,7 +216,17 @@ export default function Detail() {
                   </Typography>
                 </div>
                 <div>
-                  <Typography variant="body2">Chinese, English</Typography>
+                  <Typography variant="body2">{
+                    movieData?.supportedLanguages.map((item) => { 
+                      switch (item) { 
+                        case "zh-cn": return "Chinese";
+                        case "en": return "English";
+                        case 'ko': return "Korean";
+                        case 'ja': return "Japanese";
+                        default: return item;
+                      }
+                    }).join(", ")
+                  }</Typography>
                 </div>
               </div>
             </div>
