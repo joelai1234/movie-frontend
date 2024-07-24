@@ -23,6 +23,7 @@ import * as React from "react";
 import InputBase from "@mui/material/InputBase";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import useAuth from "../../services/auth/hooks/useAuth";
+import { decryptData } from "../../utils/movie";
 
 const VITE_BACKEND_API_BASE_URL = import.meta.env.VITE_BACKEND_API_BASE_URL;
 
@@ -32,6 +33,12 @@ export default function Detail() {
   const [value, setValue] = useState("Videos & Photos");
   const [comment, setComment] = useState("");
   const queryClient = useQueryClient();
+  const [subtitles, setSubtitles] = useState<
+    {
+      language: string;
+      url: string;
+    }[]
+  >();
 
   const { data: movieRes } = useQuery(["/api/v1/videos", id], async () => {
     return axios.get<VideoData>(
@@ -43,22 +50,83 @@ export default function Detail() {
       },
     );
   });
+  // console.log(movieRes, "movieRes");
 
-  const { data: subtitlesRes } = useQuery(
-    ["/api/v1/video-subtitles", id, "subtitles"],
+  useQuery(
+    [
+      "/api/v1/video-subtitles",
+      id,
+      "subtitles",
+      movieRes?.data.supportedLanguages,
+    ],
     async () => {
-      return authAxios.get<VideoSubtitleData[]>(
-        `/api/v1/videos/${id}/subtitles`,
-        {
-          headers: {
-            "accept-language": "en",
-          },
-        },
+      if (!movieRes) {
+        return;
+      }
+      console.log(
+        "movieRes.data.supportedLanguages",
+        movieRes.data.supportedLanguages,
       );
+      return await axios.all(
+        movieRes.data.supportedLanguages.map((language) => {
+          return authAxios.get<VideoSubtitleData[]>(
+            `/api/v1/videos/${id}/subtitles`,
+            {
+              headers: {
+                "accept-language": language,
+              },
+            },
+          );
+        }),
+      );
+    },
+    {
+      onSuccess: async (data) => {
+        console.log("data", data);
+        if (!data) {
+          return;
+        }
+        const filteredData = data.filter((item) => item.data.length > 0);
+        console.log("filteredData", filteredData);
+        if (filteredData.length === 0) {
+          setSubtitles([]);
+        }
+
+        const encryptedSubtitles = await axios.all(
+          filteredData.map((item) => {
+            return axios.get(item.data[0]?.url, {
+              responseType: "text",
+            });
+          }),
+        );
+
+        const decryptedSubtitles = await axios.all(
+          encryptedSubtitles.map(async (item, index) => {
+            const decryptedData = await decryptData(
+              filteredData[index].data[0].videoSubtitleEncryption.key,
+              filteredData[index].data[0].videoSubtitleEncryption.iv,
+              item.data,
+            );
+            const webVTTContent =
+              "WEBVTT\n\n" + decryptedData.replace(/,/g, ".");
+            const blob = new Blob([webVTTContent], { type: "text/vtt" });
+            const url = URL.createObjectURL(blob);
+            return {
+              language: filteredData[index].data[0].languageCode,
+              url: url,
+            };
+          }),
+        );
+        setSubtitles(decryptedSubtitles);
+        console.log(decryptedSubtitles, "decryptedSubtitles");
+      },
+      onError: (error) => {
+        console.log("error", error);
+      },
     },
   );
 
-  console.log("subtitlesRes", subtitlesRes);
+  // console.log("subtitlesRes", subtitlesRes);
 
   const movieData = movieRes?.data;
 
@@ -71,7 +139,6 @@ export default function Detail() {
     },
   );
   const commentsData = commentsRes?.data;
-  console.log(commentsData);
 
   const commentMutation = useMutation({
     mutationFn: async () => {
@@ -95,19 +162,45 @@ export default function Detail() {
     setComment(event.target.value);
   };
 
+  const subtitleTracks = subtitles?.map((subtitle) => {
+    const labels = {
+      "zh-cn": "Chinese",
+      "zh-tw": "Chinese",
+      en: "English",
+      ko: "Korean",
+      ja: "Japanese",
+    };
+    return {
+      kind: "subtitles",
+      src: subtitle.url,
+      srcLang: subtitle.language,
+      default: true,
+      label: labels[subtitle.language as keyof typeof labels],
+    };
+  });
+
+  console.log( "subtitles",subtitles,);
+
   return (
     <div>
       <div className="pt-[64px]">
         <div className="h-[56.25vw] max-h-[calc(100vh-169px)] min-h-[480px]">
-          <ReactPlayer
-            width="100%"
-            height="100%"
-            controls
-            url={movieData?.url}
-            // url="https://d3q62pnjbn74l6.cloudfront.net/Goodfellas.mp4"
-            // url="https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8"
-            // url="https://hn.bfvvs.com/play/QbYKvLYe/index.m3u8"
-          />
+          {subtitles && (
+            <ReactPlayer
+              width="100%"
+              height="100%"
+              controls
+              url={movieData?.url ?? 'error'}
+              config={{
+                file: {
+                  attributes: {
+                    controlsList: "nodownload",
+                  },
+                  tracks: subtitleTracks,
+                },
+              }}
+            />
+          )}
         </div>
         <div className="space-y-10 px-10 py-5">
           <div className="flex gap-16">
