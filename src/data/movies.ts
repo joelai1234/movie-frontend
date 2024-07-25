@@ -414,3 +414,22 @@ export const sortByTypeOptions = [
     value: "AVERAGE_RATING",
   },
 ];
+
+export const languages = [
+  {
+    name: "English",
+    value: "en",
+  },
+  {
+    name: "Chinese",
+    value: "zh-cn",
+  },
+  {
+    name: "Japanese",
+    value: "ja",
+  },
+  {
+    name: "Korean",
+    value: "ko",
+  },
+];

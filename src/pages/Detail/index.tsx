@@ -313,7 +313,7 @@ export default function Detail() {
                 </div>
                 <div>
                   <Typography className="capitalize" variant="body2">
-                  {movieData?.categories.map((item, index) => {
+                    {movieData?.categories.map((item, index) => {
                       return (
                         <React.Fragment key={item}>
                           <Link
@@ -337,24 +337,38 @@ export default function Detail() {
                 </div>
                 <div>
                   <Typography variant="body2">
-                    {movieData?.supportedLanguages
-                      .map((item) => {
-                        switch (item) {
-                          case "zh-cn":
-                            return "Chinese";
-                          case "zh-tw":
-                            return "Chinese";
-                          case "en":
-                            return "English";
-                          case "ko":
-                            return "Korean";
-                          case "ja":
-                            return "Japanese";
-                          default:
-                            return item;
-                        }
-                      })
-                      .join(", ")}
+                    {movieData?.supportedLanguages.map((item, index) => {
+                      let title = "";
+                      switch (item) {
+                        case "zh-cn":
+                        case "zh-tw":
+                          title = "Chinese";
+                          break;
+                        case "en":
+                          title = "English";
+                          break;
+                        case "ko":
+                          title = "Korean";
+                          break;
+                        case "ja":
+                          title = "Japanese";
+                          break;
+                        default:
+                          title = item;
+                          break;
+                      }
+                      return (
+                        <React.Fragment key={item}>
+                          <Link
+                            className="text-[#7EC2F9] no-underline"
+                            to={`/search/movies?lang=${item}`}
+                          >
+                            {title}
+                          </Link>
+                          {index !== movieData.supportedLanguages.length - 1 && ", "}
+                        </React.Fragment>
+                      );
+                    })}
                   </Typography>
                 </div>
               </div>

@@ -15,6 +15,7 @@ import ImageWithFallback from "../../components/ImageWithFallback";
 import CustomSelect from "../../components/CustomSelect";
 import {
   categoryList,
+  languages,
   releaseYearList,
   sortByTypeOptions,
 } from "../../data/movies";
@@ -28,10 +29,11 @@ export default function SearchMovies() {
   const search = searchParams.get("search");
   const categoryParam = searchParams.get("category");
   const releaseYearParam = searchParams.get("releaseYear");
+  const lang = searchParams.get("lang");
   const [category, setCategory] = useState(categoryParam ?? VideoCategory.ALL);
   const [releaseYear, setReleaseYear] = useState(releaseYearParam ?? "all");
+  const [language, setLanguage] = useState(lang ?? 'en');
   const [sortBy, setSortBy] = useState("UPDATED_AT");
-  // const [area, setArea] = useState("all");
   const [isDisplayDetail, setIsDisplayDetail] = useState(false);
 
   const navigate = useNavigate();
@@ -40,7 +42,7 @@ export default function SearchMovies() {
   );
 
   const { data: dataRes } = useQuery(
-    ["/api/v1/videos", search, category, releaseYear, sortBy],
+    ["/api/v1/videos", search, category, releaseYear, sortBy, language],
     async () => {
       const years = releaseYear.split("-");
       if (years.length === 2) {
@@ -48,7 +50,7 @@ export default function SearchMovies() {
           VITE_BACKEND_API_BASE_URL + `/api/v1/videos`,
           {
             headers: {
-              "accept-language": "en",
+              "accept-language": language,
             },
             params: {
               keyword: search,
@@ -64,7 +66,7 @@ export default function SearchMovies() {
         VITE_BACKEND_API_BASE_URL + `/api/v1/videos`,
         {
           headers: {
-            "accept-language": "en",
+            "accept-language": language,
           },
           params: {
             keyword: search,
@@ -81,11 +83,7 @@ export default function SearchMovies() {
 
   const data = dataRes?.data.data;
 
-  if (
-    data?.length === 1 &&
-    category === VideoCategory.ALL &&
-    releaseYear === "all"
-  ) {
+  if (data?.length === 1 && search === data[0].name) {
     return <Navigate to={`/detail/${data[0].id}`} replace />;
   }
 
@@ -243,18 +241,20 @@ export default function SearchMovies() {
                   setSearchParams(currentParams);
                 }}
               />
-              {/* <CustomSelect
-                data={areaList.map((data) => ({
+              <CustomSelect
+                data={languages.map((data) => ({
                   label: data.name,
                   value: data.value,
                 }))}
-                title="Area(dev)"
-                value={area}
+                title="Language"
+                value={language}
                 onChange={(value) => {
-                  setArea(value);
+                  setLanguage(value);
+                  const currentParams = new URLSearchParams(searchParams);
+                  currentParams.set("lang", value);
+                  setSearchParams(currentParams);
                 }}
-                col={3}
-              /> */}
+              />
             </div>
             <div className="flex items-center">
               <div className="flex items-center justify-center gap-2">
