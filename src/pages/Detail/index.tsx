@@ -313,10 +313,19 @@ export default function Detail() {
                 </div>
                 <div>
                   <Typography className="capitalize" variant="body2">
-                    {movieData?.categories
-                      .filter((item) => item !== VideoCategory.ALL)
-                      .join(", ")
-                      .toLocaleLowerCase()}
+                  {movieData?.categories.map((item, index) => {
+                      return (
+                        <React.Fragment key={item}>
+                          <Link
+                            className="text-[#7EC2F9] no-underline"
+                            to={`/search/movies?category=${item}`}
+                          >
+                            {item.toLocaleLowerCase()}
+                          </Link>
+                          {index !== movieData.categories.length - 1 && ", "}
+                        </React.Fragment>
+                      );
+                    })}
                   </Typography>
                 </div>
               </div>
