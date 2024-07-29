@@ -1,58 +1,88 @@
-import { Typography } from "@mui/material";
 import { IMovie } from "../../model/movie";
 import { FavoriteBorder } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { cn } from "../../utils/helper";
-import { useMutation } from "react-query";
 import useAuth from "../../services/auth/hooks/useAuth";
+import { useMutation, useQueryClient } from "react-query";
+import { Typography } from "@mui/material";
+import { useNotificationStore } from "../../store/useNotificationStore";
 
 interface MovieCardProps {
   movie?: IMovie;
 }
 
-const VITE_BACKEND_API_BASE_URL = import.meta.env.VITE_BACKEND_API_BASE_URL;
-
 const MovieCard = ({ movie }: MovieCardProps) => {
   const navigate = useNavigate();
   const [imgSrc, setImgSrc] = useState(movie?.imageUrl);
-  const [isFavorite, setIsFavorite] = useState(false);
-  const { authAxios } = useAuth();
+  const [isFavorite, setIsFavorite] = useState(movie?.isFavorite);
+  const queryClient = useQueryClient();
+  const { authAxios, isAuthenticated } = useAuth();
+  const showNotification = useNotificationStore(
+    (state) => state.showNotification,
+  );
 
   const handleError = () => {
     setImgSrc("/images/bg-sign-in.jpeg");
   };
 
-  const addFavoriteMutation = useMutation(() => {
-    return authAxios?.post(
-      VITE_BACKEND_API_BASE_URL + `/api/v1/videos/favorites`,
-      {
-        videoId: Number(movie?.id),
-      },
-    );
-  });
-
-  const deleteFavoriteMutation = useMutation(() => {
-    return authAxios.delete(
-      VITE_BACKEND_API_BASE_URL + `/api/v1/videos/favorites/video/${movie?.id}`,
-    );
-  });
-
-  const handleTriggerFavorite = (
-    e: React.MouseEvent<HTMLDivElement, MouseEvent>,
-  ) => {
-    e.stopPropagation();
-    if (isFavorite) {
-      deleteFavoriteMutation.mutate();
-    }
+  const addFavoriteMutation = useMutation(
+    (id: number) => {
+      return authAxios?.post(`/api/v1/videos/favorites`, {
+        videoId: id,
+      });
+    },
     {
-      addFavoriteMutation.mutate();
+      onSuccess: () => {
+        queryClient.invalidateQueries(["/api/v1/videos/favorites"]);
+      },
+      onError: (error: { response: { data: { message: string } } }) => {
+        console.error(error.response.data.message);
+        showNotification(error.response.data.message, "error");
+        setIsFavorite(false);
+      },
+    },
+  );
+
+  const deleteFavoriteMutation = useMutation(
+    (id: number) => {
+      return authAxios.delete(`/api/v1/videos/${id}/favorites`);
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(["/api/v1/videos/favorites"]);
+      },
+      onError: (error: { response: { data: { message: string } } }) => {
+        console.error(error.response.data.message);
+        showNotification(error.response.data.message, "error");
+        setIsFavorite(true);
+      },
+    },
+  );
+
+  const handleTriggerFavorite = (movie: IMovie) => {
+    if (!isAuthenticated) {
+      showNotification("Please login first", "error");
+      return;
     }
-    setIsFavorite((prev) => !prev);
+    if (addFavoriteMutation.isLoading || deleteFavoriteMutation.isLoading)
+      return;
+    if (movie.isFavorite) {
+      console.log("delete");
+      setIsFavorite(false);
+      deleteFavoriteMutation.mutate(movie.id);
+    } else {
+      console.log("add");
+      setIsFavorite(true);
+      addFavoriteMutation.mutate(movie.id);
+    }
   };
 
   return (
-    <div className="w-min" onClick={() => navigate(`/detail/${movie?.id}`)}>
+    <div
+      className="relative w-min"
+      onClick={() => navigate(`/detail/${movie?.id}`)}
+    >
       <div className="group relative h-80 w-56 cursor-pointer overflow-hidden rounded">
         <img
           className="absolute z-0 h-full w-full object-cover transition-all duration-500 group-hover:scale-[1.2] group-hover:blur-sm"
@@ -88,7 +118,10 @@ const MovieCard = ({ movie }: MovieCardProps) => {
           style={{
             clipPath: "polygon(100% 0, 0 0, 100% 100%)",
           }}
-          onClick={handleTriggerFavorite}
+          onClick={(e) => {
+            e.stopPropagation();
+            if (movie) handleTriggerFavorite(movie);
+          }}
         >
           <FavoriteBorder className="absolute right-1 top-1 h-7 w-7" />
         </div>

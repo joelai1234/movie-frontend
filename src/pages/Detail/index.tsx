@@ -1,4 +1,14 @@
-import { Box, Chip, IconButton, Paper, Tab, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Chip,
+  IconButton,
+  Modal,
+  Rating,
+  Tab,
+  TextField,
+  Typography,
+} from "@mui/material";
 import ReactPlayer from "react-player";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import StarBorderIcon from "@mui/icons-material/StarBorder";
@@ -6,12 +16,12 @@ import StarIcon from "@mui/icons-material/Star";
 import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Message from "../../components/Message";
 import { Link, useParams } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import axios from "axios";
-import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+import EditIcon from "@mui/icons-material/Edit";
 import {
   CommentsResponseData,
   VideoCategory,
@@ -20,25 +30,37 @@ import {
 } from "../../model/movie";
 
 import * as React from "react";
-import InputBase from "@mui/material/InputBase";
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import useAuth from "../../services/auth/hooks/useAuth";
 import { decryptData } from "../../utils/movie";
+import { useNotificationStore } from "../../store/useNotificationStore";
+import CloseIcon from "@mui/icons-material/Close";
+import { useAuthStore } from "../../services/auth/store/useAuthStroe";
+import { useMovieFavorite } from "../../hooks/useMovieFavorite";
 
 const VITE_BACKEND_API_BASE_URL = import.meta.env.VITE_BACKEND_API_BASE_URL;
 
 export default function Detail() {
   const { authAxios } = useAuth();
+
+  const { userData } = useAuthStore();
+  const showNotification = useNotificationStore(
+    (state) => state.showNotification,
+  );
+
+  const [openCommentModal, setOpenCommentModal] = useState(false);
   const { id } = useParams();
   const [value, setValue] = useState("Videos & Photos");
   const [comment, setComment] = useState("");
   const queryClient = useQueryClient();
+  const [commentRating, setCommentRating] = React.useState<number | null>(0);
   const [subtitles, setSubtitles] = useState<
     {
       language: string;
       url: string;
     }[]
   >();
+
+  const { isFavorite, handleTriggerFavorite } = useMovieFavorite(Number(id));
 
   const { data: movieRes } = useQuery(["/api/v1/videos", id], async () => {
     return axios.get<VideoData>(
@@ -50,7 +72,6 @@ export default function Detail() {
       },
     );
   });
-  // console.log(movieRes, "movieRes");
 
   useQuery(
     [
@@ -82,12 +103,10 @@ export default function Detail() {
     },
     {
       onSuccess: async (data) => {
-        console.log("data", data);
         if (!data) {
           return;
         }
         const filteredData = data.filter((item) => item.data.length > 0);
-        console.log("filteredData", filteredData);
         if (filteredData.length === 0) {
           setSubtitles([]);
         }
@@ -102,6 +121,12 @@ export default function Detail() {
 
         const decryptedSubtitles = await axios.all(
           encryptedSubtitles.map(async (item, index) => {
+            if (!filteredData[index].data[0].videoSubtitleEncryption) {
+              return {
+                language: filteredData[index].data[0].languageCode,
+                url: "",
+              };
+            }
             const decryptedData = await decryptData(
               filteredData[index].data[0].videoSubtitleEncryption.key,
               filteredData[index].data[0].videoSubtitleEncryption.iv,
@@ -117,8 +142,8 @@ export default function Detail() {
             };
           }),
         );
-        setSubtitles(decryptedSubtitles);
-        console.log(decryptedSubtitles, "decryptedSubtitles");
+
+        setSubtitles(decryptedSubtitles.filter((item) => !!item.url));
       },
       onError: (error) => {
         console.log("error", error);
@@ -126,31 +151,37 @@ export default function Detail() {
     },
   );
 
-  // console.log("subtitlesRes", subtitlesRes);
-
   const movieData = movieRes?.data;
 
   const { data: commentsRes } = useQuery(
-    ["/api/v1/videos/${id}/comments"],
+    ["/api/v1/videos/${id}/comments", id],
     async () => {
       return authAxios.get<CommentsResponseData>(
-        VITE_BACKEND_API_BASE_URL + `/api/v1/videos/${id}/comments`,
+        `/api/v1/videos/${id}/comments`,
       );
     },
   );
   const commentsData = commentsRes?.data;
+  const isCommented = commentsData?.data.some(
+    (comment) => comment.member.id === userData?.id,
+  );
+  console.log("userData", userData);
+  console.log("commentsData", commentsData);
 
   const commentMutation = useMutation({
     mutationFn: async () => {
       return authAxios.post(`/api/v1/videos/comments`, {
         videoId: Number(id),
-        rating: 10,
+        rating: commentRating,
         content: comment,
       });
     },
     onSuccess: () => {
       setComment("");
       queryClient.invalidateQueries(["/api/v1/videos/${id}/comments"]);
+    },
+    onError: (error: { response: { data: { message: string } } }) => {
+      showNotification(error.response.data.message, "error");
     },
   });
 
@@ -179,10 +210,81 @@ export default function Detail() {
     };
   });
 
-  console.log("subtitles", subtitles);
+  const rootRef = useRef<HTMLElement | null>(null);
+
+  useEffect(() => {
+    rootRef.current = document.getElementById("root");
+  }, []);
 
   return (
     <div>
+      <Modal
+        className="flex items-center justify-center bg-white/20"
+        open={openCommentModal}
+        onClose={() => {
+          setOpenCommentModal(false);
+        }}
+        disablePortal
+        container={rootRef.current}
+      >
+        <div
+          className="relative w-[542px] overflow-hidden rounded-2xl bg-[#010305] px-4 py-4"
+          style={{ boxShadow: "0px 20px 40px 0 rgba(0,0,0,0.2)" }}
+        >
+          <div className="flex justify-end">
+            <IconButton
+              size="small"
+              aria-label="close"
+              onClick={() => {
+                setOpenCommentModal(false);
+              }}
+            >
+              <CloseIcon />
+            </IconButton>
+          </div>
+          <div className="flex flex-col justify-center">
+            <div className="flex flex-col items-center justify-center gap-3">
+              <p className="m-0 text-2xl font-medium text-white">
+                {movieData?.videoDetail.title}
+              </p>
+              <p className="m-0 text-center text-base font-medium text-white">
+                How would you rate this movie?
+              </p>
+            </div>
+            <div className="mt-4 flex justify-center">
+              <Rating
+                max={10}
+                size="large"
+                value={commentRating}
+                onChange={(_, newValue) => {
+                  setCommentRating(newValue);
+                }}
+              />
+            </div>
+            <div className="flex justify-center pb-4">
+              <TextField
+                className="mt-4 w-[360px]"
+                label="Comment"
+                multiline
+                rows={4}
+                value={comment}
+                onChange={handleCommentChange}
+              />
+            </div>
+            <Button
+              className="mx-auto mb-4 mt-2 w-fit rounded-full px-10"
+              size="large"
+              variant="contained"
+              onClick={() => {
+                commentMutation.mutate();
+                setOpenCommentModal(false);
+              }}
+            >
+              Submit
+            </Button>
+          </div>
+        </div>
+      </Modal>
       <div className="pt-[64px]">
         <div className="h-[56.25vw] max-h-[calc(100vh-169px)] min-h-[480px]">
           {subtitles && (
@@ -209,11 +311,23 @@ export default function Detail() {
                 <Typography variant="h4">
                   {movieData?.videoDetail.title}
                 </Typography>
-                <IconButton className="bg-gray-800">
-                  <FavoriteBorderIcon />
+                <IconButton
+                  className="bg-gray-800"
+                  onClick={handleTriggerFavorite}
+                >
+                  <FavoriteBorderIcon
+                    className={isFavorite ? "text-red-500" : undefined}
+                  />
                 </IconButton>
-                <IconButton className="bg-gray-800">
-                  <StarBorderIcon />
+                <IconButton
+                  className="bg-gray-800"
+                  onClick={() => {
+                    if (!isCommented) setOpenCommentModal(true);
+                  }}
+                >
+                  <StarBorderIcon
+                    className={isCommented ? "text-yellow-500" : undefined}
+                  />
                 </IconButton>
               </div>
               <div className="flex w-full items-center justify-between">
@@ -227,13 +341,10 @@ export default function Detail() {
                   <StarIcon fontSize="small" className="text-yellow-500" />
                   <Typography variant="body2">
                     8.1
-                    <Typography
-                      className="inline text-gray-500"
-                      variant="body2"
-                    >
+                    <span className="inline text-gray-500">
                       (1k)
-                    </Typography>{" "}
-                    &bull; {movieData?.totalViews} Views &bull; 1.2K Comments
+                    </span> &bull; {movieData?.totalViews} Views &bull; 1.2K
+                    Comments
                   </Typography>
                 </div>
               </div>
@@ -365,7 +476,8 @@ export default function Detail() {
                           >
                             {title}
                           </Link>
-                          {index !== movieData.supportedLanguages.length - 1 && ", "}
+                          {index !== movieData.supportedLanguages.length - 1 &&
+                            ", "}
                         </React.Fragment>
                       );
                     })}
@@ -415,42 +527,18 @@ export default function Detail() {
                   </div>
                 </TabPanel>
                 <TabPanel className="px-0" value="Comments">
-                  <Paper
-                    className="mb-4 rounded-full"
-                    component="form"
-                    sx={{
-                      p: "2px 4px",
-                      display: "flex",
-                      alignItems: "center",
-                    }}
-                  >
-                    <IconButton sx={{ p: "10px" }} aria-label="menu">
-                      <AccountCircleIcon />
-                    </IconButton>
-                    <InputBase
-                      sx={{ ml: 1, flex: 1 }}
-                      placeholder="Replay"
-                      inputProps={{ "aria-label": "replay" }}
-                      value={comment}
-                      onChange={handleCommentChange}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") {
-                          e.preventDefault();
-                          commentMutation.mutate();
-                        }
-                      }}
-                    />
-                    <IconButton
-                      type="button"
-                      sx={{ p: "10px" }}
-                      aria-label="search"
+                  {!isCommented && (
+                    <Button
+                      className="mb-4 rounded-full normal-case"
+                      variant="contained"
+                      startIcon={<EditIcon />}
                       onClick={() => {
-                        commentMutation.mutate();
+                        setOpenCommentModal(true);
                       }}
                     >
-                      <ArrowForwardIcon />
-                    </IconButton>
-                  </Paper>
+                      Write a review
+                    </Button>
+                  )}
 
                   <div className="space-y-10">
                     {commentsData?.data.map((comment) => {
@@ -472,13 +560,7 @@ export default function Detail() {
                     })}
                   </div>
                 </TabPanel>
-                <TabPanel className="px-0" value="More like this">
-                  {/* <div className="flex flex-wrap gap-4">
-                    {mockMovies.map((movie) => {
-                      return <MovieCard key={movie.id} movie={movie} />;
-                    })}
-                  </div> */}
-                </TabPanel>
+                <TabPanel className="px-0" value="More like this"></TabPanel>
               </TabContext>
             </Box>
           </div>

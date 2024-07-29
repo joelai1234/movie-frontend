@@ -22,7 +22,7 @@ export default function useAuth() {
       );
     },
     onSuccess: (data) => {
-      setAuthData(data.data);
+      setAuthData({ ...data.data, userData: data.data.me });
     },
   });
 

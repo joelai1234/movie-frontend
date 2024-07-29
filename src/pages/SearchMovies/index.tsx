@@ -1,7 +1,5 @@
-import { useQuery } from "react-query";
 import { Navigate, useNavigate, useSearchParams } from "react-router-dom";
-import { IMovie, VideoCategory, VideoResponseData } from "../../model/movie";
-import axios from "axios";
+import { IMovie, VideoCategory } from "../../model/movie";
 import { Button, Chip, Divider, IconButton, Typography } from "@mui/material";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
 import GridViewIcon from "@mui/icons-material/GridView";
@@ -9,8 +7,6 @@ import ViewListIcon from "@mui/icons-material/ViewList";
 import { useState } from "react";
 import MovieCard from "../../components/MovieCard";
 import StarIcon from "@mui/icons-material/Star";
-import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
-import StarBorderIcon from "@mui/icons-material/StarBorder";
 import ImageWithFallback from "../../components/ImageWithFallback";
 import CustomSelect from "../../components/CustomSelect";
 import {
@@ -21,8 +17,7 @@ import {
 } from "../../data/movies";
 import ArrowSortIcon from "../../components/ArrowSortIcon";
 import { formatMovies } from "../../utils/movie";
-
-const VITE_BACKEND_API_BASE_URL = import.meta.env.VITE_BACKEND_API_BASE_URL;
+import useMoviesWithFavoriteQuery from "../../hooks/useMoviesQuery";
 
 export default function SearchMovies() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -32,7 +27,7 @@ export default function SearchMovies() {
   const lang = searchParams.get("lang");
   const [category, setCategory] = useState(categoryParam ?? VideoCategory.ALL);
   const [releaseYear, setReleaseYear] = useState(releaseYearParam ?? "all");
-  const [language, setLanguage] = useState(lang ?? 'en');
+  const [language, setLanguage] = useState(lang ?? "en");
   const [sortBy, setSortBy] = useState("UPDATED_AT");
   const [isDisplayDetail, setIsDisplayDetail] = useState(false);
 
@@ -41,47 +36,13 @@ export default function SearchMovies() {
     "top",
   );
 
-  const { data: dataRes } = useQuery(
-    ["/api/v1/videos", search, category, releaseYear, sortBy, language],
-    async () => {
-      const years = releaseYear.split("-");
-      if (years.length === 2) {
-        return axios.get<VideoResponseData>(
-          VITE_BACKEND_API_BASE_URL + `/api/v1/videos`,
-          {
-            headers: {
-              "accept-language": language,
-            },
-            params: {
-              keyword: search,
-              category: category === VideoCategory.ALL ? undefined : category,
-              releaseYearStartedAt: years[0],
-              releaseYearEndedAt: years[1],
-              sortBy,
-            },
-          },
-        );
-      }
-      return axios.get<VideoResponseData>(
-        VITE_BACKEND_API_BASE_URL + `/api/v1/videos`,
-        {
-          headers: {
-            "accept-language": language,
-          },
-          params: {
-            keyword: search,
-            category: category === VideoCategory.ALL ? undefined : category,
-            releaseYearStartedAt:
-              releaseYear === "all" ? undefined : releaseYear,
-            releaseYearEndedAt: releaseYear === "all" ? undefined : releaseYear,
-            sortBy,
-          },
-        },
-      );
-    },
-  );
-
-  const data = dataRes?.data.data;
+  const { data } = useMoviesWithFavoriteQuery({
+    keyword: search ?? undefined,
+    category,
+    releaseYear: releaseYear === "all" ? undefined : releaseYear,
+    sortBy,
+    language,
+  });
 
   if (data?.length === 1 && search === data[0].name) {
     return <Navigate to={`/detail/${data[0].id}`} replace />;
@@ -89,7 +50,7 @@ export default function SearchMovies() {
 
   let movies: IMovie[] = [];
   if (data) {
-    movies = formatMovies(data);
+    movies = formatMovies({ data });
   }
 
   const details = data?.map((movie) => {
@@ -174,14 +135,6 @@ export default function SearchMovies() {
               <Chip label="Adventure" variant="outlined" />
               <Chip label="Comedy" variant="outlined" />
             </div>
-          </div>
-          <div className="space-x-4">
-            <IconButton className="bg-gray-800">
-              <FavoriteBorderIcon />
-            </IconButton>
-            <IconButton className="bg-gray-800">
-              <StarBorderIcon />
-            </IconButton>
           </div>
         </div>
         <Divider className="my-6" />

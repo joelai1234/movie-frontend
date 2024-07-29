@@ -1,11 +1,11 @@
-import { Alert, IconButton, Snackbar, Typography } from "@mui/material";
+import {  IconButton, Typography } from "@mui/material";
 import ThumbUpOffAltIcon from "@mui/icons-material/ThumbUpOffAlt";
 import ThumbDownOffAltIcon from "@mui/icons-material/ThumbDownOffAlt";
 import StarIcon from "@mui/icons-material/Star";
 import { useMutation, useQueryClient } from "react-query";
 import useAuth from "../../services/auth/hooks/useAuth";
 import { VideoCommentReactionType } from "../../model/movie";
-import { useState } from "react";
+import { useNotificationStore } from "../../store/useNotificationStore";
 
 interface MessageProps {
   id: number;
@@ -28,25 +28,8 @@ export default function Message({
   dislikes,
   reaction,
 }: MessageProps) {
+  const showNotification = useNotificationStore((state) => state.showNotification);
   const { authAxios } = useAuth();
-  const [open, setOpen] = useState(false);
-  const [errorMessage, setErrorMessage] = useState<string>("");
-
-  const handleErrorMessage = (message: string) => {
-    setOpen(true);
-    setErrorMessage(message);
-  };
-
-  const handleClose = (
-    _: React.SyntheticEvent | Event,
-    reason?: string,
-  ) => {
-    if (reason === "clickaway") {
-      return;
-    }
-
-    setOpen(false);
-  };
 
   const queryClient = useQueryClient();
 
@@ -70,7 +53,7 @@ export default function Message({
           };
         }
       ).response.data.message;
-      handleErrorMessage(message);
+      showNotification(message, "error");
     },
   });
 
@@ -91,7 +74,7 @@ export default function Message({
           };
         }
       ).response.data.message;
-      handleErrorMessage(message);
+      showNotification(message, "error");
     },
   });
 
@@ -113,9 +96,6 @@ export default function Message({
 
   return (
     <div className="flex gap-8">
-      <Snackbar open={open} autoHideDuration={2000} onClose={handleClose}>
-        <Alert severity="error">{errorMessage}</Alert>
-      </Snackbar>
       <div className="h-10 w-10 rounded-full bg-slate-50" />
       <div className="w-[582px] space-y-2">
         <div className="flex items-center justify-between py-1">

@@ -1,26 +1,24 @@
-import { useQuery } from "react-query";
 import { useNavigate } from "react-router-dom";
-import { IMovie, VideoCategory, VideoResponseData } from "../../model/movie";
-import axios from "axios";
+import { IMovie, VideoCategory } from "../../model/movie";
 import { Chip, Divider, IconButton, Typography } from "@mui/material";
 import GridViewIcon from "@mui/icons-material/GridView";
 import ViewListIcon from "@mui/icons-material/ViewList";
 import { useState } from "react";
 import MovieCard from "../../components/MovieCard";
 import StarIcon from "@mui/icons-material/Star";
-import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
-import StarBorderIcon from "@mui/icons-material/StarBorder";
+// import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+// import StarBorderIcon from "@mui/icons-material/StarBorder";
 import ImageWithFallback from "../../components/ImageWithFallback";
 import CustomSelect from "../../components/CustomSelect";
 import {
   categoryList,
+  languages,
   releaseYearList,
   sortByTypeOptions,
 } from "../../data/movies";
 import ArrowSortIcon from "../../components/ArrowSortIcon";
 import { formatMovies } from "../../utils/movie";
-
-const VITE_BACKEND_API_BASE_URL = import.meta.env.VITE_BACKEND_API_BASE_URL;
+import useMoviesWithFavoriteQuery from "../../hooks/useMoviesQuery";
 
 interface MovieTableProps {
   keyword?: string;
@@ -31,59 +29,24 @@ export default function MovieTable({ keyword, crewId }: MovieTableProps) {
   const [category, setCategory] = useState(VideoCategory.ALL);
   const [releaseYear, setReleaseYear] = useState("all");
   const [sortBy, setSortBy] = useState("UPDATED_AT");
-  // const [area, setArea] = useState("all");
+  const [language, setLanguage] = useState("en");
   const navigate = useNavigate();
   const [sortDirection, setSortDirection] = useState<"top" | "down" | "none">(
     "top",
   );
 
-  const { data: dataRes } = useQuery(
-    ["/api/v1/videos", keyword, category, releaseYear, sortBy, crewId],
-    async () => {
-      const years = releaseYear.split("-");
-      if (years.length === 2) {
-        return axios.get<VideoResponseData>(
-          VITE_BACKEND_API_BASE_URL + `/api/v1/videos`,
-          {
-            headers: {
-              "accept-language": "en",
-            },
-            params: {
-              keyword,
-              category: category === VideoCategory.ALL ? undefined : category,
-              releaseYearStartedAt: years[0],
-              releaseYearEndedAt: years[1],
-              sortBy,
-              crewId,
-            },
-          },
-        );
-      }
-      return axios.get<VideoResponseData>(
-        VITE_BACKEND_API_BASE_URL + `/api/v1/videos`,
-        {
-          headers: {
-            "accept-language": "en",
-          },
-          params: {
-            keyword,
-            category: category === VideoCategory.ALL ? undefined : category,
-            releaseYearStartedAt:
-              releaseYear === "all" ? undefined : releaseYear,
-            releaseYearEndedAt: releaseYear === "all" ? undefined : releaseYear,
-            sortBy,
-            crewId,
-          },
-        },
-      );
-    },
-  );
-
-  const data = dataRes?.data.data;
+  const { data } = useMoviesWithFavoriteQuery({
+    keyword,
+    category,
+    releaseYear: releaseYear === "all" ? undefined : releaseYear,
+    sortBy,
+    language,
+    crewId,
+  });
 
   let movies: IMovie[] = [];
   if (data) {
-    movies = formatMovies(data);
+    movies = formatMovies({ data });
   }
 
   const [isDisplayDetail, setIsDisplayDetail] = useState(false);
@@ -171,14 +134,14 @@ export default function MovieTable({ keyword, crewId }: MovieTableProps) {
               <Chip label="Comedy" variant="outlined" />
             </div>
           </div>
-          <div className="space-x-4">
+          {/* <div className="space-x-4">
             <IconButton className="bg-gray-800">
               <FavoriteBorderIcon />
             </IconButton>
             <IconButton className="bg-gray-800">
               <StarBorderIcon />
             </IconButton>
-          </div>
+          </div> */}
         </div>
         <Divider className="my-6" />
       </>
@@ -216,18 +179,17 @@ export default function MovieTable({ keyword, crewId }: MovieTableProps) {
               setReleaseYear(value);
             }}
           />
-          {/* <CustomSelect
-            data={areaList.map((data) => ({
+          <CustomSelect
+            data={languages.map((data) => ({
               label: data.name,
               value: data.value,
             }))}
-            title="Area(dev)"
-            value={area}
+            title="Language"
+            value={language}
             onChange={(value) => {
-              setArea(value);
+              setLanguage(value);
             }}
-            col={3}
-          /> */}
+          />
         </div>
         <div className="flex items-center">
           <div className="flex items-center justify-center gap-2">

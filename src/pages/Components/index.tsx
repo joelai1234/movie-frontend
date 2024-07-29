@@ -5,21 +5,19 @@ import {
   Paper,
   Typography,
 } from "@mui/material";
-import MovieCard from "../../components/MovieCard";
 import SearchIcon from "@mui/icons-material/Search";
 import ReactPlayer from "react-player";
-// import MoviesSlides from "../../components/MoviesSlides";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 
-const movie = {
-  id: "Garfield",
-  name: "Garfield",
-  imageUrl: "https://image.tmdb.org/t/p/w500/wvMczgfFHlVV3oBH7fNxCiYHWAs.jpg",
-  description:
-    "Garfield, the world-famous Monday-hating, lasagna-loving cat, is about to embark on a wild outdoor adventure! After an unexpected reunion with his long-lost father, Garfield and his canine friend Odie are forced to leave their comfortable lives and embark on a risky and hilarious heist adventure with Vic.",
-  updatedAt: "2024-06-07",
-};
+// const movie = {
+//   id: "Garfield",
+//   name: "Garfield",
+//   imageUrl: "https://image.tmdb.org/t/p/w500/wvMczgfFHlVV3oBH7fNxCiYHWAs.jpg",
+//   description:
+//     "Garfield, the world-famous Monday-hating, lasagna-loving cat, is about to embark on a wild outdoor adventure! After an unexpected reunion with his long-lost father, Garfield and his canine friend Odie are forced to leave their comfortable lives and embark on a risky and hilarious heist adventure with Vic.",
+//   updatedAt: "2024-06-07",
+// };
 
 export default function Components() {
   return (
@@ -51,7 +49,7 @@ export default function Components() {
         Outlined
       </Button>
       <h2 className="text-amber-600">Card</h2>
-      <MovieCard movie={movie} />
+      {/* <MovieCard movie={movie} /> */}
       <h2 className="text-amber-600">Input</h2>
       <Paper
         sx={{ p: "2px 4px", display: "flex", alignItems: "center", width: 400 }}
@@ -75,7 +73,6 @@ export default function Components() {
       <h2 className="mt-0 text-amber-600">Footer</h2>
       <Footer />
       <h2 className="mt-0 text-amber-600">Movie Swiper</h2>
-      {/* <MoviesSlides id="1" /> */}
     </div>
   );
 }

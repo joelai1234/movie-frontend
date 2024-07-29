@@ -1,123 +1,50 @@
 import { Typography } from "@mui/material";
 import MoviesSlides from "../../components/MoviesSlides";
 import Banner from "../../components/Banner";
-import { useQuery } from "react-query";
-import axios from "axios";
-import { VideoCategory, VideoResponseData } from "../../model/movie";
+import { VideoCategory } from "../../model/movie";
 import { formatMovies } from "../../utils/movie";
 import { useState } from "react";
-
-const VITE_BACKEND_API_BASE_URL = import.meta.env.VITE_BACKEND_API_BASE_URL;
+import useMoviesWithFavoriteQuery from "../../hooks/useMoviesQuery";
 
 export default function Home() {
   const [category, setCategory] = useState<VideoCategory>();
 
-  const { data: updatedAtData } = useQuery(
-    ["/api/v1/videos", "UPDATED_AT", category],
-    async () => {
-      return axios.get<VideoResponseData>(
-        VITE_BACKEND_API_BASE_URL + `/api/v1/videos`,
-        {
-          headers: {
-            "accept-language": "en",
-          },
-          params: {
-            sortBy: "UPDATED_AT",
-            // category: category === VideoCategory.ALL ? undefined : category,
-          },
-        },
-      );
-    },
-  );
+  const { data: updatedAtData } = useMoviesWithFavoriteQuery({
+    category,
+    sortBy: "UPDATED_AT",
+    language: "en",
+  });
 
-  const { data: totalViewsData } = useQuery(
-    ["/api/v1/videos", "TOTAL_VIEWS", category],
-    async () => {
-      return axios.get<VideoResponseData>(
-        VITE_BACKEND_API_BASE_URL + `/api/v1/videos`,
-        {
-          headers: {
-            "accept-language": "en",
-          },
-          params: {
-            sortBy: "TOTAL_VIEWS",
-            category: category === VideoCategory.ALL ? undefined : category,
-          },
-        },
-      );
-    },
-  );
+  const { data: totalViewsData } = useMoviesWithFavoriteQuery({
+    category,
+    sortBy: "TOTAL_VIEWS",
+    language: "en",
+  });
 
-  const { data: last7DaysViewsData } = useQuery(
-    ["/api/v1/videos", "LAST_7_DAYS_VIEWS", category],
-    async () => {
-      return axios.get<VideoResponseData>(
-        VITE_BACKEND_API_BASE_URL + `/api/v1/videos`,
-        {
-          headers: {
-            "accept-language": "en",
-          },
-          params: {
-            sortBy: "LAST_7_DAYS_VIEWS",
-            category: category === VideoCategory.ALL ? undefined : category,
-          },
-        },
-      );
-    },
-  );
+  const { data: last7DaysViewsData } = useMoviesWithFavoriteQuery({
+    category,
+    sortBy: "LAST_7_DAYS_VIEWS",
+    language: "en",
+  });
 
-  const { data: last30DaysViewsData } = useQuery(
-    ["/api/v1/videos", "LAST_30_DAYS_VIEWS", category],
-    async () => {
-      return axios.get<VideoResponseData>(
-        VITE_BACKEND_API_BASE_URL + `/api/v1/videos`,
-        {
-          headers: {
-            "accept-language": "en",
-          },
-          params: {
-            sortBy: "LAST_30_DAYS_VIEWS",
-            category: category === VideoCategory.ALL ? undefined : category,
-          },
-        },
-      );
-    },
-  );
+  const { data: last30DaysViewsData } = useMoviesWithFavoriteQuery({
+    category,
+    sortBy: "LAST_30_DAYS_VIEWS",
+    language: "en",
+  });
 
-  const { data: TotalCommentAndReplyCountData } = useQuery(
-    ["/api/v1/videos", "TOTAL_COMMENT_AND_REPLY_COUNT", category],
-    async () => {
-      return axios.get<VideoResponseData>(
-        VITE_BACKEND_API_BASE_URL + `/api/v1/videos`,
-        {
-          headers: {
-            "accept-language": "en",
-          },
-          params: {
-            sortBy: "TOTAL_COMMENT_AND_REPLY_COUNT",
-            category: category === VideoCategory.ALL ? undefined : category,
-          },
-        },
-      );
-    },
-  );
-  const { data: AverageRatingData } = useQuery(
-    ["/api/v1/videos", "AVERAGE_RATING", category],
-    async () => {
-      return axios.get<VideoResponseData>(
-        VITE_BACKEND_API_BASE_URL + `/api/v1/videos`,
-        {
-          headers: {
-            "accept-language": "en",
-          },
-          params: {
-            sortBy: "AVERAGE_RATING",
-            category: category === VideoCategory.ALL ? undefined : category,
-          },
-        },
-      );
-    },
-  );
+  const { data: TotalCommentAndReplyCountData } = useMoviesWithFavoriteQuery({
+    category,
+    sortBy: "TOTAL_COMMENT_AND_REPLY_COUNT",
+    language: "en",
+  });
+
+  const { data: AverageRatingData } = useMoviesWithFavoriteQuery({
+    category,
+    sortBy: "AVERAGE_RATING",
+    language: "en",
+  });
+
   const handleCategoryChange = (category: VideoCategory) => {
     setCategory(category);
   };
@@ -129,7 +56,7 @@ export default function Home() {
         setCategory={handleCategoryChange}
       />
       <div className="h-2 w-full bg-red-600" />
-      {updatedAtData && updatedAtData?.data.data.length > 0 && (
+      {updatedAtData && updatedAtData.length > 0 && (
         <div className="space-y-8 px-10 py-8">
           {updatedAtData && (
             <div>
@@ -138,7 +65,9 @@ export default function Home() {
               </Typography>
               <MoviesSlides
                 id="0"
-                movies={formatMovies(updatedAtData?.data.data)}
+                movies={formatMovies({
+                  data: updatedAtData,
+                })}
               />
             </div>
           )}
@@ -149,7 +78,9 @@ export default function Home() {
               </Typography>
               <MoviesSlides
                 id="2"
-                movies={formatMovies(last7DaysViewsData?.data.data)}
+                movies={formatMovies({
+                  data: last7DaysViewsData,
+                })}
               />
             </div>
           )}
@@ -160,7 +91,9 @@ export default function Home() {
               </Typography>
               <MoviesSlides
                 id="3"
-                movies={formatMovies(last30DaysViewsData?.data.data)}
+                movies={formatMovies({
+                  data: last30DaysViewsData,
+                })}
               />
             </div>
           )}
@@ -171,7 +104,9 @@ export default function Home() {
               </Typography>
               <MoviesSlides
                 id="1"
-                movies={formatMovies(totalViewsData?.data.data)}
+                movies={formatMovies({
+                  data: totalViewsData,
+                })}
               />
             </div>
           )}
@@ -182,7 +117,9 @@ export default function Home() {
               </Typography>
               <MoviesSlides
                 id="1"
-                movies={formatMovies(TotalCommentAndReplyCountData.data.data)}
+                movies={formatMovies({
+                  data: TotalCommentAndReplyCountData,
+                })}
               />
             </div>
           )}
@@ -193,7 +130,9 @@ export default function Home() {
               </Typography>
               <MoviesSlides
                 id="1"
-                movies={formatMovies(AverageRatingData.data.data)}
+                movies={formatMovies({
+                  data: AverageRatingData,
+                })}
               />
             </div>
           )}

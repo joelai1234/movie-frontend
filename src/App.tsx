@@ -23,6 +23,7 @@ function App() {
   return (
     <>
       {/* <Suspense fallback={<Loader />}> */}
+
       <QueryClientProvider client={queryClient}>
         <ThemeProvider theme={darkTheme}>
           <AuthProvider>

@@ -1,9 +1,10 @@
 export interface IMovie {
-  id: string;
+  id: number;
   name: string;
   imageUrl: string;
   description: string;
   updatedAt: string;
+  isFavorite: boolean;
 }
 
 interface VideoDetail {
