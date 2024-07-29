@@ -2,6 +2,7 @@ import { useMutation } from "react-query";
 import { useAuthStore } from "../store/useAuthStroe";
 import axios from "axios";
 import { useAuthAxiosStore } from "../store/useAuthAxiosStroe";
+import { auth, provider, signInWithPopup } from "../utils/firebase";
 
 const VITE_BACKEND_API_BASE_URL = import.meta.env.VITE_BACKEND_API_BASE_URL;
 
@@ -16,10 +17,18 @@ export default function useAuth() {
   const { authAxios, isAuthenticated } = useAuthAxiosStore();
 
   const signInMutation = useMutation({
-    mutationFn: () => {
-      return axios.get(
-        `${VITE_BACKEND_API_BASE_URL}/api/v1/auth/google/signin/mock1`,
-      );
+    mutationFn: async () => {
+      const result = await signInWithPopup(auth, provider);
+      const { accessToken } = result.user as unknown as ({ accessToken: string });
+
+      return axios.post(`${VITE_BACKEND_API_BASE_URL}/api/v1/auth/firebase`, {
+        token: accessToken,
+        type: "google.com",
+      });
+
+      // return axios.get(
+      //   `${VITE_BACKEND_API_BASE_URL}/api/v1/auth/google/signin/mock1`,
+      // );
     },
     onSuccess: (data) => {
       setAuthData({ ...data.data, userData: data.data.me });
