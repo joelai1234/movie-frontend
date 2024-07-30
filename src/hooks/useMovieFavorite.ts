@@ -29,7 +29,7 @@ export const useMovieFavorite = (id: number) => {
   const { data: favoriteMovieData, refetch } = useQuery(
     ["/api/v1/videos/favorites"],
     async () => {
-      return authAxios.get<VideoResponseData>(`/api/v1/videos/favorites`, {
+      return authAxios?.get<VideoResponseData>(`/api/v1/videos/favorites`, {
         headers: {
           "accept-language": "en",
         },
@@ -57,7 +57,7 @@ export const useMovieFavorite = (id: number) => {
 
   const deleteFavoriteMutation = useMutation(
     (id: number) => {
-      return authAxios.delete(`/api/v1/videos/${id}/favorites`);
+      return authAxios?.delete(`/api/v1/videos/${id}/favorites`);
     },
     {
       onSuccess: () => {

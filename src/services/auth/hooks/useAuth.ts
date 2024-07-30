@@ -37,7 +37,7 @@ export default function useAuth() {
 
   const signOutMutation = useMutation({
     mutationFn: () => {
-      return authAxios.delete("/api/v1/auth/signout");
+      return authAxios?.delete("/api/v1/auth/signout");
     },
   });
 

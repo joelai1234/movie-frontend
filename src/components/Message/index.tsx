@@ -35,7 +35,7 @@ export default function Message({
 
   const reactionMutation = useMutation({
     mutationFn: async (type: VideoCommentReactionType) => {
-      return authAxios.post(`/api/v1/videos/comments/reactions`, {
+      return authAxios?.post(`/api/v1/videos/comments/reactions`, {
         videoCommentId: id,
         reactionType: type,
       });
@@ -59,7 +59,7 @@ export default function Message({
 
   const deleteReactionMutation = useMutation({
     mutationFn: async () => {
-      return authAxios.delete(`api/v1/videos/comments/${id}/reactions`);
+      return authAxios?.delete(`api/v1/videos/comments/${id}/reactions`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries("/api/v1/videos/${id}/comments");

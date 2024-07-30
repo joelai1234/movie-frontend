@@ -46,7 +46,7 @@ const MovieCard = ({ movie }: MovieCardProps) => {
 
   const deleteFavoriteMutation = useMutation(
     (id: number) => {
-      return authAxios.delete(`/api/v1/videos/${id}/favorites`);
+      return authAxios?.delete(`/api/v1/videos/${id}/favorites`);
     },
     {
       onSuccess: () => {

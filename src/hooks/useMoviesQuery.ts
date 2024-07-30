@@ -29,7 +29,7 @@ export default function useMoviesWithFavoriteQuery({
   const { data: favoriteMovieData } = useQuery(
     ["/api/v1/videos/favorites"],
     async () => {
-      return authAxios.get<VideoResponseData>(`/api/v1/videos/favorites`, {
+      return authAxios?.get<VideoResponseData>(`/api/v1/videos/favorites`, {
         headers: {
           "accept-language": language,
         },
@@ -61,7 +61,7 @@ export default function useMoviesWithFavoriteQuery({
         }
       }
       if (self) {
-        return authAxios.get<VideoResponseData>(
+        return authAxios?.get<VideoResponseData>(
           '/api/v1/videos/me',
           {
             headers: {

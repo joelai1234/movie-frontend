@@ -90,7 +90,7 @@ export default function Detail() {
       );
       return await axios.all(
         movieRes.data.supportedLanguages.map((language) => {
-          return authAxios.get<VideoSubtitleData[]>(
+          return authAxios?.get<VideoSubtitleData[]>(
             `/api/v1/videos/${id}/subtitles`,
             {
               headers: {
@@ -156,7 +156,7 @@ export default function Detail() {
   const { data: commentsRes } = useQuery(
     ["/api/v1/videos/${id}/comments", id],
     async () => {
-      return authAxios.get<CommentsResponseData>(
+      return authAxios?.get<CommentsResponseData>(
         `/api/v1/videos/${id}/comments`,
       );
     },

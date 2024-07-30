@@ -121,7 +121,7 @@ export default function UploadVideo() {
     (file: File) => {
       const formData = new FormData();
       formData.append("file", file);
-      return authAxios.post("api/v1/videos/upload", formData);
+      return authAxios?.post("api/v1/videos/upload", formData);
     },
     {
       onSuccess: (data) => {
@@ -134,7 +134,7 @@ export default function UploadVideo() {
     (file: File) => {
       const formData = new FormData();
       formData.append("file", file);
-      return authAxios.post("/api/v1/videos/pictures/upload", formData);
+      return authAxios?.post("/api/v1/videos/pictures/upload", formData);
     },
     {
       onSuccess: (data) => {
@@ -190,7 +190,7 @@ export default function UploadVideo() {
       });
 
       if (crewsPayload.length > 0) {
-        const crewsRes = await authAxios.post("/api/v1/crews/bulk", {
+        const crewsRes = await authAxios?.post("/api/v1/crews/bulk", {
           bulk: crewsPayload,
         });
         crewsRes.data.forEach((crew: { id: number; roles: string[] }) => {
@@ -232,7 +232,7 @@ export default function UploadVideo() {
         videoWriterCrewIds,
         videoCastCrewIds,
       };
-      return authAxios.post("/api/v1/videos", payload);
+      return authAxios?.post("/api/v1/videos", payload);
     },
     {
       onSuccess: (data) => {

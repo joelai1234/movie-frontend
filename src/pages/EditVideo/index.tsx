@@ -66,7 +66,7 @@ export default function EditVideo() {
     (file: File) => {
       const formData = new FormData();
       formData.append("file", file);
-      return authAxios.post(
+      return authAxios?.post(
         VITE_BACKEND_API_BASE_URL + `/api/v1/videos/pictures/upload`,
         formData,
       );
@@ -81,7 +81,7 @@ export default function EditVideo() {
 
   const updateVideoMutation = useMutation(
     ({ title, description }: { title: string; description: string }) => {
-      return authAxios.patch(
+      return authAxios?.patch(
         VITE_BACKEND_API_BASE_URL + `/api/v1/videos/${id}`,
         {
           name: title,
