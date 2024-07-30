@@ -40,7 +40,7 @@ import { useMovieFavorite } from "../../hooks/useMovieFavorite";
 const VITE_BACKEND_API_BASE_URL = import.meta.env.VITE_BACKEND_API_BASE_URL;
 
 export default function Detail() {
-  const { authAxios } = useAuth();
+  const { authAxios, isAuthenticated } = useAuth();
 
   const { userData } = useAuthStore();
   const showNotification = useNotificationStore(
@@ -165,12 +165,12 @@ export default function Detail() {
   const isCommented = commentsData?.data.some(
     (comment) => comment.member.id === userData?.id,
   );
-  console.log("userData", userData);
-  console.log("commentsData", commentsData);
+  // console.log("userData", userData);
+  // console.log("commentsData", commentsData);
 
   const commentMutation = useMutation({
     mutationFn: async () => {
-      return authAxios.post(`/api/v1/videos/comments`, {
+      return authAxios?.post(`/api/v1/videos/comments`, {
         videoId: Number(id),
         rating: commentRating,
         content: comment,
@@ -181,6 +181,7 @@ export default function Detail() {
       queryClient.invalidateQueries(["/api/v1/videos/${id}/comments"]);
     },
     onError: (error: { response: { data: { message: string } } }) => {
+      console.log("error", error);
       showNotification(error.response.data.message, "error");
     },
   });
@@ -322,6 +323,9 @@ export default function Detail() {
                 <IconButton
                   className="bg-gray-800"
                   onClick={() => {
+                    if (!isAuthenticated) {
+                      return showNotification("Please sign in to comment", "error");
+                    }
                     if (!isCommented) setOpenCommentModal(true);
                   }}
                 >
@@ -533,6 +537,9 @@ export default function Detail() {
                       variant="contained"
                       startIcon={<EditIcon />}
                       onClick={() => {
+                        if (!isAuthenticated) {
+                          return showNotification("Please sign in to comment", "error");
+                        }
                         setOpenCommentModal(true);
                       }}
                     >
