@@ -12,6 +12,7 @@ interface useMoviesQueryProps {
   releaseYear?: string;
   keyword?: string;
   crewId?: number;
+  self?: boolean;
 }
 
 export default function useMoviesWithFavoriteQuery({
@@ -21,6 +22,7 @@ export default function useMoviesWithFavoriteQuery({
   keyword,
   releaseYear,
   crewId,
+  self,
 }: useMoviesQueryProps) {
   const { authAxios } = useAuth();
 
@@ -58,22 +60,41 @@ export default function useMoviesWithFavoriteQuery({
           releaseYearEndedAt = years[1];
         }
       }
-      return axios.get<VideoResponseData>(
-        VITE_BACKEND_API_BASE_URL + `/api/v1/videos`,
-        {
-          headers: {
-            "accept-language": language,
+      if (self) {
+        return authAxios.get<VideoResponseData>(
+          '/api/v1/videos/me',
+          {
+            headers: {
+              "accept-language": language,
+            },
+            params: {
+              keyword,
+              sortBy: sortBy,
+              releaseYearStartedAt,
+              releaseYearEndedAt,
+              category: category === VideoCategory.ALL ? undefined : category,
+              crewId,
+            },
           },
-          params: {
-            keyword,
-            sortBy: sortBy,
-            releaseYearStartedAt,
-            releaseYearEndedAt,
-            category: category === VideoCategory.ALL ? undefined : category,
-            crewId,
+        );
+      } else {
+        return axios.get<VideoResponseData>(
+          VITE_BACKEND_API_BASE_URL + `/api/v1/videos`,
+          {
+            headers: {
+              "accept-language": language,
+            },
+            params: {
+              keyword,
+              sortBy: sortBy,
+              releaseYearStartedAt,
+              releaseYearEndedAt,
+              category: category === VideoCategory.ALL ? undefined : category,
+              crewId,
+            },
           },
-        },
-      );
+        );
+      }
     },
   );
 

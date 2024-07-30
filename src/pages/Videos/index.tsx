@@ -4,14 +4,10 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-import { useQuery } from "react-query";
-import axios from "axios";
 import ImageWithFallback from "../../components/ImageWithFallback";
 import { Button, Chip, Switch, TableCell } from "@mui/material";
-import { VideoResponseData } from "../../model/movie";
 import { useNavigate } from "react-router-dom";
-
-const VITE_BACKEND_API_BASE_URL = import.meta.env.VITE_BACKEND_API_BASE_URL;
+import useMoviesWithFavoriteQuery from "../../hooks/useMoviesQuery";
 
 interface RowData {
   id: number;
@@ -27,20 +23,14 @@ interface RowData {
 
 export default function Videos() {
   const navigate = useNavigate();
-  const { data } = useQuery(["movies"], async () => {
-    return axios.get<VideoResponseData>(
-      VITE_BACKEND_API_BASE_URL + `/api/v1/videos`,
-      {
-        headers: {
-          "accept-language": "en",
-        },
-      },
-    );
+  const { data } = useMoviesWithFavoriteQuery({
+    language: "en",
+    self: true,
   });
 
   let rows: RowData[] = [];
-  if (data?.data) {
-    rows = data?.data?.data.map((item) => {
+  if (data) {
+    rows = data.map((item) => {
       return {
         id: item.id,
         video: item.coverPictureUrl,

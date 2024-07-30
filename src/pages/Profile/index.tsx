@@ -7,6 +7,7 @@ import useMoviesWithFavoriteQuery from "../../hooks/useMoviesQuery";
 export default function Profile() {
   const { data } = useMoviesWithFavoriteQuery({
     language: "en",
+    self: true,
   });
 
   return (
