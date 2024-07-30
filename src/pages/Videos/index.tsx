@@ -26,6 +26,7 @@ export default function Videos() {
   const { data } = useMoviesWithFavoriteQuery({
     language: "en",
     self: true,
+    sortBy: "UPDATED_AT",
   });
 
   let rows: RowData[] = [];
