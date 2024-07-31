@@ -4,7 +4,7 @@ import {
   VideoCameraFront,
   Settings,
   SupervisedUserCircle,
-  Favorite
+  Favorite,
 } from "@mui/icons-material";
 import { Button, Typography } from "@mui/material";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
@@ -14,10 +14,12 @@ import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
+import { useAuthStore } from "../../services/auth/store/useAuthStroe";
 
 export default function SettingsLayout() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
+  const { userData } = useAuthStore();
 
   return (
     <div className="mt-16 flex">
@@ -25,7 +27,7 @@ export default function SettingsLayout() {
         <AccountCircle className="h-28 w-28" />
         <div>
           <Typography className="font-medium" variant="h6">
-            joe lai
+            {userData?.name}
           </Typography>
         </div>
         <Button
