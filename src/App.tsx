@@ -10,6 +10,8 @@ import { createTheme, CssBaseline, ThemeProvider } from "@mui/material";
 import { QueryClient, QueryClientProvider } from "react-query";
 import AuthProvider from "./services/auth/containers/AuthProvider";
 import { router } from "./routes/routes";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider/LocalizationProvider";
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 
 const queryClient = new QueryClient();
 
@@ -27,7 +29,9 @@ function App() {
       <QueryClientProvider client={queryClient}>
         <ThemeProvider theme={darkTheme}>
           <AuthProvider>
-            <RouterProvider router={router} />
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <RouterProvider router={router} />
+            </LocalizationProvider>
           </AuthProvider>
           <CssBaseline />
         </ThemeProvider>

@@ -19,19 +19,31 @@ export default function useAuth() {
   const signInMutation = useMutation({
     mutationFn: async () => {
       const result = await signInWithPopup(auth, provider);
-      const { accessToken } = result.user as unknown as ({ accessToken: string });
+      console.log("result", result);
+      const { accessToken, displayName } = result.user as unknown as {
+        accessToken: string;
+        displayName: string;
+      };
 
-      return axios.post(`${VITE_BACKEND_API_BASE_URL}/api/v1/auth/firebase`, {
-        token: accessToken,
-        type: "google.com",
-      });
+      const res = await axios.post(
+        `${VITE_BACKEND_API_BASE_URL}/api/v1/auth/firebase`,
+        {
+          token: accessToken,
+          type: "google.com",
+        },
+      );
+      return { ...res, displayName };
 
       // return axios.get(
       //   `${VITE_BACKEND_API_BASE_URL}/api/v1/auth/google/signin/mock1`,
       // );
     },
     onSuccess: (data) => {
-      setAuthData({ ...data.data, userData: data.data.me });
+      console.log("data", data);
+      setAuthData({
+        ...data.data,
+        userData: { ...data.data.me, name: data.displayName },
+      });
     },
   });
 

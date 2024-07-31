@@ -29,13 +29,14 @@ import {
 } from "../../model/movie";
 import ReactPlayer from "react-player";
 import axios from "axios";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import dayjs from "dayjs";
 
 const VITE_BACKEND_API_BASE_URL = import.meta.env.VITE_BACKEND_API_BASE_URL;
 
 type Inputs = {
   title: string;
   description: string;
-  releaseYear: string;
   url: string;
   subtitles: {
     en: boolean;
@@ -44,30 +45,6 @@ type Inputs = {
     ja: boolean;
   };
 };
-
-interface LanguageObject {
-  [key: string]: boolean;
-}
-
-interface LanguageArrayItem {
-  languageCode: string;
-  title: string;
-  description: string;
-}
-
-function transformLanguageObject(
-  obj: LanguageObject,
-  title: string,
-  description: string,
-): LanguageArrayItem[] {
-  return Object.entries(obj)
-    .filter(([, value]) => value)
-    .map(([key]) => ({
-      languageCode: key,
-      title: title,
-      description: description,
-    }));
-}
 
 export default function EditVideo() {
   const { id } = useParams();
@@ -93,6 +70,7 @@ export default function EditVideo() {
   const [directors, setDirectors] = useState<{ id?: number; name: string }[]>(
     [],
   );
+  const [releaseYear, setReleaseYear] = useState(dayjs());
   const [writers, setWriters] = useState<{ id?: number; name: string }[]>([]);
   const [casts, setCasts] = useState<{ id?: number; name: string }[]>([]);
 
@@ -110,10 +88,8 @@ export default function EditVideo() {
     },
     {
       onSuccess: (data) => {
-        console.log("data", data);
         setValue("title", data.data.name);
         setValue("description", data.data.videoDetail.description);
-        setValue("releaseYear", `${data.data.releaseYear}-01-01`);
         if (data.data.videoTags)
           setTags(data.data.videoTags.map((tag) => tag.value));
         setUploadedVideoRes({
@@ -147,10 +123,13 @@ export default function EditVideo() {
             };
           }),
         );
-        setUploadedThumbnailRes(data.data.videoAttachments.map((item) => ({
-          fileName: "",
-          url: item.url
-        })));
+        setUploadedThumbnailRes(
+          data.data.videoAttachments.map((item) => ({
+            fileName: "",
+            url: item.url,
+          })),
+        );
+        setReleaseYear(dayjs(`${data.data.releaseYear}-01-01`));
       },
     },
   );
@@ -203,7 +182,7 @@ export default function EditVideo() {
   );
 
   const createVideoMutation = useMutation(
-    async ({ title, description, releaseYear, url, subtitles }: Inputs) => {
+    async ({ title, description, url }: Inputs) => {
       const videoDirectorCrewIds: number[] = [];
       const videoWriterCrewIds: number[] = [];
       const videoCastCrewIds: number[] = [];
@@ -269,15 +248,21 @@ export default function EditVideo() {
         name: title,
         sourceType: sourceType,
         source: sourceType === "FILE" ? uploadedVideoRes?.url ?? "" : url,
-        coverPictureUrl: uploadedThumbnailRes?.[0].url ?? "",
+        coverPictureUrl: uploadedThumbnailRes?.[0]?.url ?? "",
         categories: category,
         rating: rating,
-        releaseYear: new Date(releaseYear).getTime() / 1000,
-        videoDetails: transformLanguageObject(subtitles, title, description),
+        releaseYear: releaseYear.year(),
+        videoDetails: [
+          {
+            languageCode: "en",
+            title: title,
+            description: description,
+          },
+        ],
         videoAttachments: uploadedThumbnailRes.map((thumbnail, index) => {
           return {
             type: "PICTURE",
-            url: thumbnail.url,
+            url: thumbnail?.url,
             order: index,
           };
         }),
@@ -460,13 +445,13 @@ export default function EditVideo() {
           <Typography variant="h6" gutterBottom>
             Release Year
           </Typography>
-          <div className="flex flex-col space-y-4">
-            <TextField
-              type="date"
-              variant="outlined"
-              {...register("releaseYear")}
-            />
-          </div>
+          <DatePicker
+            views={["year"]}
+            value={releaseYear}
+            onChange={(date) => {
+              if (date) setReleaseYear(date);
+            }}
+          />
         </div>
         <div>
           <Typography variant="h6" gutterBottom>
