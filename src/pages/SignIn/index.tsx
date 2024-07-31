@@ -4,112 +4,31 @@ import { Navigate } from "react-router-dom";
 
 export default function SignIn() {
   const { signIn, isAuthenticated } = useAuth();
-  
+
   if (isAuthenticated) {
     return <Navigate to="/home" />;
   }
 
   return (
     <div className="mt-16 h-[calc(100vh-64px)] bg-slate-100">
-      <div className="flex flex-1 flex-col justify-center py-12 sm:px-6 lg:px-8">
+      <div className="flex min-h-full flex-1 flex-col justify-center py-12 sm:px-6 lg:px-8">
         <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-[480px]">
-          <div className="bg-white px-6 py-12 shadow sm:rounded-lg sm:px-12">
-            <form className="space-y-6" action="#" method="POST">
-              <div>
-                <label
-                  htmlFor="email"
-                  className="block text-sm font-medium leading-6 text-gray-900"
-                >
-                  Email address
-                </label>
-                <div className="mt-2">
-                  <input
-                    id="email"
-                    name="email"
-                    type="email"
-                    autoComplete="email"
-                    required
-                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label
-                  htmlFor="password"
-                  className="block text-sm font-medium leading-6 text-gray-900"
-                >
-                  Password
-                </label>
-                <div className="mt-2">
-                  <input
-                    id="password"
-                    name="password"
-                    type="password"
-                    autoComplete="current-password"
-                    required
-                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                  />
-                </div>
-              </div>
-
-              <div className="flex items-center justify-between">
-                <div className="flex items-center">
-                  <input
-                    id="remember-me"
-                    name="remember-me"
-                    type="checkbox"
-                    className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
-                  />
-                  <label
-                    htmlFor="remember-me"
-                    className="ml-3 block text-sm leading-6 text-gray-900"
-                  >
-                    Remember me
-                  </label>
-                </div>
-
-                <div className="text-sm leading-6">
-                  <a
-                    href="#"
-                    className="font-semibold text-indigo-600 hover:text-indigo-500"
-                  >
-                    Forgot password?
-                  </a>
-                </div>
-              </div>
-
-              <div>
-                <Button className="w-full" size="large" variant="contained">
-                  Sign In
-                </Button>
-              </div>
-            </form>
+          <div className="bg-white px-6 pb-12 pt-4 shadow sm:rounded-3xl sm:px-12">
+            <div className="flex flex-col justify-center sm:mx-auto sm:w-full sm:max-w-md">
+              <h2 className="text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
+                Sign in
+              </h2>
+            </div>
 
             <div>
-              <div className="relative mt-10">
-                <div
-                  className="absolute inset-0 flex items-center"
-                  aria-hidden="true"
-                >
-                  <div className="w-full border-t border-gray-200" />
-                </div>
-                <div className="relative flex justify-center text-sm font-medium leading-6">
-                  <span className="bg-white px-6 text-gray-900">
-                    Or continue with
-                  </span>
-                </div>
-              </div>
-
-              <div className="mt-6 grid grid-cols-1 gap-4">
+              <div className="grid grid-cols-1 gap-4">
                 <Button
                   size="large"
-                  className="border-black/20 text-black hover:border-black"
+                  className="border-black/20 capitalize text-black hover:border-black rounded-3xl"
                   variant="outlined"
                   component="label"
                   role={undefined}
                   tabIndex={-1}
-                  // loading={signInMutation.isLoading}
                   startIcon={
                     <svg
                       className="h-5 w-5"
@@ -138,7 +57,7 @@ export default function SignIn() {
                     signIn();
                   }}
                 >
-                  Google
+                  Sign in with Google
                 </Button>
               </div>
             </div>
