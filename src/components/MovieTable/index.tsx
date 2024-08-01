@@ -12,7 +12,6 @@ import ImageWithFallback from "../../components/ImageWithFallback";
 import CustomSelect from "../../components/CustomSelect";
 import {
   categoryList,
-  languages,
   releaseYearList,
   sortByTypeOptions,
 } from "../../data/movies";
@@ -29,7 +28,6 @@ export default function MovieTable({ keyword, crewId }: MovieTableProps) {
   const [category, setCategory] = useState(VideoCategory.ALL);
   const [releaseYear, setReleaseYear] = useState("all");
   const [sortBy, setSortBy] = useState("UPDATED_AT");
-  const [language, setLanguage] = useState("en");
   const navigate = useNavigate();
   const [sortDirection, setSortDirection] = useState<"top" | "down" | "none">(
     "top",
@@ -40,7 +38,7 @@ export default function MovieTable({ keyword, crewId }: MovieTableProps) {
     category,
     releaseYear: releaseYear === "all" ? undefined : releaseYear,
     sortBy,
-    language,
+    language:'en',
     crewId,
   });
 
@@ -177,17 +175,6 @@ export default function MovieTable({ keyword, crewId }: MovieTableProps) {
             value={releaseYear}
             onChange={(value) => {
               setReleaseYear(value);
-            }}
-          />
-          <CustomSelect
-            data={languages.map((data) => ({
-              label: data.name,
-              value: data.value,
-            }))}
-            title="Language"
-            value={language}
-            onChange={(value) => {
-              setLanguage(value);
             }}
           />
         </div>

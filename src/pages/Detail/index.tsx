@@ -444,7 +444,7 @@ export default function Detail() {
                   </Typography>
                 </div>
               </div>
-              <div className="flex">
+              {/* <div className="flex">
                 <div className="w-20 shrink-0">
                   <Typography className="text-gray-500" variant="body2">
                     Subtitle
@@ -487,7 +487,7 @@ export default function Detail() {
                     })}
                   </Typography>
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>
           <div>

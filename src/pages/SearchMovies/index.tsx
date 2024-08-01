@@ -11,7 +11,6 @@ import ImageWithFallback from "../../components/ImageWithFallback";
 import CustomSelect from "../../components/CustomSelect";
 import {
   categoryList,
-  languages,
   releaseYearList,
   sortByTypeOptions,
 } from "../../data/movies";
@@ -24,10 +23,8 @@ export default function SearchMovies() {
   const search = searchParams.get("search");
   const categoryParam = searchParams.get("category");
   const releaseYearParam = searchParams.get("releaseYear");
-  const lang = searchParams.get("lang");
   const [category, setCategory] = useState(categoryParam ?? VideoCategory.ALL);
   const [releaseYear, setReleaseYear] = useState(releaseYearParam ?? "all");
-  const [language, setLanguage] = useState(lang ?? "en");
   const [sortBy, setSortBy] = useState("UPDATED_AT");
   const [isDisplayDetail, setIsDisplayDetail] = useState(false);
 
@@ -41,7 +38,7 @@ export default function SearchMovies() {
     category,
     releaseYear: releaseYear === "all" ? undefined : releaseYear,
     sortBy,
-    language,
+    language: "en",
   });
 
   if (data?.length === 1 && search === data[0].name) {
@@ -191,20 +188,6 @@ export default function SearchMovies() {
                   setReleaseYear(value);
                   const currentParams = new URLSearchParams(searchParams);
                   currentParams.set("releaseYear", value);
-                  setSearchParams(currentParams);
-                }}
-              />
-              <CustomSelect
-                data={languages.map((data) => ({
-                  label: data.name,
-                  value: data.value,
-                }))}
-                title="Language"
-                value={language}
-                onChange={(value) => {
-                  setLanguage(value);
-                  const currentParams = new URLSearchParams(searchParams);
-                  currentParams.set("lang", value);
                   setSearchParams(currentParams);
                 }}
               />
