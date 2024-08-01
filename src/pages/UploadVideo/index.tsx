@@ -3,10 +3,7 @@ import { useState } from "react";
 import {
   Autocomplete,
   Button,
-  Checkbox,
   FormControl,
-  FormControlLabel,
-  FormGroup,
   InputLabel,
   LinearProgress,
   MenuItem,
@@ -16,7 +13,7 @@ import {
   Typography,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { useForm, SubmitHandler, Controller } from "react-hook-form";
+import { useForm, SubmitHandler } from "react-hook-form";
 import useAuth from "../../services/auth/hooks/useAuth";
 import {
   categoryList,
@@ -68,7 +65,7 @@ export default function UploadVideo() {
   const { authAxios } = useAuth();
   const [search, setSearch] = useState("");
 
-  const { register, handleSubmit, control } = useForm<Inputs>();
+  const { register, handleSubmit } = useForm<Inputs>();
   const [directors, setDirectors] = useState<{ id?: number; name: string }[]>(
     [],
   );

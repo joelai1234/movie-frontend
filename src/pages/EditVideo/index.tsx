@@ -74,7 +74,7 @@ export default function EditVideo() {
   const [writers, setWriters] = useState<{ id?: number; name: string }[]>([]);
   const [casts, setCasts] = useState<{ id?: number; name: string }[]>([]);
 
-  const { data: movieResData } = useQuery(
+  useQuery(
     ["/api/v1/videos", id],
     async () => {
       return axios.get<VideoData>(
