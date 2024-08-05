@@ -15,7 +15,7 @@ import {
   sortByTypeOptions,
 } from "../../data/movies";
 import ArrowSortIcon from "../../components/ArrowSortIcon";
-import { formatMovies } from "../../utils/movie";
+import { convertMinutes, formatMovies } from "../../utils/movie";
 import useMoviesWithFavoriteQuery from "../../hooks/useMoviesQuery";
 
 export default function SearchMovies() {
@@ -71,14 +71,14 @@ export default function SearchMovies() {
             </Typography>
             <div className="flex items-center gap-1">
               <Typography variant="body1">
-                {movie.releaseYear} &bull; {movie?.rating} &bull; 1h 35m
+                {movie.releaseYear} &bull; {movie?.rating} &bull; {convertMinutes(movie?.duration ?? 0)}
               </Typography>{" "}
               &bull;
               <StarIcon fontSize="small" className="text-yellow-500" />
               <Typography variant="body2">
-                {movie.rating}
+                {movie.averageRating}
                 <Typography className="inline text-gray-500" variant="body2">
-                  (1k)
+                  ({movie?.totalCommentCount})
                 </Typography>{" "}
                 &bull; {movie.totalViews} Views
               </Typography>

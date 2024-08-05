@@ -31,7 +31,7 @@ import {
 
 import * as React from "react";
 import useAuth from "../../services/auth/hooks/useAuth";
-import { decryptData } from "../../utils/movie";
+import { convertMinutes, decryptData } from "../../utils/movie";
 import { useNotificationStore } from "../../store/useNotificationStore";
 import CloseIcon from "@mui/icons-material/Close";
 import { useAuthStore } from "../../services/auth/store/useAuthStroe";
@@ -156,8 +156,8 @@ export default function Detail() {
   const { data: commentsRes } = useQuery(
     ["/api/v1/videos/${id}/comments", id],
     async () => {
-      return authAxios?.get<CommentsResponseData>(
-        `/api/v1/videos/${id}/comments`,
+      return axios.get<CommentsResponseData>(
+        `${VITE_BACKEND_API_BASE_URL}/api/v1/videos/${id}/comments`,
       );
     },
   );
@@ -338,16 +338,16 @@ export default function Detail() {
                 <div>
                   <Typography variant="body1">
                     {movieData?.releaseYear} &bull; {movieData?.rating} &bull;
-                    1h 35m
+                    {" "}{convertMinutes(movieData?.duration ?? 0)}
                   </Typography>
                 </div>
                 <div className="flex items-center gap-1">
                   <StarIcon fontSize="small" className="text-yellow-500" />
                   <Typography variant="body2">
-                    8.1
+                    {movieData?.averageRating}
                     <span className="inline text-gray-500">
-                      (1k)
-                    </span> &bull; {movieData?.totalViews} Views &bull; 1.2K
+                      ({movieData?.totalCommentCount})
+                    </span> &bull; {movieData?.totalViews} Views &bull; {movieData?.totalCommentCount}{" "}
                     Comments
                   </Typography>
                 </div>

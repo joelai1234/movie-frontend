@@ -18,6 +18,15 @@ export const router = createBrowserRouter([
     },
   },
   {
+    path: "/create-default-data",
+    async lazy() {
+      const CreateDefaultMovies = await import("../pages/CreateDefaultMovies");
+      return {
+        Component: CreateDefaultMovies.default,
+      };
+    },
+  },
+  {
     element: <Layout />,
     children: [
       {

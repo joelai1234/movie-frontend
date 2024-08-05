@@ -34,6 +34,8 @@ interface MediaItem {
 }
 
 export interface VideoData {
+  totalCommentCount: number;
+  averageRating: number;
   updatedAt: string;
   totalViews: number;
   last30DaysViews: number;

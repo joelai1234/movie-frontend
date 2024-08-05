@@ -51,3 +51,9 @@ export async function decryptData(
   const decoder = new TextDecoder();
   return decoder.decode(decryptedData);
 }
+
+export function convertMinutes(minutes: number): string {
+  const hours = Math.floor(minutes / 60);
+  const remainingMinutes = minutes % 60;
+  return `${hours}h ${remainingMinutes}m`;
+}
