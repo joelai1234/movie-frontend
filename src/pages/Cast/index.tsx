@@ -63,10 +63,10 @@ export default function Cast() {
                       className="w-24 shrink-0 text-gray-500"
                       variant="body2"
                     >
-                      Born(dev)
+                      Born
                     </Typography>
                     <Typography className="w-80" variant="body2">
-                      September 16, 1971 (age 52) Burlington, Massachusetts, USA
+                      {data?.data.born}
                     </Typography>
                   </div>
                   <div className="flex">
@@ -74,10 +74,10 @@ export default function Cast() {
                       className="w-24 shrink-0 text-gray-500"
                       variant="body2"
                     >
-                      Education(dev)
+                      Education
                     </Typography>
                     <Typography className="w-80" variant="body2">
-                      Boston College (BA)
+                    {data?.data.education}
                     </Typography>
                   </div>
                   <div className="flex">
@@ -85,10 +85,10 @@ export default function Cast() {
                       className="w-24 shrink-0 text-gray-500"
                       variant="body2"
                     >
-                      Nicknames(dev)
+                      Nicknames
                     </Typography>
                     <Typography className="w-80" variant="body2">
-                      Cool Cat Amy, Crazy Amy, Phohlercoaster
+                    {data?.data.nickname}
                     </Typography>
                   </div>
                   <div className="flex">
@@ -96,10 +96,10 @@ export default function Cast() {
                       className="w-24 shrink-0 text-gray-500"
                       variant="body2"
                     >
-                      Spouse(dev)
+                      Spouse
                     </Typography>
                     <Typography className="w-80" variant="body2">
-                      Will Arnett (m. 2003; div. 2016)
+                    {data?.data.spouse}
                     </Typography>
                   </div>
                   <div className="flex">
@@ -107,10 +107,20 @@ export default function Cast() {
                       className="w-24 shrink-0 text-gray-500"
                       variant="body2"
                     >
-                      Official Sites(dev)
+                      Official Sites
                     </Typography>
                     <Typography className="w-80" variant="body2">
-                      Instagram, X
+                      {data?.data.websites.map((website) => (
+                        <a
+                          className=" text-blue-300 no-underline capitalize"
+                          key={website.name}
+                          href={website.url}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          {website.name}
+                        </a>
+                      ))}
                     </Typography>
                   </div>
                 </div>

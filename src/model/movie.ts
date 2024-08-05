@@ -177,7 +177,7 @@ export interface RolesData {
   education: string
   nickname: string
   spouse: string
-  websites: string[]
+  websites: {name:string,url:string}[]
   videoCrews: VideoCrew[]
   totalViews: number
 }
