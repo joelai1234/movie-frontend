@@ -3,24 +3,26 @@ import { defaultData } from "./data";
 import { CreateCrewPayload, CrewResponse } from "./model/crew";
 import { CreateVideoPayload } from "./model/video";
 
-const BACKEND_URL = "https://video-platform-api.tokenbricks-dev.com/api";
+// const BACKEND_URL = "https://video-platform-api.tokenbricks-dev.com/api";
+
+const VITE_BACKEND_API_BASE_URL = import.meta.env.VITE_BACKEND_API_BASE_URL;
 
 const instance = axios.create({
-  baseURL: BACKEND_URL,
+  baseURL: VITE_BACKEND_API_BASE_URL,
 });
 
 const createManyCrews = (payload: CreateCrewPayload[]) => {
-  return instance.post<CrewResponse[]>("/v1/crews/bulk", {
+  return instance.post<CrewResponse[]>("/api/v1/crews/bulk", {
     bulk: payload,
   });
 };
 
 const createVideo = (payload: CreateVideoPayload) => {
-  return instance.post("/v1/videos", payload);
+  return instance.post("/api/v1/videos", payload);
 };
 
 const getToken = () => {
-  return instance.get("/v1/auth/google/signin/mock1");
+  return instance.get("/api/v1/auth/google/signin/mock1");
 };
 
 export const createDefaultData = async () => {
