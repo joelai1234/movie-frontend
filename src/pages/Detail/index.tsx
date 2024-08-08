@@ -358,13 +358,12 @@ export default function Detail() {
                 </Typography>
               </div>
               <div className="space-x-4">
-                {movieData?.categories
-                  .filter((item) => item !== VideoCategory.ALL)
-                  .map((category) => (
+                {movieData?.videoTags
+                  .map((tag) => (
                     <Chip
                       className="capitalize"
-                      key={category}
-                      label={category.toLocaleLowerCase()}
+                      key={tag.id}
+                      label={tag.value}
                       variant="outlined"
                     />
                   ))}
@@ -444,50 +443,6 @@ export default function Detail() {
                   </Typography>
                 </div>
               </div>
-              {/* <div className="flex">
-                <div className="w-20 shrink-0">
-                  <Typography className="text-gray-500" variant="body2">
-                    Subtitle
-                  </Typography>
-                </div>
-                <div>
-                  <Typography variant="body2">
-                    {movieData?.supportedLanguages.map((item, index) => {
-                      let title = "";
-                      switch (item) {
-                        case "zh-cn":
-                        case "zh-tw":
-                          title = "Chinese";
-                          break;
-                        case "en":
-                          title = "English";
-                          break;
-                        case "ko":
-                          title = "Korean";
-                          break;
-                        case "ja":
-                          title = "Japanese";
-                          break;
-                        default:
-                          title = item;
-                          break;
-                      }
-                      return (
-                        <React.Fragment key={item}>
-                          <Link
-                            className="text-[#7EC2F9] no-underline"
-                            to={`/search/movies?lang=${item}`}
-                          >
-                            {title}
-                          </Link>
-                          {index !== movieData.supportedLanguages.length - 1 &&
-                            ", "}
-                        </React.Fragment>
-                      );
-                    })}
-                  </Typography>
-                </div>
-              </div> */}
             </div>
           </div>
           <div>
