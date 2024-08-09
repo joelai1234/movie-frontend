@@ -100,7 +100,6 @@ export default function UploadVideo() {
     },
     {
       onSuccess: (data) => {
-        console.log(data);
         setUploadedVideoRes(data.data);
       },
     },
@@ -183,7 +182,7 @@ export default function UploadVideo() {
       const payload: MoviePayload = {
         name: title,
         sourceType: sourceType,
-        source: sourceType === "FILE" ? uploadedVideoRes?.url ?? "" : url,
+        source: sourceType === "FILE" ? uploadedVideoRes?.fileName ?? "" : url,
         coverPictureUrl: uploadedThumbnailRes?.[0]?.url ?? "",
         categories: category,
         rating: rating,
