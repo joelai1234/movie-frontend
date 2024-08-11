@@ -10,21 +10,24 @@ export default function SignIn() {
   }
 
   return (
-    <div className="mt-16 h-[calc(100vh-64px)] bg-slate-100">
+    <div className="mt-16 flex h-[calc(100vh-64px)] items-center justify-center bg-[url('/path-to-your-background-image.jpg')] bg-cover bg-center">
       <div className="flex min-h-full flex-1 flex-col justify-center py-12 sm:px-6 lg:px-8">
-        <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-[480px]">
-          <div className="bg-white px-6 pb-12 pt-4 shadow sm:rounded-3xl sm:px-12">
-            <div className="flex flex-col justify-center sm:mx-auto sm:w-full sm:max-w-md">
-              <h2 className="text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
-                Sign in
+        <div className="sm:mx-auto sm:w-full sm:max-w-[480px]">
+          <div className="bg-[#1f2937]/80 px-6 pb-12 pt-4 shadow backdrop-blur-md sm:rounded-3xl sm:px-12">
+            <div className="flex flex-col justify-center text-center">
+              <h2 className="mb-0 text-3xl font-bold leading-9 tracking-tight text-gray-100">
+                Welcome
               </h2>
+              <p className="mt-2 text text-gray-400">
+                Sign in or sign up with Google
+              </p>
             </div>
 
-            <div>
+            <div className="mt-6">
               <div className="grid grid-cols-1 gap-4">
                 <Button
                   size="large"
-                  className="border-black/20 capitalize text-black hover:border-black rounded-3xl"
+                  className="rounded-3xl border-white/20 capitalize text-white shadow-lg hover:border-white"
                   variant="outlined"
                   component="label"
                   role={undefined}
