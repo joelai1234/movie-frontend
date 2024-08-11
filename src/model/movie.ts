@@ -228,6 +228,7 @@ export interface MoviePayload {
 }
 
 export interface MoviePayloadVideoDetail {
+  id?: number;
   languageCode: string;
   title: string;
   description: string;

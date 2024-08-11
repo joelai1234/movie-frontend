@@ -74,7 +74,7 @@ export default function EditVideo() {
   const [writers, setWriters] = useState<{ id?: number; name: string }[]>([]);
   const [casts, setCasts] = useState<{ id?: number; name: string }[]>([]);
 
-  useQuery(
+  const { data: movieRes } = useQuery(
     ["/api/v1/videos", id],
     async () => {
       return axios.get<VideoData>(
@@ -181,7 +181,7 @@ export default function EditVideo() {
     },
   );
 
-  const createVideoMutation = useMutation(
+  const updateVideoMutation = useMutation(
     async ({ title, description, url }: Inputs) => {
       const videoDirectorCrewIds: number[] = [];
       const videoWriterCrewIds: number[] = [];
@@ -242,7 +242,6 @@ export default function EditVideo() {
           }
         });
       }
-      console.log();
 
       const payload: MoviePayload = {
         name: title,
@@ -254,6 +253,7 @@ export default function EditVideo() {
         releaseYear: releaseYear.year(),
         videoDetails: [
           {
+            id: movieRes?.data.videoDetail.id,
             languageCode: "en",
             title: title,
             description: description,
@@ -275,7 +275,7 @@ export default function EditVideo() {
         videoWriterCrewIds,
         videoCastCrewIds,
       };
-      return authAxios?.post("/api/v1/videos", payload);
+      return authAxios?.put(`/api/v1/videos/${id}`, payload);
     },
     {
       onSuccess: (data) => {
@@ -290,7 +290,7 @@ export default function EditVideo() {
     // console.log(
     //   transformLanguageObject(data.subtitles, data.title, data.description),
     // );
-    createVideoMutation.mutate(data);
+    updateVideoMutation.mutate(data);
   };
 
   return (
@@ -461,6 +461,7 @@ export default function EditVideo() {
             style={{ margin: "10px 0" }}
             multiple
             options={tags}
+            value={tags}
             defaultValue={[...tags]}
             freeSolo
             autoSelect
@@ -488,9 +489,9 @@ export default function EditVideo() {
                 return item.roles.includes("DIRECTOR");
               }),
             ]}
-            isOptionEqualToValue={(option, value) => {
-              if (typeof value === "string") {
-                return option.name === value;
+            isOptionEqualToValue={(value, option) => {
+              if (option.id === undefined && typeof value === "string") {
+                return option.name == value;
               } else {
                 return option.id === value.id;
               }
@@ -548,9 +549,9 @@ export default function EditVideo() {
                 return item.roles.includes("WRITER");
               }),
             ]}
-            isOptionEqualToValue={(option, value) => {
-              if (typeof value === "string") {
-                return option.name === value;
+            isOptionEqualToValue={(value, option) => {
+              if (option.id === undefined && typeof value === "string") {
+                return option.name == value;
               } else {
                 return option.id === value.id;
               }
@@ -607,9 +608,9 @@ export default function EditVideo() {
                 return item.roles.includes("CAST");
               }),
             ]}
-            isOptionEqualToValue={(option, value) => {
-              if (typeof value === "string") {
-                return option.name === value;
+            isOptionEqualToValue={(value, option) => {
+              if (option.id === undefined && typeof value === "string") {
+                return option.name == value;
               } else {
                 return option.id === value.id;
               }

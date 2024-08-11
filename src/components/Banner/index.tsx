@@ -38,7 +38,7 @@ export default function Banner({ category, setCategory }: BannerProps) {
         src={totalViewsData?.[0]?.coverPictureUrl}
         alt="banner"
       />
-      <div className="absolute left-6 top-16 z-50">
+      <div className="absolute left-6 top-16 z-40">
         <Button
           className="border-white/40 px-5 text-white"
           variant="outlined"
