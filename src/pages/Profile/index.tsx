@@ -20,7 +20,7 @@ export default function Profile() {
           <div className="mt-24 flex items-center justify-center">
             <img
               className="h-[300px] w-[300px]"
-              src="/public/images/bg-settings.png"
+              src="/images/bg-settings.png"
               alt="no movies"
             />
           </div>
