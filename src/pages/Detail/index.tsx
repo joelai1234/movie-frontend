@@ -24,7 +24,6 @@ import axios from "axios";
 import EditIcon from "@mui/icons-material/Edit";
 import {
   CommentsResponseData,
-  VideoCategory,
   VideoData,
   VideoSubtitleData,
 } from "../../model/movie";
