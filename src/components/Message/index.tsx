@@ -1,4 +1,4 @@
-import {  IconButton, Typography } from "@mui/material";
+import { IconButton, Typography } from "@mui/material";
 import ThumbUpOffAltIcon from "@mui/icons-material/ThumbUpOffAlt";
 import ThumbDownOffAltIcon from "@mui/icons-material/ThumbDownOffAlt";
 import StarIcon from "@mui/icons-material/Star";
@@ -28,8 +28,10 @@ export default function Message({
   dislikes,
   reaction,
 }: MessageProps) {
-  const showNotification = useNotificationStore((state) => state.showNotification);
-  const { authAxios } = useAuth();
+  const showNotification = useNotificationStore(
+    (state) => state.showNotification,
+  );
+  const { authAxios, isAuthenticated } = useAuth();
 
   const queryClient = useQueryClient();
 
@@ -79,6 +81,9 @@ export default function Message({
   });
 
   const handleLike = () => {
+    console.log("reaction", reaction);
+    if (!isAuthenticated)
+      return showNotification("Please login to like", "error");
     if (reaction === VideoCommentReactionType.LIKE) {
       deleteReactionMutation.mutate();
     } else {
@@ -87,6 +92,8 @@ export default function Message({
   };
 
   const handleDislike = () => {
+    if (!isAuthenticated)
+      return showNotification("Please login to dislike", "error");
     if (reaction === VideoCommentReactionType.DISLIKE) {
       deleteReactionMutation.mutate();
     } else {

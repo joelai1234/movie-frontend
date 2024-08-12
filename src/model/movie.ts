@@ -58,6 +58,7 @@ export interface VideoData {
   videoWriters: Cast[];
   supportedLanguages: string[];
   videoAttachments: MediaItem[];
+  isPublic?: boolean;
 }
 
 export interface Cast {

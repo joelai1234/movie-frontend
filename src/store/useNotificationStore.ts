@@ -7,14 +7,18 @@ interface Notification {
 }
 
 interface NotificationStore {
+  isOpen: boolean;
+  setIsOpen: (isOpen: boolean) => void;
   notification: Notification | null;
   showNotification: (message: string, severity: AlertColor) => void;
-  hideNotification: () => void;
+  deleteNotification: () => void;
 }
 
 export const useNotificationStore = create<NotificationStore>((set) => ({
+  isOpen: false,
+  setIsOpen: (isOpen) => set({ isOpen }),
   notification: null,
   showNotification: (message, severity) =>
-    set({ notification: { message, severity } }),
-  hideNotification: () => set({ notification: null }),
+    set({ notification: { message, severity }, isOpen: true }),
+  deleteNotification: () => set({ notification: null }),
 }));

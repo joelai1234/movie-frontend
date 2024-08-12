@@ -1,20 +1,23 @@
 import React from "react";
-import { Snackbar, Alert } from "@mui/material";
+import { Snackbar, Alert, SnackbarCloseReason } from "@mui/material";
 import { useNotificationStore } from "../../store/useNotificationStore";
 
 const NotificationProvider: React.FC = () => {
-  const { notification, hideNotification } = useNotificationStore();
+  const { notification,isOpen,setIsOpen } =
+    useNotificationStore();
 
-  const handleClose = () => {
-    hideNotification();
-  };
-
+    const handleClose = (
+      _: React.SyntheticEvent | Event,
+      reason?: SnackbarCloseReason,
+    ) => {
+      if (reason === 'clickaway') {
+        return;
+      }
+      setIsOpen(false);
+    };
+  
   return (
-    <Snackbar
-      open={notification !== null}
-      autoHideDuration={6000}
-      onClose={handleClose}
-    >
+    <Snackbar open={isOpen} autoHideDuration={3000} onClose={handleClose}>
       <Alert
         onClose={handleClose}
         severity={notification?.severity}

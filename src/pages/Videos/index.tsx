@@ -8,6 +8,8 @@ import ImageWithFallback from "../../components/ImageWithFallback";
 import { Button, Chip, Switch, TableCell } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import useMoviesWithFavoriteQuery from "../../hooks/useMoviesQuery";
+import useAuth from "../../services/auth/hooks/useAuth";
+import { useMutation } from "react-query";
 
 interface RowData {
   id: number;
@@ -22,6 +24,7 @@ interface RowData {
 }
 
 export default function Videos() {
+  const { authAxios } = useAuth();
   const navigate = useNavigate();
   const { data } = useMoviesWithFavoriteQuery({
     language: "en",
@@ -39,12 +42,18 @@ export default function Videos() {
         date: item.updatedAt,
         views: 0,
         comments: 0,
-        isPublic: true,
+        isPublic: item.isPublic ?? false,
         process: item.status,
         tags: item.videoTags.map((tag) => tag.value),
       };
     });
   }
+
+  const updateVideoIsPublicStatusMutation = useMutation(
+    ({ id, isPublic }: { id: number; isPublic: boolean }) => {
+      return authAxios?.put(`/api/v1/videos/${id}`, { isPublic });
+    },
+  );
 
   return (
     <div className="p-8">
@@ -89,7 +98,15 @@ export default function Videos() {
                   ))}
                 </TableCell>
                 <TableCell align="right">
-                  <Switch defaultChecked={row.isPublic} />
+                  <Switch
+                    defaultChecked={row.isPublic}
+                    onChange={(_, checked) => {
+                      updateVideoIsPublicStatusMutation.mutate({
+                        id: row.id,
+                        isPublic: checked,
+                      });
+                    }}
+                  />
                 </TableCell>
                 <TableCell align="right">{row.process}</TableCell>
                 <TableCell align="right">

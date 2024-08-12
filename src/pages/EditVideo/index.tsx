@@ -77,7 +77,7 @@ export default function EditVideo() {
   const { data: movieRes } = useQuery(
     ["/api/v1/videos", id],
     async () => {
-      return axios.get<VideoData>(
+      return authAxios?.get<VideoData>(
         VITE_BACKEND_API_BASE_URL + `/api/v1/videos/${id}`,
         {
           headers: {

@@ -61,16 +61,21 @@ export default function Detail() {
 
   const { isFavorite, handleTriggerFavorite } = useMovieFavorite(Number(id));
 
-  const { data: movieRes } = useQuery(["/api/v1/videos", id], async () => {
-    return axios.get<VideoData>(
-      VITE_BACKEND_API_BASE_URL + `/api/v1/videos/${id}`,
-      {
-        headers: {
-          "accept-language": "en",
+  const { data: movieRes } = useQuery(
+    ["/api/v1/videos", id, authAxios],
+    async () => {
+      const instance = authAxios ?? axios;
+
+      return instance.get<VideoData>(
+        VITE_BACKEND_API_BASE_URL + `/api/v1/videos/${id}`,
+        {
+          headers: {
+            "accept-language": "en",
+          },
         },
-      },
-    );
-  });
+      );
+    },
+  );
 
   useQuery(
     [
@@ -105,7 +110,7 @@ export default function Detail() {
         if (!data) {
           return;
         }
-        const filteredData = data.filter((item) => item.data.length > 0);
+        const filteredData = data.filter((item) => item?.data?.length > 0);
         if (filteredData.length === 0) {
           setSubtitles([]);
         }
@@ -153,11 +158,16 @@ export default function Detail() {
   const movieData = movieRes?.data;
 
   const { data: commentsRes } = useQuery(
-    ["/api/v1/videos/${id}/comments", id],
+    ["/api/v1/videos/${id}/comments", id, authAxios],
     async () => {
-      return axios.get<CommentsResponseData>(
-        `${VITE_BACKEND_API_BASE_URL}/api/v1/videos/${id}/comments`,
-      );
+      if (authAxios)
+        return authAxios.get<CommentsResponseData>(
+          `/api/v1/videos/${id}/comments`,
+        );
+      else
+        return axios.get<CommentsResponseData>(
+          `${VITE_BACKEND_API_BASE_URL}/api/v1/videos/${id}/comments`,
+        );
     },
   );
   const commentsData = commentsRes?.data;
@@ -323,7 +333,10 @@ export default function Detail() {
                   className="bg-gray-800"
                   onClick={() => {
                     if (!isAuthenticated) {
-                      return showNotification("Please sign in to comment", "error");
+                      return showNotification(
+                        "Please sign in to comment",
+                        "error",
+                      );
                     }
                     if (!isCommented) setOpenCommentModal(true);
                   }}
@@ -336,8 +349,8 @@ export default function Detail() {
               <div className="flex w-full items-center justify-between">
                 <div>
                   <Typography variant="body1">
-                    {movieData?.releaseYear} &bull; {movieData?.rating} &bull;
-                    {" "}{convertMinutes(movieData?.duration ?? 0)}
+                    {movieData?.releaseYear} &bull; {movieData?.rating} &bull;{" "}
+                    {convertMinutes(movieData?.duration ?? 0)}
                   </Typography>
                 </div>
                 <div className="flex items-center gap-1">
@@ -346,8 +359,9 @@ export default function Detail() {
                     {movieData?.averageRating}
                     <span className="inline text-gray-500">
                       ({movieData?.totalCommentCount})
-                    </span> &bull; {movieData?.totalViews} Views &bull; {movieData?.totalCommentCount}{" "}
-                    Comments
+                    </span>{" "}
+                    &bull; {movieData?.totalViews} Views &bull;{" "}
+                    {movieData?.totalCommentCount} Comments
                   </Typography>
                 </div>
               </div>
@@ -357,15 +371,14 @@ export default function Detail() {
                 </Typography>
               </div>
               <div className="space-x-4">
-                {movieData?.videoTags
-                  .map((tag) => (
-                    <Chip
-                      className="capitalize"
-                      key={tag.id}
-                      label={tag.value}
-                      variant="outlined"
-                    />
-                  ))}
+                {movieData?.videoTags.map((tag) => (
+                  <Chip
+                    className="capitalize"
+                    key={tag.id}
+                    label={tag.value}
+                    variant="outlined"
+                  />
+                ))}
               </div>
             </div>
             <div className="w-80 shrink-0 space-y-4">
@@ -492,7 +505,10 @@ export default function Detail() {
                       startIcon={<EditIcon />}
                       onClick={() => {
                         if (!isAuthenticated) {
-                          return showNotification("Please sign in to comment", "error");
+                          return showNotification(
+                            "Please sign in to comment",
+                            "error",
+                          );
                         }
                         setOpenCommentModal(true);
                       }}
