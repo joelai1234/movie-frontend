@@ -2,8 +2,6 @@ import {
   AccountCircle,
   CloudUpload,
   VideoCameraFront,
-  Settings,
-  SupervisedUserCircle,
   Favorite,
 } from "@mui/icons-material";
 import { Button, Typography } from "@mui/material";
@@ -31,48 +29,64 @@ export default function SettingsLayout() {
           </Typography>
         </div>
         <Button
-          className="my-4"
+          className="mb-4 mt-2 rounded-3xl bg-[#335C67] px-6 capitalize text-white"
           variant="contained"
+          size="large"
           startIcon={<CloudUpload />}
           onClick={() => navigate("/upload-video")}
         >
           Upload video
         </Button>
-        <Box sx={{ width: "100%", maxWidth: 360, bgcolor: "background.paper" }}>
+        <Box sx={{ width: "100%", maxWidth: 360 }}>
           <nav aria-label="main mailbox folders">
-            <List>
-              <ListItem disablePadding onClick={() => navigate("/profile")}>
-                <ListItemButton selected={pathname === "/profile"}>
-                  <ListItemIcon>
+            <List className="space-y-1">
+              {/* <ListItem className="px-3" disablePadding onClick={() => navigate("/profile")}>
+                <ListItemButton className="rounded-lg" selected={pathname === "/profile"}>
+                  <ListItemIcon className="min-w-10">
                     <SupervisedUserCircle />
                   </ListItemIcon>
                   <ListItemText primary="Profile" />
                 </ListItemButton>
-              </ListItem>
-              <ListItem disablePadding onClick={() => navigate("/videos")}>
-                <ListItemButton selected={pathname === "/videos"}>
-                  <ListItemIcon>
-                    <VideoCameraFront />
-                  </ListItemIcon>
-                  <ListItemText primary="Videos" />
-                </ListItemButton>
-              </ListItem>
-              <ListItem disablePadding onClick={() => navigate("/favorites")}>
-                <ListItemButton selected={pathname === "/favorites"}>
-                  <ListItemIcon>
+              </ListItem> */}
+              <ListItem
+                className="px-3"
+                disablePadding
+                onClick={() => navigate("/favorites")}
+              >
+                <ListItemButton
+                  className="rounded-lg"
+                  selected={pathname === "/favorites"}
+                >
+                  <ListItemIcon className="min-w-10">
                     <Favorite />
                   </ListItemIcon>
                   <ListItemText primary="Favorites" />
                 </ListItemButton>
               </ListItem>
-              <ListItem disablePadding>
+              <ListItem
+                className="px-3"
+                disablePadding
+                onClick={() => navigate("/videos")}
+              >
+                <ListItemButton
+                  className="rounded-lg"
+                  selected={pathname === "/videos"}
+                >
+                  <ListItemIcon className="min-w-10">
+                    <VideoCameraFront />
+                  </ListItemIcon>
+                  <ListItemText primary="Videos" />
+                </ListItemButton>
+              </ListItem>
+
+              {/* <ListItem disablePadding>
                 <ListItemButton>
                   <ListItemIcon>
                     <Settings />
                   </ListItemIcon>
                   <ListItemText primary="Settings" />
                 </ListItemButton>
-              </ListItem>
+              </ListItem> */}
             </List>
           </nav>
         </Box>

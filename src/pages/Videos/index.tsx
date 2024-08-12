@@ -5,11 +5,12 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import ImageWithFallback from "../../components/ImageWithFallback";
-import { Button, Chip, Switch, TableCell } from "@mui/material";
+import { Chip, IconButton, Switch, TableCell } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import useMoviesWithFavoriteQuery from "../../hooks/useMoviesQuery";
 import useAuth from "../../services/auth/hooks/useAuth";
 import { useMutation } from "react-query";
+import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 
 interface RowData {
   id: number;
@@ -27,6 +28,7 @@ export default function Videos() {
   const { authAxios } = useAuth();
   const navigate = useNavigate();
   const { data } = useMoviesWithFavoriteQuery({
+    queryKey: "my-videos",
     language: "en",
     self: true,
     sortBy: "UPDATED_AT",
@@ -75,7 +77,7 @@ export default function Videos() {
           <TableBody>
             {rows.map((row) => (
               <TableRow
-                key={row.name}
+                key={row.id}
                 sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
               >
                 <TableCell component="th" scope="row">
@@ -99,6 +101,7 @@ export default function Videos() {
                 </TableCell>
                 <TableCell align="right">
                   <Switch
+                    color="warning"
                     defaultChecked={row.isPublic}
                     onChange={(_, checked) => {
                       updateVideoIsPublicStatusMutation.mutate({
@@ -108,16 +111,40 @@ export default function Videos() {
                     }}
                   />
                 </TableCell>
-                <TableCell align="right">{row.process}</TableCell>
+                <TableCell className="capitalize" align="right">
+                  {row.process.toLowerCase()}
+                </TableCell>
                 <TableCell align="right">
-                  <Button
+                  <IconButton
+                    aria-label="edit"
+                    size="small"
+                    onClick={() => {
+                      navigate(`/edit-video/${row.id}`);
+                    }}
+                  >
+                    <EditOutlinedIcon className="text-[#E09F3E]" />
+                  </IconButton>
+
+                  {/* <Button
+                    className="my-4 rounded-3xl bg-[#335C67] capitalize text-white"
+                    variant="contained"
+                    size="small"
+                    onClick={() => {
+                      navigate(`/edit-video/${row.id}`);
+                    }}
+                  >
+                    Edit
+                  </Button> */}
+                  {/* <Button
+                    color="warning"
+                    className="capitalize"
                     variant="text"
                     onClick={() => {
                       navigate(`/edit-video/${row.id}`);
                     }}
                   >
                     Edit
-                  </Button>
+                  </Button> */}
                 </TableCell>
               </TableRow>
             ))}

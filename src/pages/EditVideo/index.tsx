@@ -321,14 +321,14 @@ export default function EditVideo() {
             </FormControl>
             {sourceType === "FILE" && (
               <div className="flex flex-col gap-2">
-                <div className="w-36 rounded-md border border-indigo-500 bg-gray-800 p-4 shadow-md">
+                <div className="w-36 rounded-md border border-[#E09F3E] bg-gray-800 p-4 shadow-md">
                   <label
                     htmlFor="upload-video"
                     className="flex cursor-pointer flex-col items-center gap-2"
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
-                      className="h-10 w-10 fill-gray-800 stroke-indigo-500"
+                      className="h-10 w-10 fill-gray-800 stroke-[#E09F3E]"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
                       strokeWidth="2"
@@ -667,14 +667,14 @@ export default function EditVideo() {
                 />
               ))}
             </div>
-            <div className="w-36 rounded-md border border-indigo-500 bg-gray-800 p-4 shadow-md">
+            <div className="w-36 rounded-md border border-[#E09F3E] bg-gray-800 p-4 shadow-md">
               <label
                 htmlFor="thumbnail"
                 className="flex cursor-pointer flex-col items-center gap-2"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-10 w-10 fill-gray-800 stroke-indigo-500"
+                  className="h-10 w-10 fill-gray-800 stroke-[#E09F3E]"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
                   strokeWidth="2"
@@ -718,7 +718,7 @@ export default function EditVideo() {
             </Typography>
           </div>
           <Button
-            className="ml-auto rounded-full px-6"
+            className="ml-auto rounded-full bg-[#335C67] px-6 capitalize text-white"
             variant="contained"
             type="submit"
             disabled={uploadVideoMutation.isLoading}

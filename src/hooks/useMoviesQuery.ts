@@ -6,6 +6,7 @@ import useAuth from "../services/auth/hooks/useAuth";
 const VITE_BACKEND_API_BASE_URL = import.meta.env.VITE_BACKEND_API_BASE_URL;
 
 interface useMoviesQueryProps {
+  queryKey?: string;
   category?: string;
   language: string;
   sortBy?: string;
@@ -16,6 +17,7 @@ interface useMoviesQueryProps {
 }
 
 export default function useMoviesWithFavoriteQuery({
+  queryKey,
   category,
   language,
   sortBy,
@@ -39,7 +41,7 @@ export default function useMoviesWithFavoriteQuery({
 
   const { data: movieData } = useQuery(
     [
-      "/api/v1/videos",
+      queryKey ?? "/api/v1/videos",
       sortBy,
       category,
       keyword,

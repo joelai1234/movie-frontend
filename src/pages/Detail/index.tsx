@@ -462,20 +462,31 @@ export default function Detail() {
               <TabContext value={value}>
                 <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
                   <TabList
+                    classes={{
+                      indicator: "bg-[#E09F3E]",
+                    }}
                     onChange={handleChange}
-                    aria-label="lab API tabs example"
                   >
                     <Tab
+                      classes={{
+                        selected: "text-[#E09F3E]",
+                      }}
                       className="normal-case"
                       label="Videos & Photos"
                       value="Videos & Photos"
                     />
                     <Tab
+                      classes={{
+                        selected: "text-[#E09F3E]",
+                      }}
                       className="normal-case"
                       label="Comments"
                       value="Comments"
                     />
                     <Tab
+                      classes={{
+                        selected: "text-[#E09F3E]",
+                      }}
                       className="normal-case"
                       label="More like this"
                       value="More like this"
@@ -483,6 +494,15 @@ export default function Detail() {
                   </TabList>
                 </Box>
                 <TabPanel className="px-0" value="Videos & Photos">
+                  {movieData?.videoAttachments.length === 0 && (
+                    <div className="flex justify-center">
+                      <img
+                        className="h-[300px] w-[300px]"
+                        src="/images/bg-empty.png"
+                        alt="empty"
+                      />
+                    </div>
+                  )}
                   <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
                     {movieData?.videoAttachments.map((attachment) => {
                       return (
@@ -537,7 +557,15 @@ export default function Detail() {
                     })}
                   </div>
                 </TabPanel>
-                <TabPanel className="px-0" value="More like this"></TabPanel>
+                <TabPanel className="px-0" value="More like this">
+                  <div className="flex justify-center">
+                    <img
+                      className="h-[300px] w-[300px]"
+                      src="/images/bg-empty.png"
+                      alt="empty"
+                    />
+                  </div>
+                </TabPanel>
               </TabContext>
             </Box>
           </div>

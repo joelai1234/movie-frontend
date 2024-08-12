@@ -11,11 +11,7 @@ import {
   Typography,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
-import {
-  useLocation,
-  useNavigate,
-  useSearchParams,
-} from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { cn } from "../../utils/helper";
 import { AccountCircle } from "@mui/icons-material";
@@ -47,12 +43,14 @@ export default function Header() {
   };
 
   const handleProfile = () => {
-    navigate("/profile");
+    navigate("/favorites");
+    handleClose();
   };
 
   const handleLogout = () => {
     setAnchorEl(null);
     signOut();
+    handleClose();
   };
 
   useEffect(() => {
@@ -178,7 +176,7 @@ export default function Header() {
                           className="flex cursor-pointer justify-end"
                           onClick={() => setOpenSignInModal(false)}
                         >
-                          <CloseIcon className=" text-xl"  />
+                          <CloseIcon className="text-xl" />
                         </div>
 
                         <div className="flex flex-col justify-center text-center">
@@ -275,7 +273,7 @@ export default function Header() {
                 open={Boolean(anchorEl)}
                 onClose={handleClose}
               >
-                <MenuItem onClick={handleProfile}>Profile</MenuItem>
+                <MenuItem onClick={handleProfile}>Settings</MenuItem>
                 <MenuItem onClick={handleLogout}>Logout</MenuItem>
               </Menu>
             </div>

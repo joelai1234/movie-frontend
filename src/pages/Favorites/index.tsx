@@ -27,6 +27,17 @@ export default function Favorites() {
         <Typography className="font-medium" variant="h6" gutterBottom>
           Favorites
         </Typography>
+        {
+          data?.data.data.length === 0 && (
+            <div className="mt-24 flex items-center justify-center">
+              <img
+                className="h-[300px] w-[300px]"
+                src="/public/images/bg-settings.png"
+                alt="no movies"
+              />
+            </div>
+          )
+        }
         <MoviesSlides
           id="1"
           movies={formatMovies({
