@@ -32,7 +32,7 @@ export default function Favorites() {
             <div className="mt-24 flex items-center justify-center">
               <img
                 className="h-[300px] w-[300px]"
-                src="/images/bg-settings.png"
+                src="/images/bg-empty.png"
                 alt="no movies"
               />
             </div>
