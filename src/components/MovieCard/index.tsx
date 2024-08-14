@@ -80,10 +80,10 @@ const MovieCard = ({ movie }: MovieCardProps) => {
 
   return (
     <div
-      className="relative w-min"
+      className="relative w-full aspect-[12/20] sm:aspect-[12/18] flex flex-col"
       onClick={() => navigate(`/detail/${movie?.id}`)}
     >
-      <div className="group relative h-80 w-56 cursor-pointer overflow-hidden rounded">
+      <div className="group relative w-full flex-1 cursor-pointer overflow-hidden rounded">
         <img
           className="absolute z-0 h-full w-full object-cover transition-all duration-500 group-hover:scale-[1.2] group-hover:blur-sm"
           src={imgSrc}

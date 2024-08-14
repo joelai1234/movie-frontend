@@ -32,13 +32,13 @@ export default function Banner({ category, setCategory }: BannerProps) {
   };
 
   return (
-    <div className="relative mb-0 h-full max-h-[600px] pb-0">
+    <div className="relative mb-0 sm:h-[600px] pb-0">
       <img
-        className="mb-0 block h-[600px] w-full object-cover pb-0"
+        className="mb-0 block h-full w-full object-cover pb-0"
         src={totalViewsData?.[0]?.coverPictureUrl}
         alt="banner"
       />
-      <div className="absolute left-6 top-16 z-40">
+      <div className="absolute left-4 sm:left-6 top-20 sm:top-16 z-40">
         <Button
           className="border-white/40 px-5 text-white"
           variant="outlined"
@@ -93,14 +93,14 @@ export default function Banner({ category, setCategory }: BannerProps) {
         </Popover>
       </div>
       <div
-        className="absolute left-0 top-0 z-10 h-[600px] w-full"
+        className="absolute left-0 top-0 z-10 h-full w-full"
         style={{
           backgroundImage:
             "linear-gradient(90deg, rgba(0,0,0,1) 0%, rgba(0,0,0,0.9) 25%, rgba(0,0,0,0) 80%, rgba(0,0,0,0) 100%)",
         }}
       ></div>
-      <div className="absolute bottom-0 left-0 z-20 w-full px-14 py-10">
-        <Typography className="font-medium" variant="h2">
+      <div className="absolute bottom-0 left-0 z-20 w-full px-4 sm:px-14 py-10">
+        <Typography className="font-medium text-5xl sm:text-6xl mb-2" variant="h2">
           {totalViewsData?.[0]?.videoDetail.title}
         </Typography>
         <Typography className="line-clamp-3 max-w-[600px]" variant="h5">

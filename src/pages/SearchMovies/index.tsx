@@ -71,7 +71,8 @@ export default function SearchMovies() {
             </Typography>
             <div className="flex items-center gap-1">
               <Typography variant="body1">
-                {movie.releaseYear} &bull; {movie?.rating} &bull; {convertMinutes(movie?.duration ?? 0)}
+                {movie.releaseYear} &bull; {movie?.rating} &bull;{" "}
+                {convertMinutes(movie?.duration ?? 0)}
               </Typography>{" "}
               &bull;
               <StarIcon fontSize="small" className="text-yellow-500" />
@@ -250,7 +251,11 @@ export default function SearchMovies() {
             {!isDisplayDetail && (
               <div className="flex flex-wrap gap-4">
                 {movies.map((movie) => {
-                  return <MovieCard key={movie.id} movie={movie} />;
+                  return (
+                    <div className="w-56">
+                      <MovieCard key={movie.id} movie={movie} />
+                    </div>
+                  );
                 })}
               </div>
             )}

@@ -81,7 +81,6 @@ export default function Message({
   });
 
   const handleLike = () => {
-    console.log("reaction", reaction);
     if (!isAuthenticated)
       return showNotification("Please login to like", "error");
     if (reaction === VideoCommentReactionType.LIKE) {
@@ -102,10 +101,10 @@ export default function Message({
   };
 
   return (
-    <div className="flex gap-8">
-      <div className="h-10 w-10 rounded-full bg-slate-50" />
-      <div className="w-[582px] space-y-2">
-        <div className="flex items-center justify-between py-1">
+    <div className="flex gap-4 sm:gap-8">
+      <div className="size-10 shrink-0 rounded-full bg-slate-50" />
+      <div className="flex-1 shrink-0 sm:max-w-[582px]">
+        <div className="flex items-center justify-between">
           <Typography variant="body2">{name}</Typography>
           <div className="flex items-center">
             <Typography variant="body2">
@@ -115,13 +114,13 @@ export default function Message({
             <Typography variant="body2">{rating}</Typography>
           </div>
         </div>
-        <div>
+        <div className="mt-1">
           <Typography variant="body2">{message}</Typography>
         </div>
       </div>
       <div className="flex h-fit items-center gap-1">
         <IconButton
-          className="h-fit"
+          className="h-fit p-0"
           size="small"
           onClick={() => {
             handleLike();
@@ -133,7 +132,7 @@ export default function Message({
       </div>
       <div className="flex h-fit items-center gap-1">
         <IconButton
-          className="h-fit"
+          className="h-fit p-0"
           size="small"
           onClick={() => {
             handleDislike();

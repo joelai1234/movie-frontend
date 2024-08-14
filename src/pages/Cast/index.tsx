@@ -22,7 +22,7 @@ export default function Cast() {
 
   return (
     <div className="pt-[64px]">
-      <div className="px-10 py-5">
+      <div className="px-5 sm:px-10 py-5">
         <div>
           <div>
             <Button
@@ -38,10 +38,9 @@ export default function Cast() {
           <div className="mt-2 flex justify-between">
             <div className="space-y-3">
               <Typography variant="h4">{data?.data.name}</Typography>
-              <div className="flex gap-12">
-                {/* <div className="h-56 w-56 rounded-sm bg-gray-400" /> */}
+              <div className="flex gap-6 sm:gap-12 flex-col sm:flex-row">
                 <ImageWithFallback
-                  className="h-56 w-56 rounded-sm object-none"
+                  className="size-56 rounded-sm object-none"
                   src={data?.data.pictureUrl ?? ""}
                   fallbackSrc="/images/bg-sign-in.jpeg"
                   alt="avatar"
@@ -126,7 +125,7 @@ export default function Cast() {
                 </div>
               </div>
             </div>
-            <div className="space-y-2 pt-10">
+            <div className="space-y-2 pt-10 hidden sm:block">
               <div>
                 <Typography variant="h6">
                   People also search for(dev)
@@ -186,7 +185,7 @@ export default function Cast() {
               </Button>
             </div> */}
           </div>
-          <div className="mt-10">
+          <div className="sm:mt-10">
             <div className="py-8">
               <MovieTable crewId={data?.data.id} />
             </div>

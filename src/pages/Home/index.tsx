@@ -57,7 +57,7 @@ export default function Home() {
       />
       <div className="h-2 w-full bg-red-600" />
       {updatedAtData && updatedAtData.length > 0 && (
-        <div className="space-y-8 px-10 py-8">
+        <div className="space-y-8 px-4 sm:px-10 py-8">
           {updatedAtData && (
             <div>
               <Typography className="font-medium" variant="h6" gutterBottom>

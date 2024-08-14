@@ -296,7 +296,7 @@ export default function Detail() {
         </div>
       </Modal>
       <div className="pt-[64px]">
-        <div className="h-[56.25vw] max-h-[calc(100vh-169px)] min-h-[480px]">
+        <div className="sm:h-[56.25vw] sm:max-h-[calc(100vh-169px)] sm:min-h-[480px] aspect-video sm:aspect-auto">
           {subtitles && (
             <ReactPlayer
               width="100%"
@@ -314,15 +314,15 @@ export default function Detail() {
             />
           )}
         </div>
-        <div className="space-y-10 px-10 py-5">
-          <div className="flex gap-16">
+        <div className="space-y-10 px-5 sm:px-10 py-5">
+          <div className="flex gap-4 sm:gap-16 flex-col sm:flex-row">
             <div className="w-full space-y-3">
               <div className="flex space-x-5">
                 <Typography variant="h4">
                   {movieData?.videoDetail.title}
                 </Typography>
                 <IconButton
-                  className="bg-gray-800"
+                  className="bg-gray-800 h-fit"
                   onClick={handleTriggerFavorite}
                 >
                   <FavoriteBorderIcon
@@ -330,7 +330,7 @@ export default function Detail() {
                   />
                 </IconButton>
                 <IconButton
-                  className="bg-gray-800"
+                  className="bg-gray-800 h-fit"
                   onClick={() => {
                     if (!isAuthenticated) {
                       return showNotification(
@@ -381,7 +381,7 @@ export default function Detail() {
                 ))}
               </div>
             </div>
-            <div className="w-80 shrink-0 space-y-4">
+            <div className="sm:w-80 shrink-0 space-y-4">
               <div className="flex">
                 <div className="w-20 shrink-0">
                   <Typography className="text-gray-500" variant="body2">

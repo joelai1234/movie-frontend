@@ -38,7 +38,7 @@ export default function MovieTable({ keyword, crewId }: MovieTableProps) {
     category,
     releaseYear: releaseYear === "all" ? undefined : releaseYear,
     sortBy,
-    language:'en',
+    language: "en",
     crewId,
   });
 
@@ -53,13 +53,13 @@ export default function MovieTable({ keyword, crewId }: MovieTableProps) {
     return (
       <>
         <div
-          className="flex cursor-pointer gap-8"
+          className="flex cursor-pointer gap-8 flex-col sm:flex-row"
           onClick={() => {
             navigate(`/detail/${movie.id}`);
           }}
         >
           <ImageWithFallback
-            className="h-60 w-44 rounded-sm"
+            className="w-2/3 aspect-[3/4] mx-auto sm:mx-0 sm:h-60 sm:w-44 rounded-sm object-cover"
             src={movie.coverPictureUrl}
             fallbackSrc="/images/bg-sign-in.jpeg"
             alt="video"
@@ -70,10 +70,10 @@ export default function MovieTable({ keyword, crewId }: MovieTableProps) {
             </Typography>
             <div className="flex items-center gap-1">
               <Typography variant="body1">
-                {movie.releaseYear} &bull; {movie?.rating} &bull; {" "}{convertMinutes(movie?.duration ?? 0)} 
+                {movie.releaseYear} &bull; {movie?.rating} &bull;{" "}
+                {convertMinutes(movie?.duration ?? 0)}
               </Typography>{" "}
               &bull;
-
               <StarIcon fontSize="small" className="text-yellow-500" />
               <Typography variant="body2">
                 {movie?.averageRating ?? 0}
@@ -155,7 +155,7 @@ export default function MovieTable({ keyword, crewId }: MovieTableProps) {
   return (
     <div>
       <div className="mt-6 flex justify-between">
-        <div className="flex space-x-6">
+        <div className="flex space-x-1 sm:space-x-6">
           <CustomSelect
             data={categoryList.map((data) => ({
               label: data.name,
@@ -168,6 +168,7 @@ export default function MovieTable({ keyword, crewId }: MovieTableProps) {
             value={category}
           />
           <CustomSelect
+            className="hidden sm:block"
             data={releaseYearList.map((data) => ({
               label: data.name,
               value: data.value,
@@ -235,9 +236,13 @@ export default function MovieTable({ keyword, crewId }: MovieTableProps) {
       <div>
         {isDisplayDetail && <div>{details}</div>}
         {!isDisplayDetail && (
-          <div className="flex flex-wrap gap-4">
+          <div className="grid grid-cols-3 sm:flex flex-wrap gap-4">
             {movies.map((movie) => {
-              return <MovieCard key={movie.id} movie={movie} />;
+              return (
+                <div className="sm:w-56">
+                  <MovieCard key={movie.id} movie={movie} />
+                </div>
+              );
             })}
           </div>
         )}

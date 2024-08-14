@@ -39,6 +39,7 @@ export default function Header() {
   const [searchType, setSearchType] = useState(
     pathname === "/search/people" ? "People" : "Movies",
   );
+  const [isOpenMobileSearch, setIsOpenMobileSearch] = useState(false);
 
   const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -94,7 +95,7 @@ export default function Header() {
       <AppBar
         className={cn(
           "transition-all",
-          isTransparent ? "bg-transparent bg-none shadow-none" : "bg-red-950",
+          (isTransparent && !isOpenMobileSearch) ? "bg-transparent bg-none shadow-none" : "bg-red-950",
         )}
       >
         <Toolbar>
@@ -107,66 +108,70 @@ export default function Header() {
           >
             Movies
           </Typography>
-          <Paper
-            className="mx-auto hidden h-9 bg-transparent shadow-none transition hover:bg-white/10 sm:flex"
-            sx={{
-              p: "2px 4px",
-              display: "flex",
-              alignItems: "center",
-            }}
-          >
-            <div>
-              <CustomSelect
-                data={searchTypeOptions.map((data) => ({
-                  label: data.name,
-                  value: data.value,
-                }))}
-                value={searchType}
-                title={searchType}
-                onChange={setSearchType}
-                col={1}
-                width={92}
-                p={8}
-              />
-            </div>
-            <div
-              className={cn("h-6 w-[1px] bg-[#572729]", {
-                hidden: isTransparent,
-              })}
-            ></div>
-            <InputBase
-              className="w-60 transition-all focus-within:w-80"
-              sx={{ ml: 1, flex: 1 }}
-              placeholder="Search..."
-              inputProps={{ "aria-label": "search..." }}
-              value={searchValue}
-              onChange={(e) => {
-                setSearchValue(e.target.value);
+          <div className="mx-auto hidden sm:block">
+            <Paper
+              className="flex h-9 bg-transparent shadow-none transition hover:bg-white/10"
+              sx={{
+                p: "2px 4px",
+                display: "flex",
+                alignItems: "center",
               }}
-              onKeyDown={(e) => {
-                e.key === "Enter" && handleSearch();
-              }}
-            />
-            <IconButton
-              type="button"
-              sx={{ p: "10px" }}
-              aria-label="search"
-              onClick={handleSearch}
             >
-              <SearchIcon />
-            </IconButton>
-          </Paper>
+              <div>
+                <CustomSelect
+                  data={searchTypeOptions.map((data) => ({
+                    label: data.name,
+                    value: data.value,
+                  }))}
+                  value={searchType}
+                  title={searchType}
+                  onChange={setSearchType}
+                  col={1}
+                  width={92}
+                  p={8}
+                />
+              </div>
+              <div
+                className={cn("h-6 w-[1px] bg-[#572729]", {
+                  hidden: isTransparent,
+                })}
+              ></div>
+              <InputBase
+                className="w-60 transition-all focus-within:w-80"
+                sx={{ ml: 1, flex: 1 }}
+                placeholder="Search..."
+                inputProps={{ "aria-label": "search..." }}
+                value={searchValue}
+                onChange={(e) => {
+                  setSearchValue(e.target.value);
+                }}
+                onKeyDown={(e) => {
+                  e.key === "Enter" && handleSearch();
+                }}
+              />
+              <IconButton
+                type="button"
+                sx={{ p: "10px" }}
+                aria-label="search"
+                onClick={handleSearch}
+              >
+                <SearchIcon />
+              </IconButton>
+            </Paper>
+          </div>
           <IconButton
             className="ml-auto mr-2 sm:hidden"
             type="button"
             sx={{ p: "10px" }}
             aria-label="search"
-            onClick={handleSearch}
+            onClick={() => {
+              setIsOpenMobileSearch(!isOpenMobileSearch);
+            }}
           >
             <SearchIcon />
           </IconButton>
           {!isAuthenticated && (
-            <div className="ml-0 space-x-2 sm:ml-auto">
+            <div className="ml-0 space-x-2">
               <div>
                 <Button
                   className="border-white/60 text-white hover:border-white"
@@ -182,9 +187,9 @@ export default function Header() {
                   aria-describedby="modal-modal-description"
                   disablePortal
                 >
-                  <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-                    <div className="w-[480px]">
-                      <div className="bg-[#1f2937] px-4 pb-12 pt-4 shadow backdrop-blur-md sm:rounded-2xl">
+                  <div className="absolute left-4 right-4 sm:left-1/2 top-1/2 sm:-translate-x-1/2 -translate-y-1/2">
+                    <div className="sm:w-[480px]">
+                      <div className="bg-[#1f2937] px-4 pb-12 pt-4 shadow backdrop-blur-md rounded-2xl">
                         <div
                           className="flex cursor-pointer justify-end"
                           onClick={() => setOpenSignInModal(false)}
@@ -318,6 +323,59 @@ export default function Header() {
             </div>
           )}
         </Toolbar>
+        {isOpenMobileSearch && (
+          <div className="block px-4 pb-4 pt-2 sm:hidden">
+            <Paper
+              className="flex h-9 bg-transparent shadow-none transition hover:bg-white/10"
+              sx={{
+                p: "2px 4px",
+                display: "flex",
+                alignItems: "center",
+              }}
+            >
+              <div>
+                <CustomSelect
+                  data={searchTypeOptions.map((data) => ({
+                    label: data.name,
+                    value: data.value,
+                  }))}
+                  value={searchType}
+                  title={searchType}
+                  onChange={setSearchType}
+                  col={1}
+                  width={92}
+                  p={8}
+                />
+              </div>
+              <div
+                className={cn("h-6 w-[1px] bg-[#572729]", {
+                  hidden: isTransparent,
+                })}
+              ></div>
+              <InputBase
+                className="transition-all"
+                sx={{ ml: 1, flex: 1 }}
+                placeholder="Search..."
+                inputProps={{ "aria-label": "search..." }}
+                value={searchValue}
+                onChange={(e) => {
+                  setSearchValue(e.target.value);
+                }}
+                onKeyDown={(e) => {
+                  e.key === "Enter" && handleSearch();
+                }}
+              />
+              <IconButton
+                type="button"
+                sx={{ p: "10px" }}
+                aria-label="search"
+                onClick={handleSearch}
+              >
+                <SearchIcon />
+              </IconButton>
+            </Paper>
+          </div>
+        )}
       </AppBar>
     </div>
   );

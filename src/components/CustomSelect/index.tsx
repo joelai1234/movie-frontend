@@ -2,6 +2,7 @@ import { Popover } from "@mui/material";
 
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { useState } from "react";
+import { cn } from "../../utils/helper";
 
 interface SelectProps {
   className?: string;
@@ -15,6 +16,7 @@ interface SelectProps {
 }
 
 export default function CustomSelect({
+  className,
   title,
   data,
   onChange,
@@ -34,7 +36,7 @@ export default function CustomSelect({
   };
 
   return (
-    <div className="relative z-50">
+    <div className={cn("relative z-50", className)}>
       <div
         className="flex cursor-pointer items-center gap-1.5 px-2"
         onClick={handleClick}
