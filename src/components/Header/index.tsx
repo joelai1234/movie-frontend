@@ -3,6 +3,8 @@ import {
   Button,
   IconButton,
   InputBase,
+  ListItemIcon,
+  ListItemText,
   Menu,
   MenuItem,
   Modal,
@@ -19,12 +21,16 @@ import useAuth from "../../services/auth/hooks/useAuth";
 import CustomSelect from "../CustomSelect";
 import { searchTypeOptions } from "../../data/movies";
 import CloseIcon from "@mui/icons-material/Close";
+import PermIdentityIcon from "@mui/icons-material/PermIdentity";
+import LogoutIcon from "@mui/icons-material/Logout";
+import { useAuthStore } from "../../services/auth/store/useAuthStroe";
 
 export default function Header() {
   const [searchParams] = useSearchParams();
   const search = searchParams.get("search");
   const { pathname } = useLocation();
   const { isAuthenticated, signOut, signIn } = useAuth();
+  const {userData} = useAuthStore();
   const navigate = useNavigate();
   const [isTransparent, setIsTransparent] = useState(true);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -102,14 +108,14 @@ export default function Header() {
             Movies
           </Typography>
           <Paper
-            className="mx-auto h-9 bg-transparent shadow-none transition hover:bg-white/10"
+            className="mx-auto hidden h-9 bg-transparent shadow-none transition hover:bg-white/10 sm:flex"
             sx={{
               p: "2px 4px",
               display: "flex",
               alignItems: "center",
             }}
           >
-            <div className="">
+            <div>
               <CustomSelect
                 data={searchTypeOptions.map((data) => ({
                   label: data.name,
@@ -150,10 +156,18 @@ export default function Header() {
               <SearchIcon />
             </IconButton>
           </Paper>
+          <IconButton
+            className="ml-auto mr-2 sm:hidden"
+            type="button"
+            sx={{ p: "10px" }}
+            aria-label="search"
+            onClick={handleSearch}
+          >
+            <SearchIcon />
+          </IconButton>
           {!isAuthenticated && (
-            <div className="space-x-2">
+            <div className="ml-0 space-x-2 sm:ml-auto">
               <div>
-                {/* <Link to="/auth/sign-in"> */}
                 <Button
                   className="border-white/60 text-white hover:border-white"
                   variant="outlined"
@@ -161,7 +175,6 @@ export default function Header() {
                 >
                   Sign In
                 </Button>
-                {/* </Link> */}
                 <Modal
                   open={openSignInModal}
                   onClose={() => setOpenSignInModal(false)}
@@ -235,15 +248,6 @@ export default function Header() {
                   </div>
                 </Modal>
               </div>
-
-              {/* <Link to="/auth/sign-up">
-                <Button
-                  className="border-white/60 text-white hover:border-white"
-                  variant="outlined"
-                >
-                  Sign Up
-                </Button>
-              </Link> */}
             </div>
           )}
           {isAuthenticated && (
@@ -259,7 +263,9 @@ export default function Header() {
                 <AccountCircle />
               </IconButton>
               <Menu
-                id="menu-appbar"
+                classes={{
+                  paper: "bg-[#010305] border border-[#4b5563] rounded-md",
+                }}
                 anchorEl={anchorEl}
                 anchorOrigin={{
                   vertical: "top",
@@ -270,11 +276,34 @@ export default function Header() {
                   vertical: "top",
                   horizontal: "right",
                 }}
+                disablePortal
                 open={Boolean(anchorEl)}
                 onClose={handleClose}
               >
-                <MenuItem onClick={handleProfile}>Settings</MenuItem>
-                <MenuItem onClick={handleLogout}>Logout</MenuItem>
+                <div className="flex h-[140px] w-[240px] flex-col items-center justify-center">
+                  <AccountCircle className="size-[52px]" />
+                  <div className="mt-2 text-center space-y-1">
+                    <p className="my-0 text-sm font-semibold text-white">
+                      {userData?.name}
+                    </p>
+                    <p className="my-0 text-sm text-[#626262]">
+                      {userData?.email}
+                    </p>
+                  </div>
+                </div>
+                <div className="h-px w-full bg-[#626262]"></div>
+                <MenuItem onClick={handleProfile}>
+                  <ListItemIcon>
+                    <PermIdentityIcon fontSize="small" />
+                  </ListItemIcon>
+                  <ListItemText>Profile</ListItemText>
+                </MenuItem>
+                <MenuItem onClick={handleLogout}>
+                  <ListItemIcon>
+                    <LogoutIcon fontSize="small" />
+                  </ListItemIcon>
+                  <ListItemText>Logout</ListItemText>
+                </MenuItem>
               </Menu>
             </div>
           )}
