@@ -30,7 +30,7 @@ export default function Header() {
   const search = searchParams.get("search");
   const { pathname } = useLocation();
   const { isAuthenticated, signOut, signIn } = useAuth();
-  const {userData} = useAuthStore();
+  const { userData } = useAuthStore();
   const navigate = useNavigate();
   const [isTransparent, setIsTransparent] = useState(true);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -282,7 +282,7 @@ export default function Header() {
               >
                 <div className="flex h-[140px] w-[240px] flex-col items-center justify-center">
                   <AccountCircle className="size-[52px]" />
-                  <div className="mt-2 text-center space-y-1">
+                  <div className="mt-2 space-y-1 text-center">
                     <p className="my-0 text-sm font-semibold text-white">
                       {userData?.name}
                     </p>
@@ -292,13 +292,23 @@ export default function Header() {
                   </div>
                 </div>
                 <div className="h-px w-full bg-[#626262]"></div>
-                <MenuItem onClick={handleProfile}>
+                <MenuItem
+                  onClick={handleProfile}
+                  classes={{
+                    root: "flex items-center py-4",
+                  }}
+                >
                   <ListItemIcon>
                     <PermIdentityIcon fontSize="small" />
                   </ListItemIcon>
                   <ListItemText>Profile</ListItemText>
                 </MenuItem>
-                <MenuItem onClick={handleLogout}>
+                <MenuItem
+                  onClick={handleLogout}
+                  classes={{
+                    root: "flex items-center py-4",
+                  }}
+                >
                   <ListItemIcon>
                     <LogoutIcon fontSize="small" />
                   </ListItemIcon>
