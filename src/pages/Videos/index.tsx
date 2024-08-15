@@ -58,7 +58,7 @@ export default function Videos() {
   );
 
   return (
-    <div className="p-8">
+    <div className="p-4 sm:p-8">
       <TableContainer component={Paper}>
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
           <TableHead>
@@ -89,15 +89,17 @@ export default function Videos() {
                   />
                 </TableCell>
                 <TableCell align="right">{row.name}</TableCell>
-                <TableCell align="right">
+                <TableCell className="whitespace-nowrap" align="right">
                   {new Date(row.date).toDateString()}
                 </TableCell>
                 <TableCell align="right">{row.views}</TableCell>
                 <TableCell align="right">{row.comments}</TableCell>
-                <TableCell className="space-x-1 space-y-1" align="right">
-                  {row.tags.map((tag) => (
-                    <Chip key={tag} label={tag} variant="outlined" />
-                  ))}
+                <TableCell align="right">
+                  <div className="w-[150px] sm:w-auto space-x-1 space-y-1">
+                    {row.tags.map((tag) => (
+                      <Chip key={tag} label={tag} variant="outlined" />
+                    ))}
+                  </div>
                 </TableCell>
                 <TableCell align="right">
                   <Switch

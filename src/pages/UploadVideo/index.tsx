@@ -226,7 +226,7 @@ export default function UploadVideo() {
 
   return (
     <form className="flex h-full flex-col" onSubmit={handleSubmit(onSubmit)}>
-      <div className="w-full flex-1 space-y-8 overflow-auto p-8">
+      <div className="w-full flex-1 space-y-8 overflow-auto p-5 sm:p-8">
         <div>
           <Typography variant="h6" gutterBottom>
             Video
