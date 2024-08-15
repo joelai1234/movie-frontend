@@ -54,13 +54,13 @@ export default function SearchMovies() {
     return (
       <>
         <div
-          className="flex cursor-pointer gap-8"
+          className="flex cursor-pointer gap-8 flex-col sm:flex-row"
           onClick={() => {
             navigate(`/detail/${movie.id}`);
           }}
         >
           <ImageWithFallback
-            className="h-60 w-44 rounded-sm"
+             className="w-2/3 aspect-[3/4] mx-auto sm:mx-0 sm:h-60 sm:w-44 rounded-sm object-cover"
             src={movie.coverPictureUrl}
             fallbackSrc="/images/bg-sign-in.jpeg"
             alt="video"
@@ -147,7 +147,7 @@ export default function SearchMovies() {
 
   return (
     <div className="pt-[64px]">
-      <div className="px-10 py-5">
+      <div className="px-5 sm:px-10 py-5">
         <div className="mx-auto max-w-7xl">
           <div className="space-y-3">
             <Button
@@ -179,6 +179,7 @@ export default function SearchMovies() {
                 value={category}
               />
               <CustomSelect
+                className="hidden sm:block"
                 data={releaseYearList.map((data) => ({
                   label: data.name,
                   value: data.value,
@@ -249,10 +250,10 @@ export default function SearchMovies() {
           <div>
             {isDisplayDetail && <div>{details}</div>}
             {!isDisplayDetail && (
-              <div className="flex flex-wrap gap-4">
+              <div className="grid grid-cols-3 flex-wrap gap-4 sm:flex">
                 {movies.map((movie) => {
                   return (
-                    <div className="w-56">
+                    <div className="sm:w-56">
                       <MovieCard key={movie.id} movie={movie} />
                     </div>
                   );

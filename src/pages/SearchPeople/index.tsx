@@ -1,5 +1,5 @@
 import { useQuery } from "react-query";
-import { Navigate, useNavigate, useSearchParams } from "react-router-dom";
+import { Link, Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import axios from "axios";
 import { Button, Divider, Typography } from "@mui/material";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
@@ -33,7 +33,7 @@ export default function SearchPeople() {
     );
   });
 
-  if (data?.data.data.length === 1) { 
+  if (data?.data.data.length === 1) {
     return <Navigate to={`/cast/${data?.data.data[0].id}`} replace />;
   }
 
@@ -69,7 +69,7 @@ export default function SearchPeople() {
 
   return (
     <div className="pt-[64px]">
-      <div className="px-10 py-5">
+      <div className="px-5 py-5 sm:px-10">
         <div className="mx-auto max-w-7xl">
           <div className="space-y-3">
             <Button
@@ -129,7 +129,7 @@ export default function SearchPeople() {
             {peopleData?.map((_data, index) => (
               <Fragment key={_data.id}>
                 <div
-                  className="flex cursor-pointer gap-8 py-10 transition hover:bg-white/10"
+                  className="flex cursor-pointer gap-4 py-10 transition hover:bg-white/10 sm:gap-8"
                   onClick={() => {
                     navigate(`/cast/${_data.id}`);
                   }}
@@ -162,9 +162,19 @@ export default function SearchPeople() {
                         </Typography>
                       </div>
                       <div>
-                        <Typography variant="body2">
-                          Inside Out, Baby Mama (dev)
-                        </Typography>
+                        {_data.videoCrews.map((data, index) => (
+                          <>
+                            <Link
+                              className="text-[#7EC2F9] no-underline"
+                              to={`/detail/${data.video.id}`}
+                            >
+                              {data.video.name}
+                            </Link>
+                            {index < _data.videoCrews.length - 1 && ", "}
+                          </>
+                        ))}
+
+                        {/* <Typography variant="body2"></Typography> */}
                       </div>
                     </div>
                   </div>
