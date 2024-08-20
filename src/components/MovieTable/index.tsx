@@ -3,7 +3,7 @@ import { IMovie, VideoCategory } from "../../model/movie";
 import { Chip, Divider, IconButton, Typography } from "@mui/material";
 import GridViewIcon from "@mui/icons-material/GridView";
 import ViewListIcon from "@mui/icons-material/ViewList";
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import MovieCard from "../../components/MovieCard";
 import StarIcon from "@mui/icons-material/Star";
 // import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
@@ -51,7 +51,7 @@ export default function MovieTable({ keyword, crewId }: MovieTableProps) {
 
   const details = data?.map((movie) => {
     return (
-      <>
+      <Fragment key={movie.id}>
         <div
           className="flex cursor-pointer gap-8 flex-col sm:flex-row"
           onClick={() => {
@@ -143,7 +143,7 @@ export default function MovieTable({ keyword, crewId }: MovieTableProps) {
           </div> */}
         </div>
         <Divider className="my-6" />
-      </>
+      </Fragment>
     );
   });
 
@@ -239,7 +239,9 @@ export default function MovieTable({ keyword, crewId }: MovieTableProps) {
           <div className="grid grid-cols-3 sm:flex flex-wrap gap-4">
             {movies.map((movie) => {
               return (
-                <div className="sm:w-56">
+                <div
+                  key={movie.id}
+                  className="sm:w-56">
                   <MovieCard key={movie.id} movie={movie} />
                 </div>
               );

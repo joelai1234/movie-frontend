@@ -5,7 +5,7 @@ export const formatMovies = ({
 }: {
   data: (VideoData & { isFavorite?: boolean })[];
 }) => {
-  const movies: IMovie[] = data.map((item) => {
+  const movies: IMovie[] = data?.map((item) => {
     return {
       id: item.id,
       name: item.name,

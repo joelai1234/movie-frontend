@@ -6,11 +6,14 @@ import { RolesData } from "../../model/movie";
 import axios from "axios";
 import ImageWithFallback from "../../components/ImageWithFallback";
 import MovieTable from "../../components/MovieTable";
+import { CrewResponse } from "../../apis/model/crew";
+import useAuth from "../../services/auth/hooks/useAuth";
 
 const VITE_BACKEND_API_BASE_URL = import.meta.env.VITE_BACKEND_API_BASE_URL;
 
 export default function Cast() {
   const { id } = useParams();
+  const authAxios = useAuth();
   // const [isExpand, setIsExpand] = useState(false);
   const navigate = useNavigate();
 
@@ -19,6 +22,23 @@ export default function Cast() {
       VITE_BACKEND_API_BASE_URL + `/api/v1/crews/${id}`,
     );
   });
+
+  const { data: recommendationsRes } = useQuery(
+    ["/api/v1/crews/${id}/recommendations", id, authAxios],
+    async () => {
+      return axios.get<{ data: CrewResponse[] }>(
+        `${VITE_BACKEND_API_BASE_URL}/api/v1/crews/${id}/recommendations`,
+        {
+          headers: {
+            "accept-language": "en",
+          },
+        },
+      );
+    },
+  );
+
+  const recommendationsData = recommendationsRes?.data.data.slice(0, 6);
+
 
   return (
     <div className="pt-[64px]">
@@ -128,34 +148,21 @@ export default function Cast() {
             <div className="space-y-2 pt-10 hidden sm:block">
               <div>
                 <Typography variant="h6">
-                  People also search for(dev)
+                  People also search for
                 </Typography>
               </div>
               <div className="grid grid-cols-3 gap-x-7 gap-y-3">
-                <div className="space-y-1 text-center">
-                  <div className="h-20 w-20 bg-slate-200" />
-                  <Typography variant="body2">Will Arnett</Typography>
-                </div>
-                <div className="space-y-1 text-center">
-                  <div className="h-20 w-20 bg-slate-200" />
-                  <Typography variant="body2">Will Arnett</Typography>
-                </div>
-                <div className="space-y-1 text-center">
-                  <div className="h-20 w-20 bg-slate-200" />
-                  <Typography variant="body2">Will Arnett</Typography>
-                </div>
-                <div className="space-y-1 text-center">
-                  <div className="h-20 w-20 bg-slate-200" />
-                  <Typography variant="body2">Will Arnett</Typography>
-                </div>
-                <div className="space-y-1 text-center">
-                  <div className="h-20 w-20 bg-slate-200" />
-                  <Typography variant="body2">Will Arnett</Typography>
-                </div>
-                <div className="space-y-1 text-center">
-                  <div className="h-20 w-20 bg-slate-200" />
-                  <Typography variant="body2">Will Arnett</Typography>
-                </div>
+                {recommendationsData?.map((item) => (
+                  <div key={item.id} className="space-y-1 text-center">
+                    <ImageWithFallback className="h-20 w-20 bg-slate-200 object-cover"
+                    src={item.pictureUrl}
+                    fallbackSrc="/images/bg-sign-in.jpeg"
+                    alt="avatar"
+                    />
+                    <Typography variant="body2">{item.name}</Typography>
+                  </div>
+                ))}
+              
               </div>
             </div>
           </div>
